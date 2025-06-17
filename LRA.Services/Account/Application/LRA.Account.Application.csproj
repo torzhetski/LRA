@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\LRA.Shared\Abstractions\LRA.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\Domain\LRA.Account.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
