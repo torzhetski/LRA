@@ -2,5 +2,5 @@
 
 public class ApiKeySetting
 {
-    public required string ApiKey {  get; set; }
+    public required string ClientApiKey {  get; set; }
 }

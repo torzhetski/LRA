@@ -25,21 +25,24 @@ public class TestService : ITestService
     public async Task<TestMessageModel> TestAccountServiceAsync(int id)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.BaseAccountUrl}?id={id}");
-        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ApiKey);
+        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ClientApiKey);
+
         return await _http.SendAsync<TestMessageModel>(request);
     }
 
     public async Task<TestMessageModel> TestAuthServiceAsync(int id)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.BaseAuthUrl}?id={id}");
-        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ApiKey);
+        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ClientApiKey);
+
         return await _http.SendAsync<TestMessageModel>(request);
     }
 
     public async Task<TestMessageModel> TestSubscriptionServiceAsync(int id)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.BaseSubscriptionUrl}?id={id}");
-        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ApiKey);
+        request.Headers.Add("InternalApiKey", _apiKeySettings.Value.ClientApiKey);
+
         return await _http.SendAsync<TestMessageModel>(request);
     }
 }

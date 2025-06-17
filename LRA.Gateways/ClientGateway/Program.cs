@@ -14,7 +14,7 @@ builder.Services.Configure<ServiceUrlSettings>(
     builder.Configuration.GetSection("ServiceUrl"));
 
 builder.Services.Configure<ApiKeySetting>(
-    builder.Configuration.GetSection("ApiKey"));
+    builder.Configuration.GetSection("ApiKeys"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
