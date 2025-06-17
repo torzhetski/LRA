@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
-namespace LRA.Shared.Infrastructure.Middlewares;
+namespace LRA.Shared.Presentation.Middlewares;
 
 public class ApiKeyValidationMiddleware
 {

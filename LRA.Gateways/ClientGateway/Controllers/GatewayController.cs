@@ -16,19 +16,19 @@ public class GatewayController : ControllerBase
         _testService = testService;
     }
 
-    [HttpGet("test-auth")]
+    [HttpGet("auth")]
     public async Task<TestMessageModel> GetAuthResponseAsync([FromQuery] int id)
     {
         return await _testService.TestAuthServiceAsync(id);
     }
 
-    [HttpGet("test-account")]
+    [HttpGet("account")]
     public async Task<TestMessageModel> GetAccountResponseAsync([FromQuery] int id)
     {
         return await _testService.TestAccountServiceAsync(id);
     }
 
-    [HttpGet("test-subscription")]
+    [HttpGet("subscription")]
     public async Task<TestMessageModel> GetSubscriptionResponseAsync([FromQuery] int id)
     {
         return await _testService.TestSubscriptionServiceAsync(id);

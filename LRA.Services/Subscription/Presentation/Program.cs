@@ -1,4 +1,4 @@
-using LRA.Shared.Infrastructure.Middlewares;
+using LRA.Shared.Presentation.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
