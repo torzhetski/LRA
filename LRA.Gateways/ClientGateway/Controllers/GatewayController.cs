@@ -1,32 +1,36 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LRA.Gateways.Client.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Interfaces;
+using Shared.Abstractions.Test;
 
-namespace Gateways.ClientGateway.Controllers
+namespace Gateways.ClientGateway.Controllers;
+
+[Route("api/clients")]
+[ApiController]
+public class GatewayController : ControllerBase
 {
-    [Route("api/gateway")]
-    [ApiController]
-    public class GatewayController : ControllerBase
+    private readonly ITestService _testService;
+
+    public GatewayController(ITestService testService)
     {
-        private readonly IHttpClientService _http;
+        _testService = testService;
+    }
 
-        public GatewayController(IHttpClientService http)
-        {
-            _http = http;
-        }
+    [HttpGet("test-auth")]
+    public async Task<TestMessageModel> GetAuthResponseAsync([FromQuery] int id)
+    {
+        return await _testService.TestAuthServiceAsync(id);
+    }
 
-        [HttpGet("auth")]
-        public async Task<TestMessageModel> GetAuthResponseAsync([FromQuery] int id)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7183/api/test-auth?id={id}");
-            return await _http.SendAsync<TestMessageModel>(request);
-        }
+    [HttpGet("test-account")]
+    public async Task<TestMessageModel> GetAccountResponseAsync([FromQuery] int id)
+    {
+        return await _testService.TestAccountServiceAsync(id);
+    }
 
-        [HttpGet("account")]
-        public async Task<TestMessageModel> GetAccountResponseAsync([FromQuery] int id)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7052/api/test-account?id={id}");
-            return await _http.SendAsync<TestMessageModel>(request);
-        }
+    [HttpGet("test-subscription")]
+    public async Task<TestMessageModel> GetSubscriptionResponseAsync([FromQuery] int id)
+    {
+        return await _testService.TestSubscriptionServiceAsync(id);
     }
 }
