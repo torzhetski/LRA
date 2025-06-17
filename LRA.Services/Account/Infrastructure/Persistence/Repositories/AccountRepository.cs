@@ -1,4 +1,4 @@
-﻿using LRA.Account.Application.Repositories;
+﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Infrasturcture.Persistence.Interfaces;
 using LRA.Shared.Abstructions.Test;
 

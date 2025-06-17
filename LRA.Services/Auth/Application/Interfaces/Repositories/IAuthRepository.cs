@@ -1,8 +1,8 @@
 ﻿using LRA.Shared.Abstructions.Test;
 
-namespace LRA.Account.Application.Repositories;
+namespace LRA.Auth.Application.Interfaces.Repositories;
 
-public interface IAccountRepository
+public interface IAuthRepository
 {
     Guid Create(TestModel model);
     TestModel Get(Guid id);

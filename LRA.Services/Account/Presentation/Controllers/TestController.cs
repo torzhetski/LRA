@@ -1,4 +1,4 @@
-﻿using LRA.Account.Infrasturcture.Persistence.Repositories;
+﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Shared.Abstructions.Test;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,9 +6,9 @@ namespace AccountService.Presentation.Controllers;
 [Route("api/test-account")]
 public class TestController : ControllerBase
 {
-    private readonly AccountRepository _accountRepository;
+    private readonly IAccountRepository _accountRepository;
 
-    public TestController(AccountRepository accountRepository)
+    public TestController(IAccountRepository accountRepository)
     {
         _accountRepository = accountRepository;
     }

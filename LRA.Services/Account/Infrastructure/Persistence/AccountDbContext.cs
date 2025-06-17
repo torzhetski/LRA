@@ -10,6 +10,8 @@ public class AccountDbContext : DbContext, IAccountDbContext
     public AccountDbContext(DbContextOptions<AccountDbContext> options)
        : base(options)
     {
+        Database.EnsureDeleted();
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<TestModel> TestModels { get; set; }
