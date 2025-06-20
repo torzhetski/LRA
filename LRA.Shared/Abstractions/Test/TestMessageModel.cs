@@ -1,4 +1,4 @@
-﻿namespace Shared.Abstractions.Test;
+﻿namespace LRA.Shared.Abstractions.Test;
 
 public class TestMessageModel
 {

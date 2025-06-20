@@ -1,5 +1,5 @@
 ﻿using LRA.Auth.Application.Interfaces;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Auth.Application.Services;
 

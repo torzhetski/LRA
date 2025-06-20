@@ -1,6 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace Gateways.ClientGateway.Controllers;
 

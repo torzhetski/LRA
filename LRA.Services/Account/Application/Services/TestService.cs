@@ -1,5 +1,5 @@
 ﻿using LRA.Account.Application.Interfaces;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Services;
 

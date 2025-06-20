@@ -2,7 +2,7 @@
 using LRA.Gateways.Client.Options;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using Microsoft.Extensions.Options;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 
