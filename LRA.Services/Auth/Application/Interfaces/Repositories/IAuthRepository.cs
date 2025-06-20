@@ -9,5 +9,5 @@ public interface IAuthRepository
     List<TestModel> GetAll();
     void Update(TestModel model);
     void Delete(TestModel model);
-    Task SaveChangesAsync();
+    Task SaveChangesAsync(CancellationToken cancellationToken);
 }

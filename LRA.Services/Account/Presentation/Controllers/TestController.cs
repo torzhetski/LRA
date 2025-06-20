@@ -27,10 +27,9 @@ public class TestController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTest([FromBody] TestModel model)
+    public async Task<IActionResult> CreateTest([FromBody] TestModel model, CancellationToken cancellationToken)
     {
-        var id = _accountRepository.Create(model);
-        await _accountRepository.SaveChangesAsync();
-        return Ok(new { message = $"новый id: {id}" });
+        var response = await _testService.TestDatabaseResponse(model, cancellationToken);
+        return Ok(response);
     }
 }

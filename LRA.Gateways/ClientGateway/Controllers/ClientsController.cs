@@ -2,9 +2,6 @@
 using LRA.Shared.Abstructions.Test;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Test;
-using static System.Net.WebRequestMethods;
-using System.Text.Json;
-using System.Text;
 
 namespace Gateways.ClientGateway.Controllers;
 
@@ -47,14 +44,10 @@ public class ClientsController : ControllerBase
         return response;
     }
 
-    //[HttpPost("account")]
-    //public async Task<TestMessageModel> CreateAccountAsync([FromBody] TestModel model)
-    //{
-    //    //var json = JsonSerializer.Serialize(model);
-    //    //var request = new HttpRequestMessage(HttpMethod.Post, $"https://localhost:7003/api/test-account")
-    //    //{
-    //    //    Content = new StringContent(json, Encoding.UTF8, "application/json")
-    //    //};
-    //    //return await _http.SendAsync<TestMessageModel>(request);
-    //}
+    [HttpPost("account")]
+    public async Task<TestMessageModel> CreateAccountAsync([FromBody] TestModel model, CancellationToken cancellationToken)
+    {
+        var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
+        return response;
+    }
 }

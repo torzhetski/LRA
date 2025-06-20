@@ -1,7 +1,9 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstructions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Shared.Abstractions.Test;
+using System.Text;
 using System.Text.Json;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
@@ -29,5 +31,23 @@ public class AccountHttpClient : IAccountHttpClient
         var model = JsonSerializer.Deserialize<TestMessageModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
+    }
+
+    public async Task<TestMessageModel> PostAsync(TestModel model, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var request = new HttpRequestMessage(HttpMethod.Post,"")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var message = JsonSerializer.Deserialize<TestMessageModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return message;
     }
 }

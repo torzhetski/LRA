@@ -1,6 +1,7 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Gateways.Client.Options;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstructions.Test;
 using Microsoft.Extensions.Options;
 using Shared.Abstractions.Test;
 
@@ -18,6 +19,12 @@ public class TestAccountService : ITestAccountService
     public async Task<TestMessageModel> TestAccountServiceAsync(int id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
+        return response;
+    }
+
+    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestModel model, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.PostAsync(model, cancellationToken);
         return response;
     }
 }
