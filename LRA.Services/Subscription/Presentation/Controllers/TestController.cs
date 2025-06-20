@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Utils.Constants;
+using LRA.Subscription.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Test;
@@ -9,10 +10,18 @@ namespace LRA.Subscription.Presentation.Controllers;
 [ApiController]
 public class TestController : ControllerBase
 {
-    [Authorize(Roles = SystemRoles.Client)]
+    private ITestService _testService;
+
+    public TestController(ITestService testService)
+    {
+        _testService = testService;
+    }
+
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetInfo([FromQuery] int id)
     {
-        return Ok(new TestMessageModel { Message = $"subscription service answered: {id}" });
+        var response = _testService.TestResponse(id);
+        return Ok(response);
     }
 }

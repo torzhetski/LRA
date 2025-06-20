@@ -2,6 +2,7 @@
 
 public static class SystemRoles
 {
+    public const string SuperAdmin = "SuperAdmin";
     public const string Admin = "Admin";
     public const string Client = "Client";
     public const string Paramedic = "Paramedic";
