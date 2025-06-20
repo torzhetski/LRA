@@ -1,5 +1,4 @@
-﻿using LRA.Shared.Abstructions.Test;
-using Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Interfaces;
 

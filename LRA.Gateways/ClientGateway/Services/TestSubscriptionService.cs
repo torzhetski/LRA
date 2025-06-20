@@ -1,6 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 

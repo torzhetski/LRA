@@ -2,7 +2,7 @@
 using LRA.Subscription.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Abstractions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Subscription.Presentation.Controllers;
 

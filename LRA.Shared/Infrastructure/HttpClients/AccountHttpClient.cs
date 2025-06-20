@@ -2,7 +2,6 @@
 using LRA.Shared.Abstructions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using Shared.Abstractions.Test;
 using System.Text;
 using System.Text.Json;
 
