@@ -1,4 +1,4 @@
-﻿namespace Gateways.ClientGateway;
+﻿namespace Shared.Abstractions.Test;
 
 public class TestMessageModel
 {
