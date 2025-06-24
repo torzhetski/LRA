@@ -19,7 +19,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"?id={id}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request);

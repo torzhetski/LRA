@@ -19,7 +19,7 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("/{id}")]
     public async Task<IActionResult> GetInfo([FromRoute] int id)
     {
         var response = _testService.TestResponse(id);
