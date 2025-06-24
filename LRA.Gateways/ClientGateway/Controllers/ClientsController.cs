@@ -1,5 +1,5 @@
 ﻿using LRA.Gateways.Client.Interfaces;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
 using LRA.Shared.Abstractions.Test;
 
@@ -45,7 +45,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("account")]
-    public async Task<TestMessageModel> CreateAccountAsync([FromBody] TestModel model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> TestPostResponseAsync([FromBody] TestModel model, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return response;

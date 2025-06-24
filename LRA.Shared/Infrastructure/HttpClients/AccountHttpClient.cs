@@ -1,5 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using System.Text;

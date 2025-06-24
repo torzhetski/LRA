@@ -1,6 +1,6 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 using System.Reflection;
 
 namespace LRA.Account.Application.Services;

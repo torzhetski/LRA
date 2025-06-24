@@ -1,6 +1,6 @@
 ﻿using LRA.Auth.Application.Interfaces.Repositories;
 using LRA.Auth.Infrasturcture.Persistence.Interfaces;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Auth.Infrasturcture.Persistence.Repositories;
 
@@ -20,12 +20,12 @@ public class AuthRepository : IAuthRepository
         return model.Id;
     }
 
-    public TestModel Get(Guid id)
+    public TestModel GetAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public List<TestModel> GetAll()
+    public List<TestModel> GetAllAsync()
     {
         throw new NotImplementedException();
     }

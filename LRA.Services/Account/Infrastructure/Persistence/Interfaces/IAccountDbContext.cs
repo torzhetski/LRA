@@ -1,4 +1,4 @@
-﻿using LRA.Shared.Abstructions.Test;
+﻿using LRA.Shared.Abstractions.Test;
 using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Account.Infrasturcture.Persistence.Interfaces;

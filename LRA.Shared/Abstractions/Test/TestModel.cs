@@ -1,4 +1,4 @@
-﻿namespace LRA.Shared.Abstructions.Test;
+﻿namespace LRA.Shared.Abstractions.Test;
 
 public class TestModel
 {

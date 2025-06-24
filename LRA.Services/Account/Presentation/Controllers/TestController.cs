@@ -1,5 +1,5 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 using LRA.Account.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ public class TestController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetInfo([FromQuery] int id)
+    public async Task<IActionResult> GetInfo([FromRoute] int id)
     {
         var response = _testService.TestResponse(id);
         return Ok(response);

@@ -1,6 +1,6 @@
 ﻿using LRA.Subscription.Application.Interfaces.Repositories;
 using LRA.Subscription.Infrasturcture.Persistence.Interfaces;
-using LRA.Shared.Abstructions.Test;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Subscription.Infrasturcture.Persistence.Repositories;
 
@@ -20,12 +20,12 @@ public class SubscriptionRepository : ISubscriptionRepository
         return model.Id;
     }
 
-    public TestModel Get(Guid id)
+    public TestModel GetAsync(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public List<TestModel> GetAll()
+    public List<TestModel> GetAllAsync()
     {
         throw new NotImplementedException();
     }
