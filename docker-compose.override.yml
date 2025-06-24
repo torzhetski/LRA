@@ -1,0 +1,24 @@
+services:
+  client-gateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+ 
+  account:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  auth:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  stripe-gateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  email:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  subscription:    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development  
