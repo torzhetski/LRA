@@ -22,7 +22,7 @@ public class TestAccountService : ITestAccountService
         return response;
     }
 
-    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestModel model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.PostAsync(model, cancellationToken);
         return response;

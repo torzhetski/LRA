@@ -32,7 +32,7 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
-    public async Task<TestMessageModel> PostAsync(TestModel model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
         var request = new HttpRequestMessage(HttpMethod.Post,"")

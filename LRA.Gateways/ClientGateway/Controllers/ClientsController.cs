@@ -45,7 +45,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("account")]
-    public async Task<TestMessageModel> TestPostResponseAsync([FromBody] TestModel model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> TestPostResponseAsync([FromBody] TestDto model, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return response;

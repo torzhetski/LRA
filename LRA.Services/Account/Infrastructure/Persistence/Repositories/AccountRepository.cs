@@ -15,7 +15,11 @@ public class AccountRepository : IAccountRepository
 
     public Guid Create(TestModel model)
     {
-        model.Id = Guid.NewGuid();
+        if (model.Id == default)
+        {
+            model.Id = Guid.NewGuid();
+        }
+
         _context.TestModels.Add(model);
         return model.Id;
     }

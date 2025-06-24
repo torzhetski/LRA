@@ -2,6 +2,6 @@
 
 public class TestModel
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public string? Name { get; set; }
 }
