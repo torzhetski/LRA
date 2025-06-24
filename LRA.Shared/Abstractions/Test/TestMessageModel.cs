@@ -2,5 +2,5 @@
 
 public class TestMessageModel
 {
-    public string Message { get; set; }
+    public string? Message { get; set; }
 }
