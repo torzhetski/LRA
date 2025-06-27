@@ -1,5 +1,4 @@
 ﻿using LRA.Gateways.Client.Interfaces;
-using LRA.Gateways.Client.Options;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using Microsoft.Extensions.Options;
 using LRA.Shared.Abstractions.Test;

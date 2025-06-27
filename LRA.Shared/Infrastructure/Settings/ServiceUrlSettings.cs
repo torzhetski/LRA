@@ -1,4 +1,4 @@
-﻿namespace LRA.Gateways.Client.Options;
+﻿namespace LRA.Shared.Infrastructure.Settings;
 
 public class ServiceUrlSettings
 {

@@ -1,5 +1,5 @@
+using LRA.Gateways.Client.Extension;
 using LRA.Gateways.Client.Interfaces;
-using LRA.Gateways.Client.Options;
 using LRA.Gateways.Client.Services;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Infrastructure.HttpClients;
@@ -9,32 +9,14 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ServiceUrlSettings>(
-    builder.Configuration.GetSection("ServiceUrl"));
+    builder.Configuration.GetSection("ServicesComfiguration:ServiceUrls"));
 
 builder.Services.Configure<ApiKeySetting>(
-    builder.Configuration.GetSection("ApiKeys"));
+    builder.Configuration.GetSection("ServicesComfiguration:ApiKeys"));
 
-builder.Services.AddScoped<ITestAccountService, TestAccountService>();
-builder.Services.AddScoped<ITestAuthService, TestAuthService>();
-builder.Services.AddScoped<ITestSubscriptionService, TestSubscriptionService>();
+builder.Services.AddServices();
 
-builder.Services.AddHttpClient<IAccountHttpClient, AccountHttpClient>((provider, client) =>
-{
-    var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-    client.BaseAddress = new Uri(options.BaseAccountUrl);
-});
-
-builder.Services.AddHttpClient<IAuthHttpClient, AuthHttpClient>((provider, client) =>
-{
-    var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-    client.BaseAddress = new Uri(options.BaseAuthUrl);
-});
-
-builder.Services.AddHttpClient<ISubscriptionHttpClient, SubscriptionHttpClient>((provider, client) =>
-{
-    var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-    client.BaseAddress = new Uri(options.BaseSubscriptionUrl);
-});
+builder.Services.AddTypedHttpClients();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

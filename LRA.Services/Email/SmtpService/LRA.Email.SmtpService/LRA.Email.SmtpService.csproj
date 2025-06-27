@@ -4,7 +4,6 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-LRA.Email.SmtpService-f615c170-a09c-4991-ac8f-de1da2499bf9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
