@@ -2,7 +2,6 @@
 using LRA.Subscription.Infrasturcture.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
 namespace LRA.Subscription.Infrasturcture.Persistence.Repositories;
 
@@ -36,21 +35,6 @@ public class SubscriptionRepository : ISubscriptionRepository
         }
 
         return model;
-    }
-
-    public Task<List<TestModel>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Update(TestModel model)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(TestModel model)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

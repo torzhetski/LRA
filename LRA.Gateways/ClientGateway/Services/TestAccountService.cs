@@ -3,7 +3,6 @@ using LRA.Gateways.Client.Options;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.Extensions.Options;
-using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 
@@ -16,10 +15,10 @@ public class TestAccountService : ITestAccountService
         _httpClient = accountHttpClient;
     }
 
-    public async Task<TestMessageModel> TestAccountServiceAsync(int id, CancellationToken cancellationToken)
+    public async Task<TestDto> TestAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
-        return response;
+        return response.FromModelToDto();
     }
 
     public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)

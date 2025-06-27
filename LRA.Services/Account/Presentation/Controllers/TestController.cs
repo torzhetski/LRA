@@ -10,19 +10,17 @@ namespace AccountService.Presentation.Controllers;
 public class TestController : ControllerBase
 {
     private ITestService _testService;
-    private readonly IAccountRepository _accountRepository;
 
-    public TestController(ITestService testService,IAccountRepository accountRepository)
+    public TestController(ITestService testService)
     {
         _testService = testService;
-        _accountRepository = accountRepository;
     }
 
     [Authorize]
     [HttpGet("/{id}")]
-    public async Task<IActionResult> GetInfo([FromRoute] int id)
+    public async Task<IActionResult> GetInfo([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = _testService.TestResponse(id);
+        var response = _testService.TestGetDataResponse(id, cancellationToken);
         return Ok(response);
     }
 

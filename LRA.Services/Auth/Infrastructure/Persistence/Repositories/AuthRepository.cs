@@ -37,21 +37,6 @@ public class AuthRepository : IAuthRepository
         return model;
     }
 
-    public Task<List<TestModel>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Update(TestModel model)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(TestModel model)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
