@@ -1,10 +1,5 @@
 using LRA.Gateways.Client.Extension;
-using LRA.Gateways.Client.Interfaces;
-using LRA.Gateways.Client.Services;
-using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
