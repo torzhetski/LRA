@@ -1,10 +1,10 @@
 namespace LRA.Email.SmtpService
 {
-    public class Worker : BackgroundService
+    public class EmailService : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<EmailService> _logger;
 
-        public Worker(ILogger<Worker> logger)
+        public EmailService(ILogger<EmailService> logger)
         {
             _logger = logger;
         }
@@ -15,7 +15,7 @@ namespace LRA.Email.SmtpService
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    _logger.LogInformation("Service running at: {time}", DateTimeOffset.Now);
                 }
                 await Task.Delay(1000, stoppingToken);
             }

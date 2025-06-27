@@ -17,7 +17,7 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetInfo([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var response = await _testService.TestGetDataResponse(id, cancellationToken);
