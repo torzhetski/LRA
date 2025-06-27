@@ -2,7 +2,11 @@ services:
   client-gateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
- 
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/LRA.sertificate.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=1234
+    volumes:
+      - /c/Users/torzh/.aspnet/https:/https:ro
+    
   account:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

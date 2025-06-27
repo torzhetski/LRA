@@ -39,6 +39,23 @@ builder.Services.AddHttpClient<ISubscriptionHttpClient, SubscriptionHttpClient>(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8081, listenOptions =>
+    {
+        try
+        {
+            listenOptions.UseHttps("/https/LRA.sertificate.pfx", "1234");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("HTTPS error: " + ex.Message);
+        }
+    });
+
+    options.ListenAnyIP(8080);
+});
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -49,7 +66,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

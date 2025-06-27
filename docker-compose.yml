@@ -24,9 +24,6 @@ services:
       context: .
       dockerfile: LRA.Services/Account/Presentation/Dockerfile
     container_name: account
-    ports:
-      - "5003:8080"
-      - "7003:8081"
     depends_on:
       - account-db
       - rabbitmq
@@ -36,9 +33,6 @@ services:
       context: .
       dockerfile: LRA.Services/Auth/Presentation/Dockerfile
     container_name: auth
-    ports:
-      - "5004:8080"
-      - "7004:8081"
     depends_on:
       - auth-db
       - rabbitmq
@@ -56,12 +50,10 @@ services:
       context: .
       dockerfile: LRA.Services/Subscription/Presentation/Dockerfile
     container_name: subscription
-    ports:
-      - "5005:8080"
-      - "7005:8081"
     depends_on:
       - subscription-db
       - rabbitmq
+
   account-db:
      image: postgres:16
      container_name: account-db
