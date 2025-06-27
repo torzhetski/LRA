@@ -20,10 +20,18 @@ public class TestService : ITestService
         return response;
     }
 
-    public async Task<TestMessageModel> TestDatabaseResponse(TestModel model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken)
     {
         var id = _accountRepository.Create(model);
         await _accountRepository.SaveChangesAsync(cancellationToken);
-        return new TestMessageModel() { Message = $"new aacount id: {id}" };
+        var response = new TestMessageModel() { Message = $"new aacount id: {id}" };
+        return response;
+    }
+
+    public async Task<TestModel> TestGetDataResponse(Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _accountRepository.GetAsync(id, cancellationToken);
+
+        return response;
     }
 }

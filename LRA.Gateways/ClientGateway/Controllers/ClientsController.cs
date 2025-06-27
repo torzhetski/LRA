@@ -1,7 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
-using LRA.Shared.Abstractions.Test;
 
 namespace Gateways.ClientGateway.Controllers;
 
@@ -31,7 +30,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("account/{id}")]
-    public async Task<TestMessageModel> GetAccountResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<TestDto> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountServiceAsync(id, cancellationToken);
         return response;
