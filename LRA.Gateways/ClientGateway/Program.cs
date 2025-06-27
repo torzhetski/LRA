@@ -3,11 +3,14 @@ using LRA.Shared.Infrastructure.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<ServiceUrlSettings>(
-    builder.Configuration.GetSection("ServicesComfiguration:ServiceUrls"));
+builder.Services.Configure<AccountServiceSettings>(
+    builder.Configuration.GetSection("AccountServiceSettings"));
 
-builder.Services.Configure<ApiKeySetting>(
-    builder.Configuration.GetSection("ServicesComfiguration:ApiKeys"));
+builder.Services.Configure<AuthServiceSettings>(
+    builder.Configuration.GetSection("AuthServiceSettings"));
+
+builder.Services.Configure<SubscriptionServiceSettings>(
+    builder.Configuration.GetSection("SubscriptionServiceSettings"));
 
 builder.Services.AddServices();
 

@@ -11,10 +11,10 @@ public class SubscriptionHttpClient : ISubscriptionHttpClient
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
 
-    public SubscriptionHttpClient(HttpClient httpClient, IOptions<ApiKeySetting> options)
+    public SubscriptionHttpClient(HttpClient httpClient, IOptions<SubscriptionServiceSettings> options)
     {
         _httpClient = httpClient;
-        _apiKey = options.Value.SubscriptionApiKey;
+        _apiKey = options.Value.ApiKey;
     }
 
     public async Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken)

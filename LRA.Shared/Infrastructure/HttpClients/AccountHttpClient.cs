@@ -8,21 +8,22 @@ namespace LRA.Shared.Infrastructure.HttpClients;
 
 public class AccountHttpClient : IAccountHttpClient
 {
-    private readonly HttpClient _httpClient;
+    private  HttpClient _httpClient;
     private readonly string _apiKey;
 
-    public AccountHttpClient(HttpClient httpClient, IOptions<ApiKeySetting> options)
+    public AccountHttpClient(HttpClient httpClient, IOptions<AccountServiceSettings> options)
     {
         _httpClient = httpClient;
-        _apiKey = options.Value.AccountApiKey;
+        _apiKey = options.Value.ApiKey;
     }
 
     public async Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/{id}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);

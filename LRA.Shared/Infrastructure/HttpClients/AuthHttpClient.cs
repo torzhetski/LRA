@@ -11,10 +11,10 @@ public class AuthHttpClient : IAuthHttpClient
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
 
-    public AuthHttpClient(HttpClient httpClient, IOptions<ApiKeySetting> options)
+    public AuthHttpClient(HttpClient httpClient, IOptions<AuthServiceSettings> options)
     {
         _httpClient = httpClient;
-        _apiKey = options.Value.AuthApiKey;
+        _apiKey = options.Value.ApiKey;
     }
 
     public async Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken)

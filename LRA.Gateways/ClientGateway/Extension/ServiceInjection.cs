@@ -22,20 +22,20 @@ public static class ServiceInjection
     {
         services.AddHttpClient<IAccountHttpClient, AccountHttpClient>((provider, client) =>
         {
-            var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-            client.BaseAddress = new Uri(options.BaseAccountUrl);
+            var options = provider.GetRequiredService<IOptions<AccountServiceSettings>>().Value;
+            client.BaseAddress = new Uri(options.Url);
         });
 
         services.AddHttpClient<IAuthHttpClient, AuthHttpClient>((provider, client) =>
         {
-            var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-            client.BaseAddress = new Uri(options.BaseAuthUrl);
+            var options = provider.GetRequiredService<IOptions<AuthServiceSettings>>().Value;
+            client.BaseAddress = new Uri(options.Url);
         });
 
         services.AddHttpClient<ISubscriptionHttpClient, SubscriptionHttpClient>((provider, client) =>
         {
-            var options = provider.GetRequiredService<IOptions<ServiceUrlSettings>>().Value;
-            client.BaseAddress = new Uri(options.BaseSubscriptionUrl);
+            var options = provider.GetRequiredService<IOptions<SubscriptionServiceSettings>>().Value;
+            client.BaseAddress = new Uri(options.Url);
         });
 
         return services;
