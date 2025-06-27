@@ -12,6 +12,11 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    await app.ApplyMigrations();
+}
+
 app.UseMiddleware<ApiKeyValidationMiddleware>();
 
 app.UseHttpsRedirection();
