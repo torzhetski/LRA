@@ -5,5 +5,6 @@ namespace LRA.Account.Application.Interfaces;
 public interface ITestService
 {
     TestMessageModel TestResponse(int id);
-    Task<TestMessageModel> TestDatabaseResponse(TestModel model, CancellationToken cancellationToken);
+    Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken);
+    Task<TestModel> TestGetDataResponse(Guid id, CancellationToken cancellationToken)
 }

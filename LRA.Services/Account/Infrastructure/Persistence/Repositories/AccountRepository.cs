@@ -1,6 +1,7 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Infrasturcture.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Test;
+using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Account.Infrasturcture.Persistence.Repositories;
 
@@ -24,12 +25,19 @@ public class AccountRepository : IAccountRepository
         return model.Id;
     }
 
-    public TestModel GetAsync(Guid id)
+    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var model = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (model == null) 
+        {
+            throw new ArgumentNullException(nameof(model));
+        }
+
+        return model;
     }
 
-    public List<TestModel> GetAllAsync()
+    public Task<List<TestModel>> GetAllAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

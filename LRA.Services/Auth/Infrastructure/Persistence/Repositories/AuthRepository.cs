@@ -1,6 +1,7 @@
 ﻿using LRA.Auth.Application.Interfaces.Repositories;
 using LRA.Auth.Infrasturcture.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Test;
+using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Auth.Infrasturcture.Persistence.Repositories;
 
@@ -15,17 +16,28 @@ public class AuthRepository : IAuthRepository
 
     public Guid Create(TestModel model)
     {
-        model.Id = Guid.NewGuid();
+        if (model.Id == default)
+        {
+            model.Id = Guid.NewGuid();
+        }
+
         _context.TestModels.Add(model);
         return model.Id;
     }
 
-    public TestModel GetAsync(Guid id)
+    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var model = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (model == null)
+        {
+            throw new ArgumentNullException(nameof(model));
+        }
+
+        return model;
     }
 
-    public List<TestModel> GetAllAsync()
+    public Task<List<TestModel>> GetAllAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

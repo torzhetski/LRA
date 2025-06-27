@@ -29,7 +29,7 @@ public class TestController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTest([FromBody] TestDto model, CancellationToken cancellationToken)
     {
-        var response = await _testService.TestDatabaseResponse(model.FromDtoToModel(), cancellationToken);
+        var response = await _testService.TestCreateDataResponse(model.FromDtoToModel(), cancellationToken);
         return Ok(response);
     }
 }
