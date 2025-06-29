@@ -18,8 +18,8 @@ public class RabbitMQProducerService : IRabbitMQProducerService
 
     public async Task SendMessageAsync(object obj, CancellationToken token)
     {
-        var json = JsonSerializer.Serialize(obj);
-        await SendMessageAsync(json, token);
+        var message = JsonSerializer.Serialize(obj);
+        await SendMessageAsync(message, token);
     }
 
     public async Task SendMessageAsync(string message, CancellationToken token)
@@ -35,12 +35,25 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         using var connection = await factory.CreateConnectionAsync(token);
         using var channel = await connection.CreateChannelAsync(cancellationToken: token);
 
+        await channel.ExchangeDeclareAsync(
+            exchange: _options.Value.ExchangeName,
+            type: ExchangeType.Fanout, 
+            durable: true,
+            autoDelete: false,
+            cancellationToken: token);
+
         await channel.QueueDeclareAsync(
             queue: _options.Value.QueueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null,
+            cancellationToken: token);
+
+        await channel.QueueBindAsync(
+            queue: _options.Value.QueueName,
+            exchange: _options.Value.ExchangeName,
+            routingKey: default,
             cancellationToken: token);
 
         var body = Encoding.UTF8.GetBytes(message);
@@ -60,4 +73,6 @@ public class RabbitMQProducerService : IRabbitMQProducerService
 
         Console.WriteLine("Message sent");
     }
+
+    
 }

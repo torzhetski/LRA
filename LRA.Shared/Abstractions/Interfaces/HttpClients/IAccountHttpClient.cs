@@ -6,4 +6,5 @@ public interface IAccountHttpClient
 {
     Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken);
     Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken);
+    Task MessageAsync(string message, CancellationToken cancellationToken);
 }

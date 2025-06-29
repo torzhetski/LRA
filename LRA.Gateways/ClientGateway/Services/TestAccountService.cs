@@ -25,4 +25,9 @@ public class TestAccountService : ITestAccountService
         var response = await _httpClient.PostAsync(model, cancellationToken);
         return response;
     }
+
+    public async Task TestBrokerAsync(string message, CancellationToken cancellationToken)
+    {
+        await _httpClient.MessageAsync(message, cancellationToken);
+    }
 }
