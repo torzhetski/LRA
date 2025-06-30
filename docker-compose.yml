@@ -98,4 +98,3 @@ volumes:
   auth-db-data:
   subscription-db-data:
   rabbitmq-data:
-    
