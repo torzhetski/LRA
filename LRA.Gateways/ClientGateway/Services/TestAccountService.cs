@@ -17,7 +17,7 @@ public class TestAccountService : ITestAccountService
     public async Task<TestDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
-        return response.FromModelToDto();
+        return response;
     }
 
     public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)
@@ -40,6 +40,6 @@ public class TestAccountService : ITestAccountService
 
     public async Task TestBrokerAsync(string message, CancellationToken cancellationToken)
     {
-        await _httpClient.MessageAsync(message, cancellationToken);
+        await _httpClient.PostMessageAsync(message, cancellationToken);
     }
 }

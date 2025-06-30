@@ -35,13 +35,13 @@ public class TestController : ControllerBase
         return Ok(response);
     }
 
-    //[Authorize]
-    //[HttpGet]
-    //public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
-    //{
-    //    await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);
-    //    return Ok();
-    //}
+    [Authorize]
+    [HttpPost("brocker")]
+    public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
+    {
+        await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);
+        return Ok();
+    }
 
     [Authorize]
     [HttpGet("paginated")]

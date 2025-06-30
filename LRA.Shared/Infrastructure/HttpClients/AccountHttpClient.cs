@@ -19,7 +19,7 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TestDto> GetAsync(Guid id, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -29,7 +29,7 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<TestModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var model = JsonSerializer.Deserialize<TestDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
     }
@@ -88,10 +88,10 @@ public class AccountHttpClient : IAccountHttpClient
         return message;
     }
 
-    public async Task MessageAsync(string message, CancellationToken cancellationToken)
+    public async Task PostMessageAsync(string message, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(message);
-        var request = new HttpRequestMessage(HttpMethod.Get, "")
+        var request = new HttpRequestMessage(HttpMethod.Post, "brocker")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
