@@ -23,23 +23,23 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("auth/{id}")]
-    public async Task<TestMessageModel> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _authService.TestAuthServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpGet("account/{id}")]
-    public async Task<TestMessageModel> GetAccountResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAccountResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpGet("subscription/{id}")]
-    public async Task<TestMessageModel> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _subscriptionService.TestSubscriptionServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 }
