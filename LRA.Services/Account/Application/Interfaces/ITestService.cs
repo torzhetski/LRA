@@ -6,5 +6,5 @@ public interface ITestService
 {
     TestMessageModel TestResponse(int id);
     Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken);
-    Task<TestModel> TestGetDataResponse(Guid id, CancellationToken cancellationToken);
+    Task<TestDto> TestGetDataResponse(Guid id, CancellationToken cancellationToken);
 }

@@ -17,7 +17,7 @@ public class TestAccountService : ITestAccountService
     public async Task<TestDto> TestAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
-        return response.FromModelToDto();
+        return response;
     }
 
     public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)

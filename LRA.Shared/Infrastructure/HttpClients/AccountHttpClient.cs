@@ -18,7 +18,7 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TestDto> GetAsync(Guid id, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -28,7 +28,7 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<TestModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var model = JsonSerializer.Deserialize<TestDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
     }
