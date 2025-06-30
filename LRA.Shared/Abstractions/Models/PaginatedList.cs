@@ -1,10 +1,14 @@
-﻿public class PaginatedList<T> : List<T>
+﻿public class PaginatedList<T>
 {
 
-    public int PageNumber { get; private set; }
-    public int PageSize { get; private set; }
-    public int TotalCount { get; private set; }
-    public int TotalPages { get; private set; }
+    public int PageNumber { get; init; }
+    public int PageSize { get; init; }
+    public int TotalCount { get; init; }
+    public int TotalPages { get; init; }
+
+    public List<T> Items { get; set; } = new();
+
+    public PaginatedList() { }
 
     public PaginatedList(IQueryable<T> source, int pageNumber, int pageSize)
     {
@@ -13,6 +17,6 @@
         TotalCount = source.Count();
         TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
 
-        this.AddRange(source.Skip(PageNumber * PageSize).Take(PageSize));
+        Items.AddRange(source.Skip(PageNumber * PageSize).Take(PageSize));
     }
 }
