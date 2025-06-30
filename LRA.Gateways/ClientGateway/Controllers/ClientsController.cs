@@ -23,35 +23,35 @@ public class ClientsController : ControllerBase
     }
 
     [HttpGet("auth/{id}")]
-    public async Task<TestMessageModel> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _authService.TestAuthServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpGet("account/{id}")]
-    public async Task<TestDto> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpGet("subscription/{id}")]
-    public async Task<TestMessageModel> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _subscriptionService.TestSubscriptionServiceAsync(id, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpPost("account")]
-    public async Task<TestMessageModel> TestBrockerAsync([FromBody] TestDto model, CancellationToken cancellationToken)
+    public async Task<IActionResult> TestPostResponseAsync([FromBody] TestDto model, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
-        return response;
+        return Ok(response);
     }
 
     [HttpPost("account/brocker")]
-    public async Task<IActionResult> TestPostResponseAsync([FromBody] string message, CancellationToken cancellationToken)
+    public async Task<IActionResult> TestBrockerAsync([FromBody] string message, CancellationToken cancellationToken)
     {
         await _accountService.TestBrokerAsync(message, cancellationToken);
         return Ok();

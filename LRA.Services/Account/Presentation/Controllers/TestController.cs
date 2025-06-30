@@ -36,7 +36,7 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpPost("brocker")]
     public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
     {
         await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);

@@ -28,10 +28,10 @@ public class TestService : ITestService
         return response;
     }
 
-    public async Task<TestModel> TestGetDataResponse(Guid id, CancellationToken cancellationToken)
+    public async Task<TestDto> TestGetDataResponse(Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetAsync(id, cancellationToken);
 
-        return response;
+        return response.FromModelToDto();
     }
 }
