@@ -37,8 +37,26 @@ public class AccountRepository : IAccountRepository
         return model;
     }
 
+    public PaginatedList<TestDto> GetPaginatedData(int pageNumber, int pageSize)
+    {
+        var items = GetAll();
+        var paginatedItems = new PaginatedList<TestDto>(items, pageNumber, pageSize);
+        return paginatedItems;
+    }
+
+    public async Task<List<TestDto>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var items = GetAll();
+        return await items.ToListAsync(cancellationToken);
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private IQueryable<TestDto> GetAll()
+    {
+        return _context.TestModels.Select(x => x.FromModelToDto());
     }
 }

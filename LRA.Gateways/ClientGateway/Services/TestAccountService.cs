@@ -14,7 +14,7 @@ public class TestAccountService : ITestAccountService
         _httpClient = accountHttpClient;
     }
 
-    public async Task<TestDto> TestAccountServiceAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TestDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
         return response.FromModelToDto();
@@ -23,6 +23,18 @@ public class TestAccountService : ITestAccountService
     public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.PostAsync(model, cancellationToken);
+        return response;
+    }
+
+    public async Task<PaginatedList<TestDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
+        return response;
+    }
+
+    public async Task<List<TestDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetAllAsync(cancellationToken);
         return response;
     }
 

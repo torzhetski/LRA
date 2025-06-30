@@ -35,11 +35,27 @@ public class TestController : ControllerBase
         return Ok(response);
     }
 
+    //[Authorize]
+    //[HttpGet]
+    //public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
+    //{
+    //    await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);
+    //    return Ok();
+    //}
+
+    [Authorize]
+    [HttpGet("paginated")]
+    public IActionResult GetPaginated([FromQuery] int pageNumber,[FromQuery] int PageSize)
+    {
+        var response = _testService.TestGetPaginatedDataResponse(pageNumber, PageSize);
+        return Ok(response);
+    }
+
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);
-        return Ok();
+        var response = await _testService.TestGetAllDataResponseAsync(cancellationToken);
+        return Ok(response);
     }
 }
