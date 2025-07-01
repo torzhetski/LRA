@@ -1,4 +1,5 @@
-﻿using LRA.Gateways.Client.Interfaces;
+﻿using Asp.Versioning;
+using LRA.Gateways.Client.Interfaces;
 using LRA.Gateways.Client.Services;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Infrastructure.HttpClients;
