@@ -14,7 +14,6 @@ public static class AplicationPiplineInjection
             var provider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
             foreach (var description in provider.ApiVersionDescriptions)
             {
-                Console.WriteLine("Adding Swagger endpoint for: " + description.GroupName);
                 options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
             }
         });
