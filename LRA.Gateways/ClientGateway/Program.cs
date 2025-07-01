@@ -21,19 +21,20 @@ builder.Services.AddSwaggerGen();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(8081, listenOptions =>
+    var config = builder.Configuration;
+
+    var httpsPort = int.Parse(config["Https:Port"] ?? "8081");
+    var httpPort = int.Parse(config["Http:Port"] ?? "8080");
+
+    var certPath = config["Kestrel:Certificates:Default:Path"];
+    var certPassword = config["Kestrel:Certificates:Default:Password"];
+
+    options.ListenAnyIP(httpsPort, listenOptions =>
     {
-        try
-        {
-            listenOptions.UseHttps("/https/LRA.sertificate.pfx", "1234");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("HTTPS error: " + ex.Message);
-        }
+        listenOptions.UseHttps(certPath, certPassword);
     });
 
-    options.ListenAnyIP(8080);
+    options.ListenAnyIP(httpPort);
 });
 
 builder.Services.AddControllers();
