@@ -20,7 +20,6 @@ namespace LRA.Gateways.Client.Controllers
         [HttpGet("check")]
         public IActionResult CheckVersion([FromQuery] string version)
         {
-
             var parts = version.Split('.');
             if (parts.Length == 0 || parts.Length > 2)
                 return Ok(false);
