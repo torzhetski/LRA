@@ -27,7 +27,7 @@ public class SmtpService : IMessageService
     {
         try
         {
-            using (var message = new MailMessage(_smtpSettings.Value.From, messageModel.RecipientMail, "OHLC Report", messageModel.Content))
+            using (var message = new MailMessage(_smtpSettings.Value.From, messageModel.RecipientMail, "Mail", messageModel.Content))
             {
                 await _smtpClient.SendMailAsync(message);
             }
