@@ -59,6 +59,26 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync();
     }
 
+    public void Delete(Guid id)
+    {
+        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        if (entity != null)
+        {
+            _context.TestModels.Remove(entity);
+        }
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity != null)
+        {
+            _context.TestModels.Remove(entity);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
