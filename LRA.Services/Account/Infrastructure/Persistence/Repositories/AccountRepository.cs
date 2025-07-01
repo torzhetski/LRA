@@ -37,6 +37,28 @@ public class AccountRepository : IAccountRepository
         return model;
     }
 
+    public void SoftDelete(Guid id)
+    {
+        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        if (entity != null) 
+        {
+            entity.IsDeleted = true;
+            entity.DeletedOnUtc = DateTime.UtcNow;
+        }
+    }
+
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity != null)
+        {
+            entity.IsDeleted = true;
+            entity.DeletedOnUtc = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);

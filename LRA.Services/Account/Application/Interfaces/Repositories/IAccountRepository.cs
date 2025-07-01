@@ -6,5 +6,7 @@ public interface IAccountRepository
 {
     Guid Create(TestModel model);
     Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken);
+    void SoftDelete (Guid id);
+    Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

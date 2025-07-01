@@ -34,4 +34,9 @@ public class TestService : ITestService
 
         return response.FromModelToDto();
     }
+
+    public async Task TestSoftDeleteDataResponse(Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.SoftDeleteAsync(id, cancellationToken);
+    }
 }

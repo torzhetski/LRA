@@ -2,8 +2,10 @@
 
 namespace LRA.Shared.Abstractions.Test;
 
-public class TestModel : IBaseEntity
+public class TestModel : IBaseEntity, ISoftDeleteble
 {
     public required Guid Id { get; set; }
     public string? Name { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedOnUtc { get; set; }
 }

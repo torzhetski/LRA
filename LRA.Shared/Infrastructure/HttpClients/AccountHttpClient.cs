@@ -51,6 +51,16 @@ public class AccountHttpClient : IAccountHttpClient
         return message;
     }
 
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"soft/{id}");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task PostMessageAsync(string message, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(message);
