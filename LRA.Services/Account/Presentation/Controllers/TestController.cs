@@ -4,6 +4,7 @@ using LRA.Account.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
+using LRA.Shared.Abstractions.Models;
 
 namespace AccountService.Presentation.Controllers;
 
@@ -37,9 +38,9 @@ public class TestController : ControllerBase
 
     [Authorize]
     [HttpPost("brocker")]
-    public async Task<IActionResult> SendbrockerMessage([FromBody] string message, CancellationToken cancellationToken)
+    public async Task<IActionResult> SendbrockerMessage([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
-        await _rabbitMqProducerService.SendMessageAsync(message, cancellationToken);
+        await _rabbitMqProducerService.SendMessageAsync(messageModel, cancellationToken);
         return Ok();
     }
 }

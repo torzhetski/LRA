@@ -1,5 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.Extensions.Options;
 
@@ -26,8 +27,8 @@ public class TestAccountService : ITestAccountService
         return response;
     }
 
-    public async Task TestBrokerAsync(string message, CancellationToken cancellationToken)
+    public async Task SendEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
-        await _httpClient.PostMessageAsync(message, cancellationToken);
+        await _httpClient.PostEmailMessageAsync(messageModel, cancellationToken);
     }
 }
