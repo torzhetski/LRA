@@ -18,4 +18,14 @@
 
         Items.AddRange(source.Skip(PageNumber * PageSize).Take(PageSize));
     }
+
+    public PaginatedList(List<T> listOfItems, int pageNumber, int pageSize)
+    {
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+        TotalCount = listOfItems.Count();
+        TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+
+        Items.AddRange(listOfItems.Skip(PageNumber * PageSize).Take(PageSize));
+    }
 }
