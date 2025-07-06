@@ -23,11 +23,11 @@ public class SmtpService : IMessageService
         };
     }
 
-    public async Task SendAsync(EmailMessageModel messageModel)
+    public async Task SendAsync(string text, string recipientMail)
     {
         try
         {
-            using (var message = new MailMessage(_smtpSettings.Value.From, messageModel.RecipientMail, "Mail", messageModel.Content))
+            using (var message = new MailMessage(_smtpSettings.Value.From, recipientMail, "Mail", text))
             {
                 await _smtpClient.SendMailAsync(message);
             }

@@ -4,5 +4,5 @@ namespace LRA.Email.SmtpService.Interfaces;
 
 public interface IMessageService
 {
-    Task SendAsync(EmailMessageModel messageModel);
+    Task SendAsync(string text, string recipientMail);
 }
