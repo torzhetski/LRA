@@ -14,14 +14,11 @@ public class SubscriptionRepository : ISubscriptionRepository
         _context = context;
     }
 
-    public Guid Create(TestModel model)
+    public async Task<Guid> CreateAsync(TestModel model)
     {
-        if (model.Id == default)
-        {
-            model.Id = Guid.NewGuid();
-        }
-
         _context.TestModels.Add(model);
+        await _context.SaveChangesAsync();
+
         return model.Id;
     }
 

@@ -6,7 +6,6 @@ public static class TestMapper
     {
         return new TestModel()
         {
-            Id = Guid.NewGuid(),
             Name = dto.Name,
         };
     }

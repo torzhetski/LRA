@@ -22,7 +22,7 @@ public class TestService : ITestService
 
     public async Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken)
     {
-        var id = _accountRepository.Create(model);
+        var id = _accountRepository.CreateAsync(model);
         await _accountRepository.SaveChangesAsync(cancellationToken);
         var response = new TestMessageModel() { Message = $"new aacount id: {id}" };
         return response;
