@@ -2,6 +2,8 @@ services:
   client-gateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Http__Port=8080
+      - Https__Port=8081
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/LRA.sertificate.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=1234
     volumes:

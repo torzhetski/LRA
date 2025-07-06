@@ -4,7 +4,7 @@ namespace LRA.Account.Application.Interfaces.Repositories;
 
 public interface IAccountRepository
 {
-    Guid Create(TestModel model);
+    Task<Guid> CreateAsync(TestModel model);
     Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

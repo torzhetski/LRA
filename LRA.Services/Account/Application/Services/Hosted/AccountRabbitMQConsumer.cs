@@ -1,5 +1,6 @@
 ﻿using LRA.Shared.Abstractions.RabbitMQProvider.Services;
 using LRA.Shared.Abstractions.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -9,13 +10,23 @@ namespace LRA.Account.Application.Services.Hosted;
 
 public class AccountRabbitMQConsumer : RabbitMQConsumerBase
 {
-    public AccountRabbitMQConsumer(IOptions<RabbitMQSettings> options) : base(options)
+    private readonly ILogger<AccountRabbitMQConsumer> _logger;
+
+    public AccountRabbitMQConsumer(IOptions<RabbitMQSettings> options, ILogger<AccountRabbitMQConsumer> logger) : base(options)
     {
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        token.ThrowIfCancellationRequested();
+        try
+        {
+            token.ThrowIfCancellationRequested();
+        }
+        catch (OperationCanceledException ex) 
+        {
+            _logger.LogError(ex, ex.Message);
+        }
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += async (ch, ea) =>

@@ -70,9 +70,5 @@ public class RabbitMQProducerService : IRabbitMQProducerService
             body: body,
             basicProperties: properties,
             cancellationToken: token);
-
-        Console.WriteLine("Message sent");
     }
-
-    
 }
