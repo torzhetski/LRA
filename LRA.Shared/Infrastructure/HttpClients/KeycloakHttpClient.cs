@@ -1,7 +1,10 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
@@ -28,8 +31,38 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         return content;
     }
 
-    public Task<string> CreateUserAsync(string email, string password, CancellationToken cancellationToken)
+    public async Task<string> CreateUserAsync(string email, string password, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var adminToken = "";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "admin/realms/keycloak-auth/users");
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        var userData = new
+        {
+            email,
+            username = email,
+            enabled = true,
+            credentials = new[]
+            {
+            new {
+                type = "password",
+                value = password,
+                temporary = false
+            }
+        }
+        };
+
+        var json = JsonSerializer.Serialize(userData);
+        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var location = response.Headers.Location?.ToString();
+        var userId = location?.Split('/').Last();
+
+        return userId!;
     }
 }
