@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.AspNetCore.WebUtilities;
@@ -12,10 +13,12 @@ namespace LRA.Shared.Infrastructure.HttpClients;
 public class KeycloakHttpClient : IKeycloakHttpClient
 {
     private HttpClient _httpClient;
+    private readonly string _userManagementToken;
 
-    public KeycloakHttpClient(HttpClient httpClient)
+    public KeycloakHttpClient(HttpClient httpClient, IOptions<KeycloakServiceSettings> options)
     {
         _httpClient = httpClient;
+        _userManagementToken = options.Value.ApiKey;
     }
 
     public async Task<string> GetServiceSettingsAsync(CancellationToken cancellationToken)
@@ -31,27 +34,25 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         return content;
     }
 
-    public async Task<string> CreateUserAsync(string email, string password, CancellationToken cancellationToken)
+    public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
-        var adminToken = "";
+        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8080/admin/realms/keycloak-auth/users");
 
-        var request = new HttpRequestMessage(HttpMethod.Post, "admin/realms/keycloak-auth/users");
-
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _userManagementToken);
 
         var userData = new
         {
-            email,
-            username = email,
+            model.Email,
+            username = model.Email,
             enabled = true,
             credentials = new[]
             {
             new {
                 type = "password",
-                value = password,
+                value = model.Password,
                 temporary = false
+                }
             }
-        }
         };
 
         var json = JsonSerializer.Serialize(userData);

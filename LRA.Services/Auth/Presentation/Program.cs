@@ -1,8 +1,25 @@
 using LRA.Auth.Infrasturcture.Persistence.Exstensions;
 using LRA.Auth.Application.Extension;
 using LRA.Shared.Presentation.Middlewares;
+using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Infrastructure.HttpClients;
+using Microsoft.Extensions.Options;
+using LRA.Auth.Presentation.Interfaces;
+using LRA.Auth.Presentaion.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<KeycloakServiceSettings>(
+    builder.Configuration.GetSection("KeycloakServiceSettings"));
+
+builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<KeycloakServiceSettings>>().Value;
+    client.BaseAddress = new Uri(options.Url);
+});
+
+builder.Services.AddScoped<IKeycklockService, KeycklockService>();
 
 builder.Services.AddDatabase(builder.Configuration);
 

@@ -1,4 +1,5 @@
 ﻿using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,10 +23,17 @@ public class ClientsController : ControllerBase
         _subscriptionService = subscriptionService;
     }
 
-    [HttpGet("auth/{id}")]
-    public async Task<IActionResult> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    [HttpGet("auth")]
+    public async Task<IActionResult> GetAuthResponseAsync(CancellationToken cancellationToken)
     {
-        var response = await _authService.TestAuthServiceAsync(id, cancellationToken);
+        var response = await _authService.GetAuthServiceConfigAsync(cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("auth")]
+    public async Task<IActionResult> CreateUserAsync([FromBody] RegistrationModel model, CancellationToken cancellationToken)
+    {
+        var response = await _authService.CreateUserAsync(model, cancellationToken);
         return Ok(response);
     }
 
@@ -48,12 +56,5 @@ public class ClientsController : ControllerBase
     {
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return Ok(response);
-    }
-
-    [HttpPost("account/brocker")]
-    public async Task<IActionResult> TestBrockerAsync([FromBody] string message, CancellationToken cancellationToken)
-    {
-        await _accountService.TestBrokerAsync(message, cancellationToken);
-        return Ok();
     }
 }

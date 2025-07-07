@@ -1,8 +1,11 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Interfaces;
 
 public interface ITestAuthService
 {
-    Task<TestMessageModel> TestAuthServiceAsync(int id, CancellationToken cancellationToken);
+    Task<string> GetAuthServiceConfigAsync(CancellationToken cancellationToken);
+    Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
+
 }

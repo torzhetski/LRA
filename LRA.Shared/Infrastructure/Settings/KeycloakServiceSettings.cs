@@ -1,5 +1,7 @@
-﻿namespace LRA.Shared.Infrastructure.Settings;
+﻿using LRA.Shared.Abstractions.Settings;
 
-public class KeycloakServiceSettings
+namespace LRA.Shared.Infrastructure.Settings;
+
+public class KeycloakServiceSettings : ServiceSettingBase
 {
 }
