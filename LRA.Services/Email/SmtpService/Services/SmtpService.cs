@@ -11,8 +11,9 @@ public class SmtpService : IMessageService
 {
     private readonly SmtpClient _smtpClient;
     private readonly IOptions<SmtpSettings> _smtpSettings;
+    private readonly ILogger<SmtpService> _logger;
 
-    public SmtpService(IOptions<SmtpSettings> smtpSettings)
+    public SmtpService(IOptions<SmtpSettings> smtpSettings, ILogger<SmtpService> logger)
     {
         _smtpSettings = smtpSettings;
 
@@ -21,6 +22,8 @@ public class SmtpService : IMessageService
             Credentials = new NetworkCredential(_smtpSettings.Value.Username, _smtpSettings.Value.Password),
             EnableSsl = true
         };
+
+        _logger = logger;
     }
 
     public async Task SendAsync(string text, string recipientMail)
@@ -34,7 +37,7 @@ public class SmtpService : IMessageService
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            _logger.LogError(ex, ex.Message);
         }
     }
 }

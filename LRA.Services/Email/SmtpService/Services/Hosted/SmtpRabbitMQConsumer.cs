@@ -39,8 +39,9 @@ namespace LRA.Email.SmtpService.Services.Hosted
             consumer.ReceivedAsync += async (ch, ea) =>
             {
                 var content = Encoding.UTF8.GetString(ea.Body.ToArray());
+                var messageModel = JsonSerializer.Deserialize<EmailMessageModel>(content);
 
-                await SendEmailAsync(content);
+                await SendEmailAsync(messageModel);
 
                 await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
             };
@@ -59,9 +60,8 @@ namespace LRA.Email.SmtpService.Services.Hosted
             base.Dispose();
         }
 
-        private async Task SendEmailAsync(string content)
+        private async Task SendEmailAsync(EmailMessageModel messageModel)
         {
-            var messageModel = JsonSerializer.Deserialize<EmailMessageModel>(content);
             using (var scope = _serviceProvider.CreateScope())
             {
                 var messageService = scope.ServiceProvider.GetService<IMessageService>();
