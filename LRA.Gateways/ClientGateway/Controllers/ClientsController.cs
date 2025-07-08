@@ -49,4 +49,11 @@ public class ClientsController : ControllerBase
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return Ok(response);
     }
+
+    [HttpPost("account/brocker")]
+    public async Task<IActionResult> TestBrockerAsync([FromBody] string message, CancellationToken cancellationToken)
+    {
+        await _accountService.TestBrokerAsync(message, cancellationToken);
+        return Ok();
+    }
 }

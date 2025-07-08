@@ -50,4 +50,17 @@ public class AccountHttpClient : IAccountHttpClient
 
         return message;
     }
+
+    public async Task PostMessageAsync(string message, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(message);
+        var request = new HttpRequestMessage(HttpMethod.Post, "brocker")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
 }
