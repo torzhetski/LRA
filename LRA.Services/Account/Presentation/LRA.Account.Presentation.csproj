@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\LRA.Shared\Abstractions\LRA.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\LRA.Shared\Infrastructure\LRA.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\LRA.Shared\Presentation\LRA.Shared.Presentation.csproj" />
+    <ProjectReference Include="..\..\..\LRA.Shared\Utils\LRA.Shared.Utils.csproj" />
+    <ProjectReference Include="..\Application\LRA.Account.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\Persistence\LRA.Account.Infrasturcture.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
