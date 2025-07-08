@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["LRA.Gateways/ClientGateway/LRA.Gateways.Client.csproj", "LRA.Gateways/ClientGateway/"]
 COPY ["LRA.Shared/Abstractions/LRA.Shared.Abstractions.csproj", "LRA.Shared/Abstractions/"]
 COPY ["LRA.Shared/Infrastructure/LRA.Shared.Infrastructure.csproj", "LRA.Shared/Infrastructure/"]
+COPY ["LRA.Shared/Presentation/LRA.Shared.Presentation.csproj", "LRA.Shared/Presentation/"]
 RUN dotnet restore "./LRA.Gateways/ClientGateway/LRA.Gateways.Client.csproj"
 COPY . .
 WORKDIR "/src/LRA.Gateways/ClientGateway"
