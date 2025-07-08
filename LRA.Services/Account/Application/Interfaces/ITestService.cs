@@ -8,4 +8,6 @@ public interface ITestService
     Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken);
     Task<TestDto> TestGetDataResponse(Guid id, CancellationToken cancellationToken);
     Task TestSoftDeleteDataResponse(Guid id, CancellationToken cancellationToken);
+    PaginatedList<TestDto> TestGetPaginatedDataResponse(int pageNumber, int pageSize);
+    Task<List<TestDto>> TestGetAllDataResponseAsync(CancellationToken cancellationToken);
 }
