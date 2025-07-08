@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\..\LRA.Shared\Presentation\LRA.Shared.Presentation.csproj" />
     <ProjectReference Include="..\..\..\LRA.Shared\Utils\LRA.Shared.Utils.csproj" />
     <ProjectReference Include="..\Application\LRA.Auth.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\Persistence\LRA.Auth.Infrasturcture.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

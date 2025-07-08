@@ -4,5 +4,6 @@ namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
 public interface IAccountHttpClient
 {
-    Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken);
+    Task<TestDto> GetAsync(Guid id, CancellationToken cancellationToken);
+    Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken);
 }
