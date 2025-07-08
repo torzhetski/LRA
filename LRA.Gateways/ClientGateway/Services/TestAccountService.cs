@@ -1,7 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Test;
-using Microsoft.Extensions.Options;
 
 namespace LRA.Gateways.Client.Services;
 
@@ -24,6 +23,11 @@ public class TestAccountService : ITestAccountService
     {
         var response = await _httpClient.PostAsync(model, cancellationToken);
         return response;
+    }
+
+    public async Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken)
+    {
+        await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
 
     public async Task TestBrokerAsync(string message, CancellationToken cancellationToken)

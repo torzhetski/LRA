@@ -12,4 +12,9 @@ public class AccountDbContext : DbContext, IAccountDbContext
     }
 
     public virtual DbSet<TestModel> TestModels { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TestModel>().HasQueryFilter(e => !e.IsDeleted);
+    }
 }

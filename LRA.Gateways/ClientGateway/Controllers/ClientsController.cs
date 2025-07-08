@@ -55,6 +55,13 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpDelete("account/soft/{id}")]
+    public async Task<IActionResult> TestSoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _accountService.TestAccountSoftDelete(id, cancellationToken);
+        return Ok();
+    }
+
     [HttpPost("account/brocker")]
     public async Task<IActionResult> TestBrockerAsync([FromBody] string message, CancellationToken cancellationToken)
     {

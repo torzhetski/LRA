@@ -36,6 +36,14 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
+    [HttpDelete("soft/{id}")]
+    public async Task<IActionResult> SoftDeleteTest([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _testService.TestSoftDeleteDataResponse(id, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
     [HttpPost("brocker")]
     public async Task<IActionResult> SendBrockerMessage([FromBody] string message, CancellationToken cancellationToken)
     {
