@@ -32,7 +32,21 @@ public class ClientsController : ControllerBase
     [HttpGet("account/{id}")]
     public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await _accountService.TestAccountServiceAsync(id, cancellationToken);
+        var response = await _accountService.TestGetFromAccountServiceAsync(id, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpGet("account/paginated")]
+    public async Task<IActionResult> GetPaginatedAccountsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+    {
+        var response = await _accountService.TestGetPaginatedFromAccountServiceAsync(pageNumber, pageSize, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpGet("account")]
+    public async Task<IActionResult> GetAllAccountsAsync(CancellationToken cancellationToken)
+    {
+        var response = await _accountService.TestGetAllfromAccountServiceAsync(cancellationToken);
         return Ok(response);
     }
 
