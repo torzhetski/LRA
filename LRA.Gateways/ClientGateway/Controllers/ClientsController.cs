@@ -1,11 +1,14 @@
-﻿using LRA.Gateways.Client.Interfaces;
+﻿using Asp.Versioning;
+using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateways.ClientGateway.Controllers;
 
-[Route("api/test-clients")]
+[Route("api/v{version:apiVersion}/test-clients")]
 [ApiController]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 public class ClientsController : ControllerBase
 {
     private readonly ITestAccountService _accountService;
@@ -22,10 +25,19 @@ public class ClientsController : ControllerBase
         _subscriptionService = subscriptionService;
     }
 
+    [MapToApiVersion("2.0")]
     [HttpGet("auth/{id}")]
     public async Task<IActionResult> GetAuthResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
     {
         var response = await _authService.TestAuthServiceAsync(id, cancellationToken);
+        return Ok(response);
+    }
+
+    [MapToApiVersion("2.0")]
+    [HttpGet("subscription/{id}")]
+    public async Task<IActionResult> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionService.TestSubscriptionServiceAsync(id, cancellationToken);
         return Ok(response);
     }
 
@@ -50,18 +62,18 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("subscription/{id}")]
-    public async Task<IActionResult> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
-    {
-        var response = await _subscriptionService.TestSubscriptionServiceAsync(id, cancellationToken);
-        return Ok(response);
-    }
-
     [HttpPost("account")]
     public async Task<IActionResult> TestPostResponseAsync([FromBody] TestDto model, CancellationToken cancellationToken)
     {
         var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return Ok(response);
+    }
+
+    [HttpDelete("account/soft/{id}")]
+    public async Task<IActionResult> TestSoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _accountService.TestAccountSoftDelete(id, cancellationToken);
+        return Ok();
     }
 
     [HttpPost("account/brocker")]

@@ -8,5 +8,6 @@ public interface ITestAccountService
     Task<PaginatedList<TestDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
     Task<List<TestDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken);
     Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken);
+    Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken);
     Task TestBrokerAsync(string message, CancellationToken cancellationToken);
 }

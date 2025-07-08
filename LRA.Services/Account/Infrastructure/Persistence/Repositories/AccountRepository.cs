@@ -34,6 +34,48 @@ public class AccountRepository : IAccountRepository
         return model;
     }
 
+    public void SoftDelete(Guid id)
+    {
+        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        if (entity != null) 
+        {
+            entity.IsDeleted = true;
+            entity.DeletedOnUtc = DateTime.UtcNow;
+        }
+    }
+
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity != null)
+        {
+            entity.IsDeleted = true;
+            entity.DeletedOnUtc = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public void Delete(Guid id)
+    {
+        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        if (entity != null)
+        {
+            _context.TestModels.Remove(entity);
+        }
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity != null)
+        {
+            _context.TestModels.Remove(entity);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+    
     public PaginatedList<TestDto> GetPaginatedData(int pageNumber, int pageSize)
     {
         var items = _context.TestModels.Select(x => x.FromModelToDto());

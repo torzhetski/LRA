@@ -1,7 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Test;
-using Microsoft.Extensions.Options;
 
 namespace LRA.Gateways.Client.Services;
 
@@ -26,6 +25,12 @@ public class TestAccountService : ITestAccountService
         return response;
     }
 
+
+    public async Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken)
+    {
+        await _httpClient.SoftDeleteAsync(id, cancellationToken);
+    }
+    
     public async Task<PaginatedList<TestDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
