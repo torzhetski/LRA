@@ -1,5 +1,7 @@
 using LRA.Gateways.Client.Extension;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Presentation.Configuration;
+using LRA.Shared.Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +18,11 @@ builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();
 
+builder.Services.AddVersioning();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -43,8 +48,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.AddSwaggerVersioning();
 }
 
 app.UseHttpsRedirection();

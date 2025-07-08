@@ -37,10 +37,34 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
+    [HttpDelete("soft/{id}")]
+    public async Task<IActionResult> SoftDeleteTest([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _testService.TestSoftDeleteDataResponse(id, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
     [HttpPost("brocker")]
     public async Task<IActionResult> SendBrockerMessage([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
         await _rabbitMqProducerService.SendMessageAsync(messageModel, cancellationToken);
         return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("paginated")]
+    public IActionResult GetPaginated([FromQuery] int pageNumber,[FromQuery] int PageSize)
+    {
+        var response = _testService.TestGetPaginatedDataResponse(pageNumber, PageSize);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var response = await _testService.TestGetAllDataResponseAsync(cancellationToken);
+        return Ok(response);
     }
 }

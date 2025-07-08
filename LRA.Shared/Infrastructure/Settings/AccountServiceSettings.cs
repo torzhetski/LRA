@@ -1,7 +1,7 @@
-﻿namespace LRA.Shared.Infrastructure.Settings;
+﻿using LRA.Shared.Abstractions.Settings;
 
-public class AccountServiceSettings
+namespace LRA.Shared.Infrastructure.Settings;
+
+public class AccountServiceSettings : ServiceSettingBase
 {
-    public required string ApiKey { get; set; }
-    public required string Url { get; set; }
 }
