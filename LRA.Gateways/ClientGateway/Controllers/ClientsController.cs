@@ -23,8 +23,8 @@ public class ClientsController : ControllerBase
         _subscriptionService = subscriptionService;
     }
 
-    [HttpGet("auth")]
-    public async Task<IActionResult> GetAuthResponseAsync(CancellationToken cancellationToken)
+    [HttpGet("auth/config")]
+    public async Task<IActionResult> GetAuthConfigAsync(CancellationToken cancellationToken)
     {
         var response = await _authService.GetAuthServiceConfigAsync(cancellationToken);
         return Ok(response);

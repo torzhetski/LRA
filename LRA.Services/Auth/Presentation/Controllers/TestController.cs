@@ -27,7 +27,7 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("keycloak")]
+    [HttpGet("keycloak-config")]
     public async Task<IActionResult> GetRealmConfig(CancellationToken cancellationToken)
     {
         var response = await _keycklockService.GetKeycloakRealmConfigAsync(cancellationToken);

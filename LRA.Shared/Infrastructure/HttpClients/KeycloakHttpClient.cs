@@ -13,17 +13,17 @@ namespace LRA.Shared.Infrastructure.HttpClients;
 public class KeycloakHttpClient : IKeycloakHttpClient
 {
     private HttpClient _httpClient;
-    private readonly string _userManagementToken;
+    private readonly IOptions<KeycloakServiceSettings> _options;
 
     public KeycloakHttpClient(HttpClient httpClient, IOptions<KeycloakServiceSettings> options)
     {
         _httpClient = httpClient;
-        _userManagementToken = options.Value.ApiKey;
+        _options = options;
     }
 
     public async Task<string> GetServiceSettingsAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $".well-known/openid-configuration");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.KeycloakBaseUrl}.well-known/openid-configuration");
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
@@ -36,13 +36,15 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
     public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8080/admin/realms/keycloak-auth/users");
+        var _userManagementToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AdminBaseUrl}users");
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _userManagementToken);
 
         var userData = new
         {
-            model.Email,
+            email = model.Email,
             username = model.Email,
             enabled = true,
             credentials = new[]
@@ -65,5 +67,30 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var userId = location?.Split('/').Last();
 
         return userId!;
+    }
+
+    private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AccessTokenUrl}");
+
+        var body = new Dictionary<string, string>
+        {
+            ["client_id"] = $"{_options.Value.ClientId}",
+            ["username"] = $"{_options.Value.Username}",
+            ["password"] = $"{_options.Value.Password}",
+            ["grant_type"] = $"password"
+        };
+
+        request.Content = new FormUrlEncodedContent(body);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        using var doc = JsonDocument.Parse(json);
+        var accessToken = doc.RootElement.GetProperty("access_token").GetString();
+
+        return accessToken;
     }
 }

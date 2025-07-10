@@ -13,11 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<KeycloakServiceSettings>(
     builder.Configuration.GetSection("KeycloakServiceSettings"));
 
-builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>((provider, client) =>
-{
-    var options = provider.GetRequiredService<IOptions<KeycloakServiceSettings>>().Value;
-    client.BaseAddress = new Uri(options.Url);
-});
+builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
 
 builder.Services.AddScoped<IKeycklockService, KeycklockService>();
 

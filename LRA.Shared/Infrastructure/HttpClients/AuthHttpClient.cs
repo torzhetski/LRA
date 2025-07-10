@@ -21,7 +21,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task<string> GetRealmConfigAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak-config");
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request);
