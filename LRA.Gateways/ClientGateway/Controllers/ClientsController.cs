@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
 
@@ -77,9 +78,9 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("account/brocker")]
-    public async Task<IActionResult> TestBrockerAsync([FromBody] string message, CancellationToken cancellationToken)
+    public async Task<IActionResult> TestBrockerAsync([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
-        await _accountService.TestBrokerAsync(message, cancellationToken);
+        await _accountService.SendEmailMessageAsync(messageModel, cancellationToken);
         return Ok();
     }
 }

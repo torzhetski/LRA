@@ -1,4 +1,5 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
@@ -9,5 +10,5 @@ public interface IAccountHttpClient
     Task<List<TestDto>> GetAllAsync(CancellationToken cancellationToken);
     Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken);
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
-    Task PostMessageAsync(string message, CancellationToken cancellationToken);
+    Task PostEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken);
 }

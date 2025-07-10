@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.AspNetCore.WebUtilities;
@@ -98,9 +99,9 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task PostMessageAsync(string message, CancellationToken cancellationToken)
+    public async Task PostEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(message);
+        var json = JsonSerializer.Serialize(messageModel);
         var request = new HttpRequestMessage(HttpMethod.Post, "brocker")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")

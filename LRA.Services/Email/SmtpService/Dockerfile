@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["LRA.Services/Email/SmtpService/LRA.Email.SmtpService.csproj", "LRA.Services/Email/SmtpService/"]
+COPY ["LRA.Shared/Abstractions/LRA.Shared.Abstractions.csproj", "LRA.Shared/Abstractions/"]
 RUN dotnet restore "./LRA.Services/Email/SmtpService/LRA.Email.SmtpService.csproj"
 COPY . .
 WORKDIR "/src/LRA.Services/Email/SmtpService"
