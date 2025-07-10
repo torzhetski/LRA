@@ -78,7 +78,7 @@ public class ClientsController : ControllerBase
     }
 
     [HttpPost("account/brocker")]
-    public async Task<IActionResult> TestBrockerAsync([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> SendEmailAsync([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
         await _accountService.SendEmailMessageAsync(messageModel, cancellationToken);
         return Ok();
