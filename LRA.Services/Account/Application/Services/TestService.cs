@@ -1,7 +1,6 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Shared.Abstractions.Test;
-using System.Reflection;
 
 namespace LRA.Account.Application.Services;
 
@@ -33,5 +32,22 @@ public class TestService : ITestService
         var response = await _accountRepository.GetAsync(id, cancellationToken);
 
         return response.FromModelToDto();
+    }
+
+    public async Task TestSoftDeleteDataResponse(Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.SoftDeleteAsync(id, cancellationToken);
+    }
+    
+    public PaginatedList<TestDto> TestGetPaginatedDataResponse(int pageNumber, int pageSize)
+    {
+        var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);
+        return response;
+    }
+
+    public async Task<List<TestDto>> TestGetAllDataResponseAsync(CancellationToken cancellationToken)
+    {
+        var response = await _accountRepository.GetAllAsync(cancellationToken);
+        return response;
     }
 }

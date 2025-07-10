@@ -23,7 +23,7 @@ services:
 
   email:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
 
   subscription:    
     environment:

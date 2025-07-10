@@ -12,12 +12,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\LRA.Shared\Abstractions\LRA.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\..\LRA.Shared\Infrastructure\LRA.Shared.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\LRA.Shared\Presentation\LRA.Shared.Presentation.csproj" />
   </ItemGroup>
 
 </Project>

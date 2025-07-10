@@ -1,6 +1,8 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
@@ -33,6 +35,42 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
+    public async Task<PaginatedList<TestDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("paginated", new Dictionary<string, string?>
+        {
+            ["pageNumber"] = pageNumber.ToString(),
+            ["pageSize"] = pageSize.ToString()
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var model = JsonSerializer.Deserialize<PaginatedList<TestDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return model;
+    }
+
+    public async Task<List<TestDto>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var model = JsonSerializer.Deserialize<List<TestDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return model;
+    }
+
     public async Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
@@ -51,9 +89,19 @@ public class AccountHttpClient : IAccountHttpClient
         return message;
     }
 
-    public async Task PostMessageAsync(string message, CancellationToken cancellationToken)
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(message);
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"soft/{id}");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task PostEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(messageModel);
         var request = new HttpRequestMessage(HttpMethod.Post, "brocker")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
