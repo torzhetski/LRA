@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\LRA.Shared\Utils\LRA.Shared.Utils.csproj" />
     <ProjectReference Include="..\..\Application\LRA.Account.Application.csproj" />
   </ItemGroup>
 

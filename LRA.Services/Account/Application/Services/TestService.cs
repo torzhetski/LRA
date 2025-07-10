@@ -1,6 +1,9 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
+using LRA.Account.Domain.Entities;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Test;
+using LRA.Account.Domain.Mappers;
 
 namespace LRA.Account.Application.Services;
 
@@ -13,39 +16,32 @@ public class TestService : ITestService
         _accountRepository = accountRepository;
     }
 
-    public TestMessageModel TestResponse(int id)
+    public async Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken)
     {
-        var response = new TestMessageModel { Message = $"account service answered: {id}" };
-        return response;
-    }
-
-    public async Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken)
-    {
-        var id = _accountRepository.CreateAsync(model);
+        var id = await _accountRepository.CreateAsync(model);
         await _accountRepository.SaveChangesAsync(cancellationToken);
-        var response = new TestMessageModel() { Message = $"new aacount id: {id}" };
-        return response;
+        return id;
     }
 
-    public async Task<TestDto> TestGetDataResponse(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountById(Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetAsync(id, cancellationToken);
 
-        return response.FromModelToDto();
+        return response;
     }
 
-    public async Task TestSoftDeleteDataResponse(Guid id, CancellationToken cancellationToken)
+    public async Task SoftDeleteAccount(Guid id, CancellationToken cancellationToken)
     {
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);
     }
     
-    public PaginatedList<TestDto> TestGetPaginatedDataResponse(int pageNumber, int pageSize)
+    public PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize)
     {
         var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);
         return response;
     }
 
-    public async Task<List<TestDto>> TestGetAllDataResponseAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetAllAsync(cancellationToken);
         return response;

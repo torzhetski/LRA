@@ -1,13 +1,14 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Account.Domain.Entities;
+using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Interfaces;
 
 public interface ITestService
 {
-    TestMessageModel TestResponse(int id);
-    Task<TestMessageModel> TestCreateDataResponse(TestModel model, CancellationToken cancellationToken);
-    Task<TestDto> TestGetDataResponse(Guid id, CancellationToken cancellationToken);
-    Task TestSoftDeleteDataResponse(Guid id, CancellationToken cancellationToken);
-    PaginatedList<TestDto> TestGetPaginatedDataResponse(int pageNumber, int pageSize);
-    Task<List<TestDto>> TestGetAllDataResponseAsync(CancellationToken cancellationToken);
+    Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken);
+    Task<AccountDto> GetAccountById(Guid id, CancellationToken cancellationToken);
+    Task SoftDeleteAccount(Guid id, CancellationToken cancellationToken);
+    PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize);
+    Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
 }

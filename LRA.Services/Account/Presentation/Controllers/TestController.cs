@@ -24,23 +24,23 @@ public class TestController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetInfo([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await _testService.TestGetDataResponse(id, cancellationToken);
+        var response = await _testService.GetAccountById(id, cancellationToken);
         return Ok(response);
     }
 
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> CreateTest([FromBody] TestDto model, CancellationToken cancellationToken)
-    {
-        var response = await _testService.TestCreateDataResponse(model.FromDtoToModel(), cancellationToken);
-        return Ok(response);
-    }
+    //[Authorize]
+    //[HttpPost]
+    //public async Task<IActionResult> CreateTest([FromBody] TestDto model, CancellationToken cancellationToken)
+    //{
+    //    var response = await _testService.CreateAccountAsync(model.FromDtoToModel(), cancellationToken);
+    //    return Ok(response);
+    //}
 
     [Authorize]
     [HttpDelete("soft/{id}")]
     public async Task<IActionResult> SoftDeleteTest([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        await _testService.TestSoftDeleteDataResponse(id, cancellationToken);
+        await _testService.SoftDeleteAccount(id, cancellationToken);
         return Ok();
     }
 
@@ -56,7 +56,7 @@ public class TestController : ControllerBase
     [HttpGet("paginated")]
     public IActionResult GetPaginated([FromQuery] int pageNumber,[FromQuery] int PageSize)
     {
-        var response = _testService.TestGetPaginatedDataResponse(pageNumber, PageSize);
+        var response = _testService.GetPaginatedAccounts(pageNumber, PageSize);
         return Ok(response);
     }
 
@@ -64,7 +64,7 @@ public class TestController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var response = await _testService.TestGetAllDataResponseAsync(cancellationToken);
+        var response = await _testService.GetAllAccountsAsync(cancellationToken);
         return Ok(response);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using LRA.Account.Infrasturcture.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using LRA.Shared.Abstractions.Test;
+using LRA.Account.Domain.Entities;
 
 namespace LRA.Account.Infrasturcture.Persistence;
 
@@ -11,10 +12,10 @@ public class AccountDbContext : DbContext, IAccountDbContext
     {
     }
 
-    public virtual DbSet<TestModel> TestModels { get; set; }
+    public virtual DbSet<AccountEntity> Accounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TestModel>().HasQueryFilter(e => !e.IsDeleted);
+        modelBuilder.Entity<AccountEntity>().HasQueryFilter(e => !e.IsDeleted);
     }
 }

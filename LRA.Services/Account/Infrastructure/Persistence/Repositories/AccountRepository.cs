@@ -1,7 +1,11 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
+using LRA.Account.Domain.Entities;
 using LRA.Account.Infrasturcture.Persistence.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.EntityFrameworkCore;
+using LRA.Account.Domain.Mappers;
+using LRA.Shared.Utils.Exceptions;
 
 namespace LRA.Account.Infrasturcture.Persistence.Repositories;
 
@@ -14,29 +18,29 @@ public class AccountRepository : IAccountRepository
         _context = context;
     }
 
-    public async Task<Guid> CreateAsync(TestModel model)
+    public async Task<Guid> CreateAsync(AccountEntity model)
     {
-        _context.TestModels.Add(model);
+        _context.Accounts.Add(model);
         await _context.SaveChangesAsync();
 
         return model.Id;
     }
 
-    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        var model = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (model == null) 
         {
             throw new ArgumentNullException(nameof(model));
         }
 
-        return model;
+        return model.FromModelToDto();
     }
 
     public void SoftDelete(Guid id)
     {
-        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        var entity = _context.Accounts.FirstOrDefault(x => x.Id == id);
         if (entity != null) 
         {
             entity.IsDeleted = true;
@@ -46,46 +50,69 @@ public class AccountRepository : IAccountRepository
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        if (entity != null)
-        {
-            entity.IsDeleted = true;
-            entity.DeletedOnUtc = DateTime.UtcNow;
-        }
-
+        SoftDelete(id);
         await _context.SaveChangesAsync();
     }
 
     public void Delete(Guid id)
     {
-        var entity = _context.TestModels.FirstOrDefault(x => x.Id == id);
+        var entity = _context.Accounts.FirstOrDefault(x => x.Id == id);
         if (entity != null)
         {
-            _context.TestModels.Remove(entity);
+            _context.Accounts.Remove(entity);
         }
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-        if (entity != null)
-        {
-            _context.TestModels.Remove(entity);
-        }
-
+        Delete(id);
         await _context.SaveChangesAsync();
     }
-    
-    public PaginatedList<TestDto> GetPaginatedData(int pageNumber, int pageSize)
+
+    public void Update(AccountDto dto)
     {
-        var items = _context.TestModels.Select(x => x.FromModelToDto());
-        var paginatedItems = new PaginatedList<TestDto>(items, pageNumber, pageSize);
+        var entity = _context.Accounts.FirstOrDefault(a => a.Id == dto.Id);
+        if (entity == null)
+            throw new NotFoundException(nameof(entity), dto.Id);
+
+        entity.FirstName = dto.FirstName ?? entity.FirstName;
+        entity.LastName = dto.LastName ?? entity.LastName;
+        entity.PhoneNumber = dto.PhoneNumber ?? entity.PhoneNumber;
+
+        if (dto.Roles.Any())
+        {
+            foreach (var role in dto.Roles)
+            {
+                if (entity.Roles.Contains(role))
+                {
+                    entity.Roles.Remove(role);
+                }
+                else
+                {
+                    entity.Roles.Add(role);
+                }
+            }
+        }
+
+        entity.UpdatedUtc = DateTime.UtcNow;
+    }
+
+    public async Task UpdateAsync(AccountDto dto)
+    {
+        Update(dto);
+        await _context.SaveChangesAsync();
+    }
+
+    public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
+    {
+        var items = _context.Accounts.Select(x => x.FromModelToDto());
+        var paginatedItems = new PaginatedList<AccountDto>(items, pageNumber, pageSize);
         return paginatedItems;
     }
 
-    public async Task<List<TestDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var items = _context.TestModels.Select(x => x.FromModelToDto());
+        var items = _context.Accounts.Select(x => x.FromModelToDto());
         return await items.ToListAsync(cancellationToken);
     }
 
