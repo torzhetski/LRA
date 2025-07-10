@@ -28,14 +28,6 @@ public class TestController : ControllerBase
         return Ok(response);
     }
 
-    //[Authorize]
-    //[HttpPost]
-    //public async Task<IActionResult> CreateTest([FromBody] TestDto model, CancellationToken cancellationToken)
-    //{
-    //    var response = await _testService.CreateAccountAsync(model.FromDtoToModel(), cancellationToken);
-    //    return Ok(response);
-    //}
-
     [Authorize]
     [HttpDelete("soft/{id}")]
     public async Task<IActionResult> SoftDeleteTest([FromRoute] Guid id, CancellationToken cancellationToken)
