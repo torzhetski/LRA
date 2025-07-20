@@ -5,18 +5,27 @@ using LRA.Shared.Abstractions.Test;
 using System.Text.Json;
 using LRA.Shared.Abstractions.Models;
 using System.Text;
+using LRA.Shared.Utils.Exceptions;
+using System.Net;
+using System.Numerics;
+using Microsoft.Extensions.Logging;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
 public class AuthHttpClient : IAuthHttpClient
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<AuthHttpClient> _logger;
     private readonly string _apiKey;
 
-    public AuthHttpClient(HttpClient httpClient, IOptions<AuthServiceSettings> options)
+    public AuthHttpClient(
+        HttpClient httpClient, 
+        IOptions<AuthServiceSettings> options, 
+        ILogger<AuthHttpClient> logger)
     {
         _httpClient = httpClient;
         _apiKey = options.Value.ApiKey;
+        _logger = logger;
     }
 
     public async Task<string> GetRealmConfigAsync(CancellationToken cancellationToken)
@@ -42,7 +51,21 @@ public class AuthHttpClient : IAuthHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                throw new AlreadyExistsException("User");
+            }
+            else
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+        }
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 

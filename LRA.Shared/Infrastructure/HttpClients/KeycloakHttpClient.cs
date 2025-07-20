@@ -2,8 +2,12 @@
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Utils.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -14,11 +18,16 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 {
     private HttpClient _httpClient;
     private readonly IOptions<KeycloakServiceSettings> _options;
+    private readonly ILogger<KeycloakHttpClient> _logger;
 
-    public KeycloakHttpClient(HttpClient httpClient, IOptions<KeycloakServiceSettings> options)
+    public KeycloakHttpClient(
+        HttpClient httpClient, 
+        IOptions<KeycloakServiceSettings> options, 
+        ILogger<KeycloakHttpClient> logger)
     {
         _httpClient = httpClient;
         _options = options;
+        _logger = logger;
     }
 
     public async Task<string> GetServiceSettingsAsync(CancellationToken cancellationToken)
@@ -61,7 +70,22 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException ex) 
+        {
+            if (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                throw new AlreadyExistsException("User");
+            }
+            else
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+        }
 
         var location = response.Headers.Location?.ToString();
         var userId = location?.Split('/').Last();

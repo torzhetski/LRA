@@ -1,5 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.RabbitMq;
-using LRA.Shared.Abstractions.Settings;
+using LRA.Shared.Abstractions.Settings.RabbitMq;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System.Text;
@@ -36,14 +36,14 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         using var channel = await connection.CreateChannelAsync(cancellationToken: token);
 
         await channel.ExchangeDeclareAsync(
-            exchange: _options.Value.ExchangeName,
+            exchange: _options.Value.Producer.ExchangeName,
             type: ExchangeType.Fanout, 
             durable: true,
             autoDelete: false,
             cancellationToken: token);
 
         await channel.QueueDeclareAsync(
-            queue: _options.Value.QueueName,
+            queue: _options.Value.Producer.QueueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
@@ -51,9 +51,9 @@ public class RabbitMQProducerService : IRabbitMQProducerService
             cancellationToken: token);
 
         await channel.QueueBindAsync(
-            queue: _options.Value.QueueName,
-            exchange: _options.Value.ExchangeName,
-            routingKey: default,
+            queue: _options.Value.Producer.QueueName,
+            exchange: _options.Value.Producer.ExchangeName,
+            routingKey: "",
             cancellationToken: token);
 
         var body = Encoding.UTF8.GetBytes(message);
@@ -64,8 +64,8 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         };
 
         await channel.BasicPublishAsync(
-            exchange: string.Empty,
-            routingKey: _options.Value.QueueName,
+            exchange: _options.Value.Producer.ExchangeName,
+            routingKey: "",
             mandatory: true,
             body: body,
             basicProperties: properties,

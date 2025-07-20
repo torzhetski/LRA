@@ -18,10 +18,10 @@ public class AccountRepository : IAccountRepository
         _context = context;
     }
 
-    public async Task<Guid> CreateAsync(AccountEntity model)
+    public async Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken)
     {
         _context.Accounts.Add(model);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return model.Id;
     }
@@ -97,10 +97,10 @@ public class AccountRepository : IAccountRepository
         entity.UpdatedUtc = DateTime.UtcNow;
     }
 
-    public async Task UpdateAsync(AccountDto dto)
+    public async Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken)
     {
         Update(dto);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
@@ -118,6 +118,16 @@ public class AccountRepository : IAccountRepository
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task MakeUserVerifiedAsync(string email, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email, cancellationToken);
+        if (entity == null)
+            throw new NotFoundException(nameof(entity), email);
+
+        entity.IsEmailVerified = true;
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

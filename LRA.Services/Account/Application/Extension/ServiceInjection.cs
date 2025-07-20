@@ -9,7 +9,7 @@ public static class ServiceInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<ITestService, TestService>();
+        services.AddScoped<ITAccountService, AccountService>();
         services.AddHostedService<AccountRabbitMQConsumer>();
 
         return services;

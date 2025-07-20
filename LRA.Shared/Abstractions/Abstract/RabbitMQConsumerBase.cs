@@ -1,4 +1,4 @@
-﻿using LRA.Shared.Abstractions.Settings;
+﻿using LRA.Shared.Abstractions.Settings.RabbitMq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -30,26 +30,26 @@ public abstract class RabbitMQConsumerBase : BackgroundService
         _connection = await factory.CreateConnectionAsync(token);
         _channel = await _connection.CreateChannelAsync(cancellationToken: token);
 
-        await _channel.ExchangeDeclareAsync(
-            exchange: _options.Value.ExchangeName,
-            type: ExchangeType.Fanout,
-            durable: true,
-            autoDelete: false,
-            cancellationToken: token);
+        //await _channel.ExchangeDeclareAsync(
+        //    exchange: _options.Value.Consumer,
+        //    type: ExchangeType.Fanout,
+        //    durable: true,
+        //    autoDelete: false,
+        //    cancellationToken: token);
 
         await _channel.QueueDeclareAsync(
-            queue: _options.Value.QueueName,
+            queue: _options.Value.Consumer.QueueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: null,
             cancellationToken: token);
 
-        await _channel.QueueBindAsync(
-            queue: _options.Value.QueueName,
-            exchange: _options.Value.ExchangeName,
-            routingKey: default,
-            cancellationToken: token);
+        //await _channel.QueueBindAsync(
+        //    queue: _options.Value.Consumer.QueueName,
+        //    exchange: _options.Value.ExchangeName,
+        //    routingKey: default,
+        //    cancellationToken: token);
 
         await base.StartAsync(token);
     }

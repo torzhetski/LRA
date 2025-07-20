@@ -1,9 +1,15 @@
-﻿using LRA.Gateways.Client.Interfaces;
+﻿using FluentValidation;
+using LRA.Gateways.Client.Handlers;
+using LRA.Gateways.Client.Interfaces;
 using LRA.Gateways.Client.Services;
+using LRA.Gateways.Client.Validators;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Presentation.Handlers;
 using Microsoft.Extensions.Options;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace LRA.Gateways.Client.Extension;
 
@@ -11,9 +17,14 @@ public static class ServiceInjection
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<ITestAccountService, TestAccountService>();
+        services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ITestAuthService, TestAuthService>();
         services.AddScoped<ITestSubscriptionService, TestSubscriptionService>();
+        services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
+        services.AddFluentValidationAutoValidation();
+        services.AddSingleton<BaseExceptionHandler>();
+        services.AddExceptionHandler<ClientGatewayExceptionHandler>();
+        services.AddProblemDetails();
 
         return services;
     }

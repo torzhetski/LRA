@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,12 @@ namespace Gateways.ClientGateway.Controllers;
 [ApiVersion("2.0")]
 public class ClientsController : ControllerBase
 {
-    private readonly ITestAccountService _accountService;
+    private readonly IAccountService _accountService;
     private readonly ITestAuthService _authService;
     private readonly ITestSubscriptionService _subscriptionService;
 
     public ClientsController(
-        ITestAccountService testService, 
+        IAccountService testService, 
         ITestAuthService authService, 
         ITestSubscriptionService subscriptionService)
     {
@@ -35,7 +36,7 @@ public class ClientsController : ControllerBase
     }
 
     [MapToApiVersion("2.0")]
-    [HttpPost("auth")]
+    [HttpPost("auth/registration")]
     public async Task<IActionResult> CreateUserAsync([FromBody] RegistrationModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.CreateUserAsync(model, cancellationToken);
@@ -57,6 +58,13 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("account/verify-email")]
+    public async Task<IActionResult> VerifyEmailAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
+    {
+        await _accountService.VerifyEmailAsync(token, email, cancellationToken);
+        return Ok();
+    }
+
     [HttpGet("account/paginated")]
     public async Task<IActionResult> GetPaginatedAccountsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
@@ -64,17 +72,10 @@ public class ClientsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("account")]
+    [HttpGet("accounts")]
     public async Task<IActionResult> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
         var response = await _accountService.TestGetAllfromAccountServiceAsync(cancellationToken);
-        return Ok(response);
-    }
-
-    [HttpPost("account")]
-    public async Task<IActionResult> TestPostResponseAsync([FromBody] TestDto model, CancellationToken cancellationToken)
-    {
-        var response = await _accountService.TestAccountDatabaseServiceAsync(model, cancellationToken);
         return Ok(response);
     }
 

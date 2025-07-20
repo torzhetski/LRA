@@ -17,6 +17,7 @@ public static class ServiceInjection
             options.UseNpgsql(connString));
 
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
 
         return services;
     }

@@ -11,10 +11,10 @@ namespace AccountService.Presentation.Controllers;
 [Route("api/test-account")]
 public class TestController : ControllerBase
 {
-    private ITestService _testService;
+    private ITAccountService _testService;
     private readonly IRabbitMQProducerService _rabbitMqProducerService;
 
-    public TestController(ITestService testService, IRabbitMQProducerService rabbitMqProducerService)
+    public TestController(ITAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
     {
         _testService = testService;
         _rabbitMqProducerService = rabbitMqProducerService;
@@ -24,7 +24,7 @@ public class TestController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetInfo([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await _testService.GetAccountById(id, cancellationToken);
+        var response = await _testService.GetAccountByIdAsync(id, cancellationToken);
         return Ok(response);
     }
 
@@ -58,5 +58,16 @@ public class TestController : ControllerBase
     {
         var response = await _testService.GetAllAccountsAsync(cancellationToken);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
+    {
+        var result = await _testService.VerifyEmailAsync(token, email, cancellationToken);
+        if(result)
+            return Ok("email verified");
+        else
+            return BadRequest("email not verified");
     }
 }

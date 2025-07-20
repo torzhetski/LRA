@@ -68,6 +68,28 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
 
                     b.ToTable("Accounts");
                 });
+
+            modelBuilder.Entity("LRA.Account.Domain.Entities.EmailVerificationModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailVerification");
+                });
 #pragma warning restore 612, 618
         }
     }

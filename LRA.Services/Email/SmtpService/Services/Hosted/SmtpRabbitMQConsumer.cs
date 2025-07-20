@@ -1,7 +1,7 @@
 using LRA.Email.SmtpService.Interfaces;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.RabbitMQProvider.Services;
-using LRA.Shared.Abstractions.Settings;
+using LRA.Shared.Abstractions.Settings.RabbitMq;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -47,7 +47,7 @@ namespace LRA.Email.SmtpService.Services.Hosted
             };
 
             await _channel.BasicConsumeAsync(
-                _options.Value.QueueName,
+                _options.Value.Consumer.QueueName,
                 false,
                 consumer,
                 token);

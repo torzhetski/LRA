@@ -6,15 +6,16 @@ namespace LRA.Account.Application.Interfaces.Repositories;
 
 public interface IAccountRepository
 {
-    Task<Guid> CreateAsync(AccountEntity model);
+    Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken);
     Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken);
     void SoftDelete (Guid id);
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
     void Delete(Guid id);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     void Update(AccountDto dto);
-    Task UpdateAsync(AccountDto dto);
+    Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

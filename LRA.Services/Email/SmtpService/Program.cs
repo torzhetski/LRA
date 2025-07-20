@@ -2,7 +2,7 @@ using LRA.Email.SmtpService.Interfaces;
 using LRA.Email.SmtpService.Services;
 using LRA.Email.SmtpService.Services.Hosted;
 using LRA.Email.SmtpService.Settings;
-using LRA.Shared.Abstractions.Settings;
+using LRA.Shared.Abstractions.Settings.RabbitMq;
 
 var builder = Host.CreateApplicationBuilder(args);
 

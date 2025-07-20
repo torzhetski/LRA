@@ -1,4 +1,5 @@
-﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+﻿using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
@@ -20,7 +21,7 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<TestDto> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -30,12 +31,12 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<TestDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var model = JsonSerializer.Deserialize<AccountDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
     }
 
-    public async Task<PaginatedList<TestDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedList<AccountDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("paginated", new Dictionary<string, string?>
         {
@@ -51,12 +52,12 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<PaginatedList<TestDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var model = JsonSerializer.Deserialize<PaginatedList<AccountDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
     }
 
-    public async Task<List<TestDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -66,12 +67,12 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<List<TestDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var model = JsonSerializer.Deserialize<List<AccountDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return model;
     }
 
-    public async Task<TestMessageModel> PostAsync(TestDto model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> PostAsync(AccountDto model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
         var request = new HttpRequestMessage(HttpMethod.Post,"")
@@ -109,6 +110,22 @@ public class AccountHttpClient : IAccountHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("verify-email", new Dictionary<string, string?>
+        {
+            ["token"] = token,
+            ["email"] = email
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
         response.EnsureSuccessStatusCode();
     }
 }

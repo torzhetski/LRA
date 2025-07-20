@@ -1,7 +1,7 @@
 using LRA.Account.Application.Extension;
 using LRA.Account.Infrasturcture.Persistence.Exstensions;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
-using LRA.Shared.Abstractions.Settings;
+using LRA.Shared.Abstractions.Settings.RabbitMq;
 using LRA.Shared.Infrastructure.RabbitMq;
 using LRA.Shared.Presentation.Middlewares;
 

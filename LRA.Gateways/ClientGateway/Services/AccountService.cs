@@ -1,26 +1,27 @@
 ﻿using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 
-public class TestAccountService : ITestAccountService
+public class AccountService : IAccountService
 {
     private readonly IAccountHttpClient _httpClient;
 
-    public TestAccountService (IAccountHttpClient accountHttpClient)
+    public AccountService (IAccountHttpClient accountHttpClient)
     {
         _httpClient = accountHttpClient;
     }
 
-    public async Task<TestDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAsync(id, cancellationToken);
         return response;
     }
 
-    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(TestDto model, CancellationToken cancellationToken)
+    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(AccountDto model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.PostAsync(model, cancellationToken);
         return response;
@@ -32,13 +33,13 @@ public class TestAccountService : ITestAccountService
         await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
     
-    public async Task<PaginatedList<TestDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedList<AccountDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
         return response;
     }
 
-    public async Task<List<TestDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAllAsync(cancellationToken);
         return response;
@@ -47,5 +48,10 @@ public class TestAccountService : ITestAccountService
     public async Task SendEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
     {
         await _httpClient.PostEmailMessageAsync(messageModel, cancellationToken);
+    }
+
+    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
+    {
+        await _httpClient.VerifyEmailAsync(token, email, cancellationToken);
     }
 }

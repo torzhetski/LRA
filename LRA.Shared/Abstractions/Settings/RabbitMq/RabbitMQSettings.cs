@@ -1,4 +1,4 @@
-﻿namespace LRA.Shared.Abstractions.Settings;
+﻿namespace LRA.Shared.Abstractions.Settings.RabbitMq;
 
 public class RabbitMQSettings
 {
@@ -6,6 +6,6 @@ public class RabbitMQSettings
     public int Port { get; set; }
     public required string UserName {  get; set; }
     public required string Password { get; set; }
-    public required string QueueName { get; set; }
-    public required string ExchangeName { get; set; }
+    public required RabbitMqProducerSettings Producer { get; set; }
+    public required RabbitMqConsumerSettings Consumer { get; set; }
 }
