@@ -13,6 +13,10 @@ public class RegistrationModelValidator : AbstractValidator<RegistrationModel>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Password required.")
-            .MinimumLength(8).WithMessage("Password must have at least 8 symbols.");
+            .MinimumLength(8).WithMessage("Password must have at least 8 symbols.")
+            .Matches(@"[!@#$%^&*(),.?""{}|<>]").WithMessage("Password must contain at least one special character.");
+
+        RuleFor(x => x.ConfirmPassword)
+            .Equal(x => x.Password).WithMessage("Passwords do not match.");
     }
 }
