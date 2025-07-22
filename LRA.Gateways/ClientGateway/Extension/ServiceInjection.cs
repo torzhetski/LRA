@@ -22,7 +22,6 @@ public static class ServiceInjection
         services.AddScoped<ITestSubscriptionService, TestSubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
         services.AddFluentValidationAutoValidation();
-        services.AddSingleton<BaseExceptionHandler>();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
         services.AddProblemDetails();
 

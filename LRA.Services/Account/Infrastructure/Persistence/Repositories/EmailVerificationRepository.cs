@@ -1,11 +1,13 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
 using LRA.Account.Infrasturcture.Persistence.Interfaces;
+using LRA.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,7 +27,7 @@ public class EmailVerificationRepository : IEmailVerificationRepository
         var emailVerify = new EmailVerificationModel()
         {
             Email = email,
-            Token = Guid.NewGuid().ToString(),
+            Token = RandomCode.Generate(),
         };
         _context.EmailVerification.Add(emailVerify);
         await _context.SaveChangesAsync();

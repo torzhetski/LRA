@@ -8,23 +8,17 @@ namespace LRA.Gateways.Client.Handlers;
 
 public class ClientGatewayExceptionHandler : IExceptionHandler
 {
-    private readonly BaseExceptionHandler _baseExceptionHandler;
-
-    public ClientGatewayExceptionHandler(BaseExceptionHandler baseExceptionHandler)
-    {
-        _baseExceptionHandler = baseExceptionHandler;
-    }
-
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        var handled = await _baseExceptionHandler.TryHandleAsync(httpContext, exception, cancellationToken);
-        if (handled)
-            return true;
-
         httpContext.Response.ContentType = "application/problem+json";
 
         var response = exception switch
         {
+            AlreadyExistsException alreadyExsistseEx => new ProblemDetails
+            {
+                Title = alreadyExsistseEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
