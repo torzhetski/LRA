@@ -11,36 +11,17 @@ namespace Gateways.ClientGateway.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
-public class ClientsController : ControllerBase
+public class AccountsController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    private readonly ITestAuthService _authService;
     private readonly ITestSubscriptionService _subscriptionService;
 
-    public ClientsController(
+    public AccountsController(
         IAccountService testService, 
-        ITestAuthService authService, 
         ITestSubscriptionService subscriptionService)
     {
         _accountService = testService;
-        _authService = authService;
         _subscriptionService = subscriptionService;
-    }
-
-    [MapToApiVersion("2.0")]
-    [HttpGet("auth/config")]
-    public async Task<IActionResult> GetAuthConfigAsync(CancellationToken cancellationToken)
-    {
-        var response = await _authService.GetAuthServiceConfigAsync(cancellationToken);
-        return Ok(response);
-    }
-
-    [MapToApiVersion("2.0")]
-    [HttpPost("auth/registration")]
-    public async Task<IActionResult> CreateUserAsync([FromBody] RegistrationModel model, CancellationToken cancellationToken)
-    {
-        var response = await _authService.CreateUserAsync(model, cancellationToken);
-        return Ok(response);
     }
 
     [MapToApiVersion("2.0")]

@@ -7,4 +7,5 @@ public interface IKeycloakHttpClient
 {
     Task<string> GetServiceSettingsAsync(CancellationToken cancellationToken);
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
+    Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
 }

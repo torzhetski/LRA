@@ -7,4 +7,5 @@ public interface IAuthHttpClient
 {
     Task<string> GetRealmConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
+    Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
 }

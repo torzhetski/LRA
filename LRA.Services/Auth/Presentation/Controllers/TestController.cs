@@ -27,7 +27,7 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("keycloak-config")]
+    [HttpGet("keycloak/config")]
     public async Task<IActionResult> GetRealmConfig(CancellationToken cancellationToken)
     {
         var response = await _keycklockService.GetKeycloakRealmConfigAsync(cancellationToken);
@@ -35,10 +35,18 @@ public class TestController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("keycloak")]
+    [HttpPost("keycloak/registration")]
     public async Task<IActionResult> CreateUser([FromBody] RegistrationModel model, CancellationToken cancellationToken)
     {
         var response = await _keycklockService.CreateKeycloakUserAsync(model, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost("keycloak/login")]
+    public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
+    {
+        var response = await _keycklockService.LoginKeycloakUserAsync(model, cancellationToken);
         return Ok(response);
     }
 }

@@ -18,12 +18,20 @@ public static class ServiceInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IAccountService, AccountService>();
-        services.AddScoped<ITestAuthService, TestAuthService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITestSubscriptionService, TestSubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
         services.AddFluentValidationAutoValidation();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
         services.AddProblemDetails();
+        services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = "http://keycloak:8080/realms/keycloak-auth";
+                options.Audience = "account";
+                options.RequireHttpsMetadata = false;
+            });
+        services.AddAuthorization();
 
         return services;
     }

@@ -1,15 +1,14 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
-using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 
-public class TestAuthService : ITestAuthService
+public class AuthService : IAuthService
 {
     private readonly IAuthHttpClient _httpClient;
 
-    public TestAuthService(IAuthHttpClient httpClient)
+    public AuthService(IAuthHttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -23,6 +22,12 @@ public class TestAuthService : ITestAuthService
     public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.CreateUserAsync(model, cancellationToken);
+        return response;
+    }
+
+    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.LoginUserAsync(model, cancellationToken);
         return response;
     }
 }

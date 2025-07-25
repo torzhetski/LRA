@@ -30,7 +30,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task<string> GetRealmConfigAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak-config");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak/config");
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request);
@@ -44,7 +44,38 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak")
+        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/registration")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.Conflict)
+            {
+                throw new AlreadyExistsException("User");
+            }
+            else
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+        }
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return content;
+    }
+
+    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/login")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };

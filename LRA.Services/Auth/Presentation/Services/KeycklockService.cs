@@ -37,4 +37,11 @@ public class KeycklockService : IKeycklockService
 
         return response;
     }
+
+    public async Task<string> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken)
+    {
+        var response = await _keycloakHttpClient.LoginUserAsync(model, cancellationToken);
+
+        return response;
+    }
 }

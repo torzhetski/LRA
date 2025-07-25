@@ -93,6 +93,28 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         return userId!;
     }
 
+    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
+
+        var body = new Dictionary<string, string>
+        {
+            ["grant_type"] = "password",
+            ["client_id"] = $"public-client",
+            ["username"] = model.Email,
+            ["password"] = model.Password,
+        };
+
+        request.Content = new FormUrlEncodedContent(body);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();//надо чекнуть статус код который на неверный логин или пароль будет
+
+        var result = await response.Content.ReadAsStringAsync();
+        var token = JsonDocument.Parse(result).RootElement.GetProperty("access_token").GetString();
+
+        return token;
+    }
+
     private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AccessTokenUrl}");
