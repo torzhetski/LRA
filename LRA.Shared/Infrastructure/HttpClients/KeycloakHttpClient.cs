@@ -107,7 +107,15 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
         request.Content = new FormUrlEncodedContent(body);
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();//надо чекнуть статус код который на неверный логин или пароль будет
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedAccessException("Invalid user credentials");
+                default: 
+                    throw new Exception("smthing went wrong");
+            }
 
         var result = await response.Content.ReadAsStringAsync();
         var token = JsonDocument.Parse(result).RootElement.GetProperty("access_token").GetString();

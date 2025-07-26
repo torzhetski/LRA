@@ -19,6 +19,11 @@ public class ClientGatewayExceptionHandler : IExceptionHandler
                 Title = alreadyExsistseEx.Message,
                 Status = StatusCodes.Status400BadRequest
             },
+            UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails
+            {
+                Title = unauthorizedAccessEx.Message,
+                Status = StatusCodes.Status401Unauthorized
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
