@@ -8,19 +8,8 @@ namespace LRA.Auth.Presentation.Handlers;
 
 public class AuthExceptionHandler : IExceptionHandler
 {
-    private readonly BaseExceptionHandler _baseExceptionHandler;
-
-    public AuthExceptionHandler(BaseExceptionHandler baseExceptionHandler)
-    {
-        _baseExceptionHandler = baseExceptionHandler;
-    }
-
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        var handled = await _baseExceptionHandler.TryHandleAsync(httpContext, exception, cancellationToken);
-        if (handled)
-            return true;
-
         httpContext.Response.ContentType = "application/problem+json";
 
         var response = exception switch

@@ -18,17 +18,14 @@ namespace LRA.Shared.Infrastructure.HttpClients;
 public class AuthHttpClient : IAuthHttpClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<AuthHttpClient> _logger;
     private readonly string _apiKey;
 
     public AuthHttpClient(
         HttpClient httpClient, 
-        IOptions<AuthServiceSettings> options, 
-        ILogger<AuthHttpClient> logger)
+        IOptions<AuthServiceSettings> options)
     {
         _httpClient = httpClient;
         _apiKey = options.Value.ApiKey;
-        _logger = logger;
     }
 
     public async Task<string> GetRealmConfigAsync(CancellationToken cancellationToken)
@@ -54,21 +51,15 @@ public class AuthHttpClient : IAuthHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        try
-        {
-            response.EnsureSuccessStatusCode();
-        }
-        catch (HttpRequestException ex)
-        {
-            if (ex.StatusCode == HttpStatusCode.Conflict)
+        
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
             {
-                throw new AlreadyExistsException("User");
+                case HttpStatusCode.Conflict:
+                    throw new AlreadyExistsException("User");
+                default: 
+                    throw new Exception("smthing went wrong");
             }
-            else
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-        }
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -85,22 +76,14 @@ public class AuthHttpClient : IAuthHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        try
-        {
-            response.EnsureSuccessStatusCode();
-        }
-        catch (HttpRequestException ex)
-        {
-            if (ex.StatusCode == HttpStatusCode.Conflict)
-            {
-                throw new AlreadyExistsException("User");
-            }
-            else
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-        }
 
+        if(!response.IsSuccessStatusCode)
+            switch (response.StatusCode) {
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedAccessException("Invalid user credentials");
+                default: 
+                    throw new Exception("smthing went wrong");
+            }
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;

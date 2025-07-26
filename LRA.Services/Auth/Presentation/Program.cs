@@ -42,7 +42,7 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<BaseExceptionHandler>();
+builder.Services.AddExceptionHandler<BaseExceptionHandler>();
 builder.Services.AddExceptionHandler<AuthExceptionHandler>();
 builder.Services.AddProblemDetails();
 

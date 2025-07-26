@@ -18,6 +18,11 @@ public class BaseExceptionHandler : IExceptionHandler
                 Title = alreadyExsistseEx.Message,
                 Status = StatusCodes.Status409Conflict
             },
+            UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails
+            {
+                Title = unauthorizedAccessEx.Message,
+                Status = StatusCodes.Status401Unauthorized
+            },
             NotFoundException notFoundEx => new ProblemDetails
             {
                 Title = notFoundEx.Message,
