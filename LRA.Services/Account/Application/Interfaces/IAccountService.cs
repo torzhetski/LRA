@@ -4,7 +4,7 @@ using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Interfaces;
 
-public interface ITAccountService
+public interface IAccountService
 {
     Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
@@ -12,4 +12,5 @@ public interface ITAccountService
     PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<bool> VerifyEmailAsync(string token, string email, CancellationToken cancellationToken);
+    Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
 }

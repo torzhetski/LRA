@@ -9,7 +9,7 @@ using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Application.Services;
 
-public class AccountService : ITAccountService
+public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
     private readonly IEmailVerificationRepository _emailVerificationRepository;
@@ -76,5 +76,10 @@ public class AccountService : ITAccountService
         {
             return false;
         }
+    }
+
+    public Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -16,4 +16,5 @@ public class AccountEntity : IBaseEntity, ISoftDeleteble
     public List<string> Roles { get; set; } = new List<string>();
     public bool IsDeleted { get; set; }
     public DateTime? DeletedOnUtc { get; set; }
+    public bool Is2FaEnabled { get; set; } = true;
 }

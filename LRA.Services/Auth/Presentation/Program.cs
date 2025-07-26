@@ -39,6 +39,11 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    await app.ApplyMigrations();
+}
+
 app.UseExceptionHandler();
 
 app.UseMiddleware<ApiKeyValidationMiddleware>();

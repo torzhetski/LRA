@@ -1,7 +1,7 @@
 ﻿using LRA.Account.Infrasturcture.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using LRA.Shared.Abstractions.Test;
 using LRA.Account.Domain.Entities;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Account.Infrasturcture.Persistence;
 
@@ -13,7 +13,7 @@ public class AccountDbContext : DbContext, IAccountDbContext
     }
 
     public virtual DbSet<AccountEntity> Accounts { get; set; }
-    public virtual DbSet<EmailVerificationModel> EmailVerification { get; set; }
+    public virtual DbSet<VerificationModel> EmailVerification { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -11,10 +11,10 @@ namespace AccountService.Presentation.Controllers;
 [Route("api/test-account")]
 public class TestController : ControllerBase
 {
-    private ITAccountService _testService;
+    private IAccountService _testService;
     private readonly IRabbitMQProducerService _rabbitMqProducerService;
 
-    public TestController(ITAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
+    public TestController(IAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
     {
         _testService = testService;
         _rabbitMqProducerService = rabbitMqProducerService;

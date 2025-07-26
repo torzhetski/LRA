@@ -1,6 +1,6 @@
 ﻿using LRA.Auth.Application.Interfaces;
 using LRA.Auth.Presentation.Interfaces;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

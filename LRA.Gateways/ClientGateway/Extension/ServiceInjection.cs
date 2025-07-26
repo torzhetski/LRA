@@ -4,7 +4,7 @@ using LRA.Gateways.Client.Interfaces;
 using LRA.Gateways.Client.Services;
 using LRA.Gateways.Client.Validators;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Presentation.Handlers;

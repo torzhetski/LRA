@@ -1,4 +1,4 @@
-﻿namespace LRA.Shared.Abstractions.Models;
+﻿namespace LRA.Shared.Abstractions.Models.Auth;
 
 public class RegistrationModel
 {

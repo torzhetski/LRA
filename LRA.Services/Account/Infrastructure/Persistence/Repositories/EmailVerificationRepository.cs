@@ -1,15 +1,9 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Account.Domain.Entities;
 using LRA.Account.Infrasturcture.Persistence.Interfaces;
+using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Utils;
+using LRA.Shared.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LRA.Account.Infrasturcture.Persistence.Repositories;
 
@@ -24,10 +18,11 @@ public class EmailVerificationRepository : IEmailVerificationRepository
 
     public async Task<string> CreateVerificationTokenAsync(string email, CancellationToken cancellationToken)
     {
-        var emailVerify = new EmailVerificationModel()
+        var emailVerify = new VerificationModel()
         {
             Email = email,
             Token = RandomCode.Generate(),
+            Type = VerificationType.EmailVerification,
         };
         _context.EmailVerification.Add(emailVerify);
         await _context.SaveChangesAsync();
@@ -36,7 +31,7 @@ public class EmailVerificationRepository : IEmailVerificationRepository
 
     public async Task<bool> VerifyTokenAsync(string token, string email, CancellationToken cancellationToken)
     {
-        var verification = await _context.EmailVerification.FirstOrDefaultAsync(vf => vf.Token == token);
+        var verification = await _context.EmailVerification.FirstOrDefaultAsync(vf => vf.Token == token && vf.Type == VerificationType.EmailVerification);
         if (verification == null || verification.ExpiresAt < DateTime.UtcNow || verification.Email != email)
         {
             return false;

@@ -1,4 +1,4 @@
-﻿using LRA.Shared.Abstractions.Models;
+﻿using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;

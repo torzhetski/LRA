@@ -16,7 +16,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<Guid> CreateAsync(TestModel model)
     {
-        _context.TestModels.Add(model);
+        _context.TwoFaVerificationModels.Add(model);
         await _context.SaveChangesAsync();
 
         return model.Id;
@@ -24,7 +24,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        var model = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var model = await _context.TwoFaVerificationModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (model == null)
         {

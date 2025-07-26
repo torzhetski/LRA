@@ -3,12 +3,12 @@ using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using LRA.Shared.Abstractions.Test;
 using System.Text.Json;
-using LRA.Shared.Abstractions.Models;
 using System.Text;
 using LRA.Shared.Utils.Exceptions;
 using System.Net;
 using System.Numerics;
 using Microsoft.Extensions.Logging;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 

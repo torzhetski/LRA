@@ -1,5 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Utils.Exceptions;

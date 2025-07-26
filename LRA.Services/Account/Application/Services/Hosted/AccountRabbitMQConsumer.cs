@@ -75,7 +75,7 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         };
         using (var scope = _serviceProvider.CreateScope())
         {
-            var accountRepository = scope.ServiceProvider.GetService<ITAccountService>();
+            var accountRepository = scope.ServiceProvider.GetService<IAccountService>();
             await accountRepository!.CreateAccountAsync(model, cancellationToken);
         }
     }

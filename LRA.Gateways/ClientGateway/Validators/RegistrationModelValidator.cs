@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Gateways.Client.Validators;
 

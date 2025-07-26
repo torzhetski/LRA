@@ -1,6 +1,6 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Gateways.Client.Services;
 

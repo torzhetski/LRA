@@ -2,7 +2,7 @@
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
-using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Auth.Presentaion.Services;
 
