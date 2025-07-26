@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\LRA.Shared\Abstractions\LRA.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\..\Application\LRA.Auth.Application.csproj" />
+    <ProjectReference Include="..\..\Domain\LRA.Auth.Domain.csproj" />
   </ItemGroup>
 
 </Project>

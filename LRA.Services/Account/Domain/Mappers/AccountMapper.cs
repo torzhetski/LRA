@@ -10,6 +10,7 @@ public static class AccountMapper
         return new AccountDto()
         {
             Id = model.Id,
+            KeycloakId = model.KeycloakId,
             Email = model.Email,
             FirstName = model.FirstName,
             LastName = model.LastName,
@@ -17,6 +18,7 @@ public static class AccountMapper
             CreatedUtc = model.CreatedUtc,
             UpdatedUtc = model.UpdatedUtc,
             Roles = model.Roles,
+            IsTwoFaEnabled = model.IsTwoFaEnabled,
         };
     }
 }

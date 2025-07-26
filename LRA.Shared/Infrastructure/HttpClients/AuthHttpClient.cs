@@ -9,6 +9,9 @@ using System.Net;
 using System.Numerics;
 using Microsoft.Extensions.Logging;
 using LRA.Shared.Abstractions.Models.Auth;
+using LRA.Shared.Abstractions.Dtos.Verification;
+using LRA.Shared.Abstractions.Dtos.Account;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -72,7 +75,7 @@ public class AuthHttpClient : IAuthHttpClient
         return content;
     }
 
-    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
         var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/login")
@@ -100,6 +103,29 @@ public class AuthHttpClient : IAuthHttpClient
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        return content;
+        var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return dto;
+    }
+
+    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("twofactor-verification", new Dictionary<string, string?>
+        {
+            ["token"] = token,
+            ["id"] = id.ToString()
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return dto;
     }
 }

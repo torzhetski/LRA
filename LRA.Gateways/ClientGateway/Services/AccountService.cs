@@ -17,16 +17,9 @@ public class AccountService : IAccountService
 
     public async Task<AccountDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetAsync(id, cancellationToken);
+        var response = await _httpClient.GetByIdAsync(id, cancellationToken);
         return response;
     }
-
-    public async Task<TestMessageModel> TestAccountDatabaseServiceAsync(AccountDto model, CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.PostAsync(model, cancellationToken);
-        return response;
-    }
-
 
     public async Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken)
     {

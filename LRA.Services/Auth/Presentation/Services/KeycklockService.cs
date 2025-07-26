@@ -9,12 +9,12 @@ namespace LRA.Auth.Presentaion.Services;
 public class KeycklockService : IKeycklockService
 {
     private readonly IKeycloakHttpClient _keycloakHttpClient;
-    private readonly IRabbitMQProducerService _rabbitMQProducerService;
+    private readonly IAccountHttpClient _accountHttpClient;
 
-    public KeycklockService(IKeycloakHttpClient keycloakHttpClient, IRabbitMQProducerService rabbitMQProducerService)
+    public KeycklockService(IKeycloakHttpClient keycloakHttpClient, IAccountHttpClient accountHttpClient)
     {
         _keycloakHttpClient = keycloakHttpClient;
-        _rabbitMQProducerService = rabbitMQProducerService;
+        _accountHttpClient = accountHttpClient;
     }
 
     public async Task<string> GetKeycloakRealmConfigAsync(CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ public class KeycklockService : IKeycklockService
             Email = model.Email,
         };
 
-        await _rabbitMQProducerService.SendMessageAsync(dto, cancellationToken);
+        await _accountHttpClient.CreateAccountAsync(dto, cancellationToken);
 
         return response;
     }

@@ -6,6 +6,7 @@ using LRA.Shared.Abstractions.Test;
 using LRA.Account.Domain.Mappers;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Utils.Exceptions;
 
 namespace LRA.Account.Application.Services;
 
@@ -42,7 +43,7 @@ public class AccountService : IAccountService
 
     public async Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var response = await _accountRepository.GetAsync(id, cancellationToken);
+        var response = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
         return response;
     }
@@ -78,8 +79,12 @@ public class AccountService : IAccountService
         }
     }
 
-    public Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
+    public async Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var dto = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);
+        if (dto == null)
+            throw new NotFoundException(nameof(dto), keycloakId);
+
+        return dto.IsTwoFaEnabled;
     }
 }

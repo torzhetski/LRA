@@ -1,4 +1,5 @@
 ﻿using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Verification;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
 
@@ -25,9 +26,15 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.LoginUserAsync(model, cancellationToken);
+        return response;
+    }
+
+    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.TwoFactorVerificateAsync(token, id, cancellationToken);
         return response;
     }
 }

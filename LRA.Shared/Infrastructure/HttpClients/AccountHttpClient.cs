@@ -1,4 +1,5 @@
-﻿using LRA.Shared.Abstractions.Dtos.Account;
+﻿using LRA.Shared.Abstractions.Dtos;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
@@ -21,7 +22,7 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -72,10 +73,10 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
-    public async Task<TestMessageModel> PostAsync(AccountDto model, CancellationToken cancellationToken)
+    public async Task CreateAccountAsync(BaseAccountDto dto, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(model);
-        var request = new HttpRequestMessage(HttpMethod.Post,"")
+        var json = JsonSerializer.Serialize(dto);
+        var request = new HttpRequestMessage(HttpMethod.Post, "create-user")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -83,11 +84,6 @@ public class AccountHttpClient : IAccountHttpClient
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var message = JsonSerializer.Deserialize<TestMessageModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
-        return message;
     }
 
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -127,5 +123,20 @@ public class AccountHttpClient : IAccountHttpClient
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"two-fa/{keycloakId}");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var model = JsonSerializer.Deserialize<GenericServiceResponse<bool>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return model.Response;
     }
 }

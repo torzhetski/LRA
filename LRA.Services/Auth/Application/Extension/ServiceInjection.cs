@@ -8,7 +8,7 @@ public static class ServiceInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<ITestService, TestService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }

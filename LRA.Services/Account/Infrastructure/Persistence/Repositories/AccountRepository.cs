@@ -26,11 +26,24 @@ public class AccountRepository : IAccountRepository
         return model.Id;
     }
 
-    public async Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (model == null) 
+        {
+            throw new ArgumentNullException(nameof(model));
+        }
+
+        return model.FromModelToDto();
+    }
+
+
+    public async Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
+
+        if (model == null)
         {
             throw new ArgumentNullException(nameof(model));
         }

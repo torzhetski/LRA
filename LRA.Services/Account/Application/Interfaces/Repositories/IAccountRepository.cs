@@ -7,7 +7,8 @@ namespace LRA.Account.Application.Interfaces.Repositories;
 public interface IAccountRepository
 {
     Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken);
-    Task<AccountDto> GetAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     void SoftDelete (Guid id);
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
     void Delete(Guid id);

@@ -40,4 +40,11 @@ public class AuthController : ControllerBase
         var response = await _authService.LoginUserAsync(model, cancellationToken);
         return Ok(response);
     }
+
+    [HttpPost("twofactor-verification")]
+    public async Task<IActionResult> VerificateUser([FromQuery] string token, Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _authService.TwoFactorVerificateAsync(token, id, cancellationToken);
+        return Ok(response);
+    }
 }

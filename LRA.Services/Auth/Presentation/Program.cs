@@ -21,7 +21,16 @@ builder.Services.Configure<KeycloakServiceSettings>(
 builder.Services.Configure<RabbitMQSettings>(
     builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.Configure<AccountServiceSettings>(
+    builder.Configuration.GetSection("AccountServiceSettings"));
+
 builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
+
+builder.Services.AddHttpClient<IAccountHttpClient, AccountHttpClient>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<AccountServiceSettings>>().Value;
+    client.BaseAddress = new Uri(options.Url);
+});
 
 builder.Services.AddScoped<IKeycklockService, KeycklockService>();
 

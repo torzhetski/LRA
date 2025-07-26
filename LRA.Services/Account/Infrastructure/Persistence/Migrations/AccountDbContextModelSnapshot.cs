@@ -48,6 +48,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsTwoFaEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("KeycloakId")
                         .HasColumnType("uuid");
 
@@ -69,7 +72,7 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("LRA.Account.Domain.Entities.EmailVerificationModel", b =>
+            modelBuilder.Entity("LRA.Shared.Abstractions.Models.Auth.VerificationModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,6 +88,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

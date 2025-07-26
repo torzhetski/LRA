@@ -1,11 +1,11 @@
-﻿using LRA.Shared.Abstractions.Models.Auth;
+﻿using LRA.Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Auth.Infrasturcture.Persistence.Interfaces;
 
 public interface IAuthDbContext
 {
-    DbSet<VerificationModel> TwoFaVerificationModels { get; set; }
+    DbSet<TwoFactorVerificationEntity> TwoFaVerificationModels { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

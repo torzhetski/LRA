@@ -2,12 +2,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LRA.Shared.Presentation.Handlers;
 
@@ -23,6 +17,11 @@ public class BaseExceptionHandler : IExceptionHandler
             {
                 Title = alreadyExsistseEx.Message,
                 Status = StatusCodes.Status409Conflict
+            },
+            NotFoundException notFoundEx => new ProblemDetails
+            {
+                Title = notFoundEx.Message,
+                Status = StatusCodes.Status400BadRequest
             },
             _ => null!
         };
