@@ -46,6 +46,7 @@ public class TwoFaRepository : ITwoFaRepository
         var response = await _context.TwoFaVerificationModels.FirstOrDefaultAsync(vf => vf.Id == id, cancellationToken);
         if (response != null && DateTime.UtcNow < response.ExpiresAt && response.Token == token)
         {
+            _context.TwoFaVerificationModels.Remove(response);
             return response.JwtToken;
         }
         else
