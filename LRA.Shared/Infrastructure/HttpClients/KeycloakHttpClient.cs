@@ -1,10 +1,8 @@
-﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+﻿using LRA.Shared.Abstractions.Dtos;
+using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
-using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Utils.Exceptions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
@@ -93,7 +91,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         return userId!;
     }
 
-    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
 
@@ -114,11 +112,40 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                 case HttpStatusCode.Unauthorized:
                     throw new UnauthorizedAccessException("Invalid user credentials");
                 default: 
-                    throw new Exception("smthing went wrong");
+                    throw new Exception("Failed to login");
             }
 
-        var result = await response.Content.ReadAsStringAsync();
-        var token = JsonDocument.Parse(result).RootElement.GetProperty("access_token").GetString();
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return token;
+    }
+
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
+
+        var body = new Dictionary<string, string>
+        {
+            ["grant_type"] = "refresh_token",
+            ["client_id"] = "public-client",
+            ["refresh_token"] = refreshToken
+        };
+
+        request.Content = new FormUrlEncodedContent(body);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                default:
+                    throw new Exception("Failed to refresh token");
+            }
+
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return token;
     }

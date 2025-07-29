@@ -1,17 +1,15 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using LRA.Shared.Abstractions.Test;
 using System.Text.Json;
 using System.Text;
 using LRA.Shared.Utils.Exceptions;
 using System.Net;
-using System.Numerics;
-using Microsoft.Extensions.Logging;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Dtos.Verification;
-using LRA.Shared.Abstractions.Dtos.Account;
 using Microsoft.AspNetCore.WebUtilities;
+using LRA.Shared.Abstractions.Dtos;
+using System.Reflection;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -91,15 +89,13 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken)
+    public async Task<VerificationDto> TwoFactorVerificateAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("twofactor-verification", new Dictionary<string, string?>
+        var json = JsonSerializer.Serialize(model);
+        var request = new HttpRequestMessage(HttpMethod.Post, "twofactor-verification")
         {
-            ["token"] = token,
-            ["id"] = id.ToString()
-        });
-
-        var request = new HttpRequestMessage(HttpMethod.Post, url);
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -107,8 +103,37 @@ public class AuthHttpClient : IAuthHttpClient
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
         var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return dto;
+    }
+
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("keycloak/refresh", new Dictionary<string, string?>
+        {
+            ["refreshToken"] = refreshToken,
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                default:
+                    throw new Exception("Failed to refresh token");
+            }
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return token;
     }
 }

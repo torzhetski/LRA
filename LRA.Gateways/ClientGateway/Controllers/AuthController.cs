@@ -42,9 +42,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFactorVerificateAsync(token, id, cancellationToken);
+        var response = await _authService.TwoFactorVerificateAsync(model, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("auth/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync([FromQuery] string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
         return Ok(response);
     }
 }

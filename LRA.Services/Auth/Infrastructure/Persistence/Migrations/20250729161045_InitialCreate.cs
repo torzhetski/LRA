@@ -12,11 +12,10 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TwoFaVerificationModels",
+                name: "VerificationModels",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    JwtToken = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -24,7 +23,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TwoFaVerificationModels", x => x.Id);
+                    table.PrimaryKey("PK_VerificationModels", x => x.Id);
                 });
         }
 
@@ -32,7 +31,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TwoFaVerificationModels");
+                name: "VerificationModels");
         }
     }
 }

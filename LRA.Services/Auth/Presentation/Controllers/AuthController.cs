@@ -9,13 +9,13 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.Presentation.Controllers;
 
-[Route("api/test-auth")]
-public class TestController : ControllerBase
+[Route("api/auth")]
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IKeycklockService _keycklockService;
 
-    public TestController(IAuthService authService, IKeycklockService keycklockService)
+    public AuthController(IAuthService authService, IKeycklockService keycklockService)
     {
         _authService = authService;
         _keycklockService = keycklockService;
@@ -44,16 +44,15 @@ public class TestController : ControllerBase
         var response = await _keycklockService.LoginKeycloakUserAsync(model, cancellationToken);
 
         var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(response);
+        var jwtToken = handler.ReadJwtToken(response.AccessToken);
         Guid.TryParse(jwtToken.Claims.First(c => c.Type == "sub").Value, out var keycloakId);
 
         if (await _authService.IsTwoFaEnabledAsync(keycloakId, cancellationToken))
         {
-            var tokenId = await _authService.SendTwoFactorToken(model.Email, response, cancellationToken);
+            await _authService.SendTwoFactorToken(model.Email, cancellationToken);
             var requiredVerificationDto = new VerificationDto()
             {
                 IsVerificationRequired = true,
-                VerificationId = tokenId.ToString(),
             };
             return Ok(requiredVerificationDto);
         }
@@ -61,23 +60,38 @@ public class TestController : ControllerBase
         var verificationDto = new VerificationDto()
         {
             IsVerificationRequired = false,
-            Token = response,
+            Tokens = response
         };
         return Ok(verificationDto);
     }
 
     [Authorize]
     [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, Guid id ,CancellationToken cancellationToken)
+    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel twoFaModel, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFaVerification(token, id, cancellationToken);
+        var response = await _authService.TwoFaVerification(twoFaModel.TwoFactorToken, cancellationToken);
 
-        var verificationDto = new VerificationDto()
+        if (response)
         {
-            IsVerificationRequired = false,
-            Token = response,
-        };
+            var tokens = await _keycklockService.LoginKeycloakUserAsync(twoFaModel, cancellationToken);
+            var verificationDto = new VerificationDto()
+            {
+                IsVerificationRequired = false,
+                Tokens = tokens,
+            };
+            return Ok(verificationDto);
+        }
+        else
+        {
+            return BadRequest("Invalid twofa token");
+        }
+    }
 
-        return Ok(verificationDto);
+    [Authorize]
+    [HttpPost("keycloak/refresh")]
+    public async Task<IActionResult> RefreshToken([FromQuery] string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _keycklockService.RefreshTokenAsync(refreshToken, cancellationToken);
+        return Ok(response);
     }
 }

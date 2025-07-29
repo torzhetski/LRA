@@ -1,5 +1,5 @@
-﻿using LRA.Shared.Abstractions.Models.Auth;
-using LRA.Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Dtos;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Auth.Presentation.Interfaces;
 
@@ -7,5 +7,6 @@ public interface IKeycklockService
 {
     Task<string> GetKeycloakRealmConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateKeycloakUserAsync(RegistrationModel model, CancellationToken cancellationToken);
-    Task<string> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
 }

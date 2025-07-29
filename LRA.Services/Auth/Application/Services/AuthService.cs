@@ -28,23 +28,21 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<string> TwoFaVerification(string token, Guid id, CancellationToken cancellationToken)
+    public async Task<bool> TwoFaVerification(string token, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.ValidateAsync(token, id, cancellationToken);
+        var response = await _authRepository.ValidateAsync(token, cancellationToken);
         return response;
     }
 
-    public async Task<Guid> SendTwoFactorToken(string email, string jwtToken, CancellationToken cancellationToken)
+    public async Task SendTwoFactorToken(string email, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.CreateAsync(email, jwtToken, cancellationToken);
+        var response = await _authRepository.CreateAsync(email, cancellationToken);
 
         var message = new EmailMessageModel() 
         {
-            Content =response.Token,
+            Content = response,
             RecipientMail = email,
         };
         await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
-
-        return response.Id;
     }
 }

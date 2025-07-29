@@ -1,4 +1,5 @@
 ﻿using LRA.Auth.Presentation.Interfaces;
+using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
@@ -38,10 +39,16 @@ public class KeycklockService : IKeycklockService
         return response;
     }
 
-    public async Task<string> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _keycloakHttpClient.LoginUserAsync(model, cancellationToken);
 
+        return response;
+    }
+
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _keycloakHttpClient.RefreshTokenAsync(refreshToken, cancellationToken);
         return response;
     }
 }

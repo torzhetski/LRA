@@ -22,7 +22,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LRA.Auth.Domain.Entities.TwoFactorVerificationEntity", b =>
+            modelBuilder.Entity("LRA.Shared.Abstractions.Models.Auth.VerificationModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,10 +35,6 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("JwtToken")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
@@ -48,7 +44,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TwoFaVerificationModels");
+                    b.ToTable("VerificationModels");
                 });
 #pragma warning restore 612, 618
         }
