@@ -16,7 +16,7 @@ public static class ServiceInjection
         services.AddDbContext<IAuthDbContext, AuthDbContext>(options =>
             options.UseNpgsql(connString));
 
-        services.AddScoped<ITwoFaRepository, TwoFaRepository>();
+        services.AddScoped<IVerificationRepository, VerificatioRepository>();
 
         return services;
     }

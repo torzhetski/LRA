@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -71,21 +72,14 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        try
-        {
-            response.EnsureSuccessStatusCode();
-        }
-        catch (HttpRequestException ex) 
-        {
-            if (ex.StatusCode == HttpStatusCode.Conflict)
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
             {
-                throw new AlreadyExistsException("User");
+                case HttpStatusCode.Conflict:
+                    throw new AlreadyExistsException("User");
+                default:
+                    throw new Exception("smthing went wrong");
             }
-            else
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-        }
 
         var location = response.Headers.Location?.ToString();
         var userId = location?.Split('/').Last();
@@ -146,5 +140,31 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var accessToken = doc.RootElement.GetProperty("access_token").GetString();
 
         return accessToken;
+    }
+
+    public async Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var accessToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
+
+        var passwordPayload = new
+        {
+            type = "password",
+            value = newPassword,
+            temporary = false
+        };
+
+        var request = new HttpRequestMessage(
+            HttpMethod.Put,
+            $"{_options.Value.AdminBaseUrl}users/{keycloakId}/reset-password")
+        {
+            Content = JsonContent.Create(passwordPayload)
+        };
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Password update failed: {response.StatusCode}");
     }
 }

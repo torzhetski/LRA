@@ -1,6 +1,7 @@
 ﻿using LRA.Shared.Abstractions.Dtos.Verification;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Test;
+using System.Threading;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
@@ -9,5 +10,6 @@ public interface IAuthHttpClient
     Task<string> GetRealmConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
-    Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken);
+    Task ChangeUserPasswordAsync(string newPassword, string email, CancellationToken cancellationToken);
+    Task<VerificationDto> TwoFactorVerificateAsync(string token, CancellationToken cancellationToken);
 }

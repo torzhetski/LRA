@@ -13,5 +13,14 @@ public class AuthDbContext : DbContext, IAuthDbContext
     {
     }
 
-    public virtual DbSet<TwoFactorVerificationEntity> TwoFaVerificationModels { get; set; }
+    public virtual DbSet<VerificationModel> VerificationModels { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<VerificationModel>()
+            .HasDiscriminator<string>("Discriminator")
+            .HasValue<VerificationModel>("ResetPassword")
+            .HasValue<TwoFactorVerificationEntity>("TwoFactorVerification");
+        base.OnModelCreating(modelBuilder);
+    }
 }

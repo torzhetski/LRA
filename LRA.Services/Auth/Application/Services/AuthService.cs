@@ -9,16 +9,16 @@ namespace LRA.Auth.Application.Services;
 public class AuthService : IAuthService
 {
     private readonly IAccountHttpClient _httpClient;
-    private readonly ITwoFaRepository _authRepository;
+    private readonly IVerificationRepository _verificationRepository;
     private readonly IRabbitMQProducerService _rabbitMQProducerService;
 
     public AuthService(
         IAccountHttpClient httpClient, 
-        ITwoFaRepository authRepository, 
+        IVerificationRepository verificationRepository, 
         IRabbitMQProducerService rabbitMQProducerService)
     {
         _httpClient = httpClient;
-        _authRepository = authRepository;
+        _verificationRepository = verificationRepository;
         _rabbitMQProducerService = rabbitMQProducerService;
     }
 
@@ -28,19 +28,38 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<string> TwoFaVerification(string token, Guid id, CancellationToken cancellationToken)
+    public async Task<string> TwoFaVerificationAsync(string token, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.ValidateAsync(token, id, cancellationToken);
+        var response = await _verificationRepository.ValidateTwoFactorAsync(token, cancellationToken);
         return response;
     }
 
-    public async Task<Guid> SendTwoFactorToken(string email, string jwtToken, CancellationToken cancellationToken)
+    public async Task<Guid> SendTwoFactorTokenAsync(string email, string jwtToken, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.CreateAsync(email, jwtToken, cancellationToken);
+        var response = await _verificationRepository.CreateTwoFactorAsync(email, jwtToken, cancellationToken);
 
         var message = new EmailMessageModel() 
         {
             Content =response.Token,
+            RecipientMail = email,
+        };
+        await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
+
+        return response.Id;
+    }
+
+    public async Task PasswordResetVerificationAsync(string token, CancellationToken cancellationToken)
+    {
+        await _verificationRepository.ValidatePasswordResetAsync(token, cancellationToken);
+    }
+
+    public async Task<Guid> SendPasswordResetTokenAsync(string email, CancellationToken cancellationToken)
+    {
+        var response = await _verificationRepository.CreatePasswordResetAsync(email, cancellationToken);
+
+        var message = new EmailMessageModel()
+        {
+            Content = response.Token,
             RecipientMail = email,
         };
         await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);

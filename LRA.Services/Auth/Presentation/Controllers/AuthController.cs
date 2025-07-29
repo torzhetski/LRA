@@ -9,13 +9,13 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.Presentation.Controllers;
 
-[Route("api/test-auth")]
-public class TestController : ControllerBase
+[Route("api/auth")]
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IKeycklockService _keycklockService;
 
-    public TestController(IAuthService authService, IKeycklockService keycklockService)
+    public AuthController(IAuthService authService, IKeycklockService keycklockService)
     {
         _authService = authService;
         _keycklockService = keycklockService;
@@ -49,7 +49,7 @@ public class TestController : ControllerBase
 
         if (await _authService.IsTwoFaEnabledAsync(keycloakId, cancellationToken))
         {
-            var tokenId = await _authService.SendTwoFactorToken(model.Email, response, cancellationToken);
+            var tokenId = await _authService.SendTwoFactorTokenAsync(model.Email, response, cancellationToken);
             var requiredVerificationDto = new VerificationDto()
             {
                 IsVerificationRequired = true,
@@ -68,16 +68,42 @@ public class TestController : ControllerBase
 
     [Authorize]
     [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, Guid id ,CancellationToken cancellationToken)
+    public async Task<IActionResult> VerificateUser([FromQuery] string token, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFaVerification(token, id, cancellationToken);
+        var response = await _authService.TwoFaVerificationAsync(token, cancellationToken);
 
-        var verificationDto = new VerificationDto()
+        var verificationDto = new VerificationDto() 
         {
             IsVerificationRequired = false,
             Token = response,
         };
 
         return Ok(verificationDto);
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromQuery] Guid id ,CancellationToken cancellationToken)
+    {
+        await _keycklockService.ChangeUserPasswordAsync(newPassword, id, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("reset-password/code")]
+    public async Task<IActionResult> ResetUserPassword([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        var response = await _authService.SendPasswordResetTokenAsync(email, cancellationToken);
+        return Ok(new GenericServiceResponse<string>(response.ToString()));
+    }
+
+    [Authorize]
+    [HttpPost("reset-password/verification")]
+    public async Task<IActionResult> ResetUserPassword([FromQuery] string newPassword, string email, string token, CancellationToken cancellationToken)
+    {
+        await _authService.PasswordResetVerificationAsync(token, cancellationToken);
+        //вот тут надо получить айдишник по мейлу - либо я подниму таблицу в этом сервисе, либо обращаться к аккаунту чтоб получить айдишник
+        //дальше просто вызываем тот же await _keycklockService.ChangeUserPasswordAsync(newPassword, id, cancellationToken); что и в обычной смене пароля
+        return Ok();
     }
 }

@@ -41,10 +41,17 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, Guid id, CancellationToken cancellationToken)
+    [HttpPost("auth/change-password")]
+    public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, string email, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFactorVerificateAsync(token, id, cancellationToken);
+        await _authService.ChangeUserPasswordAsync(newPassword, email, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPost("twofactor-verification")]
+    public async Task<IActionResult> VerificateUser([FromQuery] string token, CancellationToken cancellationToken)
+    {
+        var response = await _authService.TwoFactorVerificateAsync(token, cancellationToken);
         return Ok(response);
     }
 }

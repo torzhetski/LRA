@@ -32,9 +32,14 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken)
+    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.TwoFactorVerificateAsync(token, id, cancellationToken);
+        var response = await _httpClient.TwoFactorVerificateAsync(token, cancellationToken);
         return response;
+    }
+
+    public async Task ChangeUserPasswordAsync(string newPassword, string email, CancellationToken cancellationToken)
+    {
+        await _httpClient.ChangeUserPasswordAsync(newPassword, email, cancellationToken);
     }
 }

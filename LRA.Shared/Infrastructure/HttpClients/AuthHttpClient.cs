@@ -91,12 +91,11 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, Guid id, CancellationToken cancellationToken)
+    public async Task<VerificationDto> TwoFactorVerificateAsync(string token, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("twofactor-verification", new Dictionary<string, string?>
         {
             ["token"] = token,
-            ["id"] = id.ToString()
         });
 
         var request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -110,5 +109,21 @@ public class AuthHttpClient : IAuthHttpClient
         var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return dto;
+    }
+
+    public async Task ChangeUserPasswordAsync(string newPassword, string email, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("change-password", new Dictionary<string, string?>
+        {
+            ["newPassword"] = newPassword,
+            ["email"] = email,
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
     }
 }
