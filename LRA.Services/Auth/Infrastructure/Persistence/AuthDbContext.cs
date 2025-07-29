@@ -1,8 +1,6 @@
 ﻿using LRA.Auth.Infrasturcture.Persistence.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Abstractions.Models.Auth;
-using LRA.Auth.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Auth.Infrasturcture.Persistence;
 

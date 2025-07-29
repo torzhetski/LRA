@@ -15,24 +15,24 @@ public class AccountService : IAccountService
         _httpClient = accountHttpClient;
     }
 
-    public async Task<AccountDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetByIdAsync(id, cancellationToken);
         return response;
     }
 
-    public async Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken)
+    public async Task AccountSoftDelete(Guid id, CancellationToken cancellationToken)
     {
         await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
     
-    public async Task<PaginatedList<AccountDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedList<AccountDto>> GetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
         return response;
     }
 
-    public async Task<List<AccountDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> GetAllfromAccountServiceAsync(CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAllAsync(cancellationToken);
         return response;

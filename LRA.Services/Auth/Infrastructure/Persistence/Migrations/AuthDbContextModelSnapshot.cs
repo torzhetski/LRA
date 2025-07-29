@@ -50,6 +50,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VerificationModels");
+<<<<<<< HEAD
 
                     b.HasDiscriminator().HasValue("ResetPassword");
 
@@ -65,6 +66,8 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("TwoFactorVerification");
+=======
+>>>>>>> NET5-224
                 });
 #pragma warning restore 612, 618
         }

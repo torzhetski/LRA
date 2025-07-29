@@ -42,24 +42,38 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("twofactor-verification")]
+    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
+    {
+        var response = await _authService.TwoFactorVerificateAsync(model, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPost("auth/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        var response = await _authService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpDelete("keycloak/logout")]
+    public async Task<IActionResult> LogoutSession([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        await _authService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
+        return Ok();
+    }
+
     [Authorize]
     [HttpPut("auth/change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeUserPasswordAsync([FromBody] PasswordChangeModel newPassword, CancellationToken cancellationToken)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId)) 
+        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId))
         {
             return Unauthorized("Missing 'Identifier' in token");
         }
 
-        await _authService.ChangeUserPasswordAsync(newPassword, userId, cancellationToken);
+        await _authService.ChangeUserPasswordAsync(newPassword.Password, userId, cancellationToken);
         return Ok();
-    }
-
-    [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, CancellationToken cancellationToken)
-    {
-        var response = await _authService.TwoFactorVerificateAsync(token, cancellationToken);
-        return Ok(response);
     }
 }

@@ -11,7 +11,7 @@ using LRA.Account.Domain.Entities;
 
 namespace AccountService.Presentation.Controllers;
 
-[Route("api/test-account")]
+[Route("api/account")]
 public class TestController : ControllerBase
 {
     private IAccountService _accountService;

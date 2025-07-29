@@ -9,6 +9,5 @@ namespace LRA.Shared.Abstractions.Dtos.Verification;
 public class VerificationDto
 {
     public bool IsVerificationRequired { get; set; }
-    public string? Token { get; set; }
-    public string? VerificationId { get; set; }
+    public KeycloakTokenDto? Tokens { get; set; }
 }
