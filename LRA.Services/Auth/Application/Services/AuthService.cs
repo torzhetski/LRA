@@ -30,13 +30,13 @@ public class AuthService : IAuthService
 
     public async Task<bool> TwoFaVerification(string token, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.ValidateAsync(token, cancellationToken);
+        var response = await _verificationRepository.ValidateAsync(token, cancellationToken);
         return response;
     }
 
     public async Task SendTwoFactorToken(string email, CancellationToken cancellationToken)
     {
-        var response = await _authRepository.CreateAsync(email, cancellationToken);
+        var response = await _verificationRepository.CreateAsync(email, cancellationToken);
 
         var message = new EmailMessageModel() 
         {
@@ -51,17 +51,15 @@ public class AuthService : IAuthService
         await _verificationRepository.ValidatePasswordResetAsync(token, cancellationToken);
     }
 
-    public async Task<Guid> SendPasswordResetTokenAsync(string email, CancellationToken cancellationToken)
+    public async Task SendPasswordResetTokenAsync(string email, CancellationToken cancellationToken)
     {
         var response = await _verificationRepository.CreatePasswordResetAsync(email, cancellationToken);
 
         var message = new EmailMessageModel()
         {
-            Content = response.Token,
+            Content = response,
             RecipientMail = email,
         };
         await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
-
-        return response.Id;
     }
 }

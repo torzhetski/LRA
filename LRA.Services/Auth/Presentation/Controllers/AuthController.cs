@@ -115,8 +115,8 @@ public class AuthController : ControllerBase
     [HttpGet("reset-password/code")]
     public async Task<IActionResult> ResetUserPassword([FromQuery] string email, CancellationToken cancellationToken)
     {
-        var response = await _authService.SendPasswordResetTokenAsync(email, cancellationToken);
-        return Ok(new GenericServiceResponse<string>(response.ToString()));
+        await _authService.SendPasswordResetTokenAsync(email, cancellationToken);
+        return Ok();
     }
 
     [Authorize]
