@@ -38,8 +38,8 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task ChangeUserPasswordAsync(string newPassword, Guid id, CancellationToken cancellationToken)
+    public async Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _httpClient.ChangeUserPasswordAsync(newPassword, id, cancellationToken);
+        await _httpClient.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
     }
 }

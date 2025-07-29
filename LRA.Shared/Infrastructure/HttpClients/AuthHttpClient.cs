@@ -111,15 +111,15 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task ChangeUserPasswordAsync(string newPassword, Guid id, CancellationToken cancellationToken)
+    public async Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("change-password", new Dictionary<string, string?>
         {
             ["newPassword"] = newPassword,
-            ["id"] = id.ToString(),
+            ["keycloakId"] = keycloakId.ToString(),
         });
 
-        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        var request = new HttpRequestMessage(HttpMethod.Put, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);

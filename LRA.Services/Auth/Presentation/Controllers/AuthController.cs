@@ -82,10 +82,10 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("change-password")]
-    public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromQuery] Guid id ,CancellationToken cancellationToken)
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromQuery] Guid keycloakId ,CancellationToken cancellationToken)
     {
-        await _keycklockService.ChangeUserPasswordAsync(newPassword, id, cancellationToken);
+        await _keycklockService.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
         return Ok();
     }
 
@@ -102,7 +102,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ResetUserPassword([FromQuery] string newPassword, string email, string token, CancellationToken cancellationToken)
     {
         await _authService.PasswordResetVerificationAsync(token, cancellationToken);
-        //вот тут надо получить айдишник по мейлу - либо я подниму таблицу в этом сервисе, либо обращаться к аккаунту чтоб получить айдишник
+        //вот тут надо получить айдишник по мейлу - либо я подниму таблицу в этом сервисе, либо обращаться к аккаунту чтоб получить айдишник, или же по имейлу можно вытащить из кейклока айдишник
         //дальше просто вызываем тот же await _keycklockService.ChangeUserPasswordAsync(newPassword, id, cancellationToken); что и в обычной смене пароля
         return Ok();
     }

@@ -43,13 +43,13 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("auth/change-password")]
+    [HttpPut("auth/change-password")]
     public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, CancellationToken cancellationToken)
     {
         var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId)) 
         {
-            return Unauthorized("Missing 'sub' in token");
+            return Unauthorized("Missing 'Identifier' in token");
         }
 
         await _authService.ChangeUserPasswordAsync(newPassword, userId, cancellationToken);
