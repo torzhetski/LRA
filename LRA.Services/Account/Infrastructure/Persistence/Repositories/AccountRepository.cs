@@ -84,13 +84,14 @@ public class AccountRepository : IAccountRepository
 
     public void Update(AccountDto dto)
     {
-        var entity = _context.Accounts.FirstOrDefault(a => a.Id == dto.Id);
+        var entity = _context.Accounts.FirstOrDefault(a => a.KeycloakId == dto.KeycloakId);
         if (entity == null)
-            throw new NotFoundException(nameof(entity), dto.Id);
+            throw new NotFoundException(nameof(entity), dto.KeycloakId);
 
         entity.FirstName = dto.FirstName ?? entity.FirstName;
         entity.LastName = dto.LastName ?? entity.LastName;
         entity.PhoneNumber = dto.PhoneNumber ?? entity.PhoneNumber;
+        entity.Email = dto.Email ?? entity.Email;
 
         if (dto.Roles.Any())
         {
@@ -113,6 +114,16 @@ public class AccountRepository : IAccountRepository
     public async Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken)
     {
         Update(dto);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateTwoFaAsync(Guid keycloalId, CancellationToken cancellationToken)
+    {
+        var entity = await GetByKeycloakIdAsync(keycloalId, cancellationToken);
+        if (entity == null)
+            throw new NotFoundException(nameof(entity), keycloalId);
+
+        entity.IsTwoFaEnabled = !entity.IsTwoFaEnabled;
         await _context.SaveChangesAsync(cancellationToken);
     }
 

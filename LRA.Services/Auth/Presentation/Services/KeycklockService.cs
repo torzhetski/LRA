@@ -49,4 +49,9 @@ public class KeycklockService : IKeycklockService
     {
         await _keycloakHttpClient.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
     }
+
+    public async Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken)
+    {
+        await _keycloakHttpClient.ChangeUserEmailAsync(keycloakId, newEmail, cancellationToken);
+    }
 }

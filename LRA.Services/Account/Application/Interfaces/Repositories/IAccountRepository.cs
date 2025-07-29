@@ -15,6 +15,7 @@ public interface IAccountRepository
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     void Update(AccountDto dto);
     Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
+    Task UpdateTwoFaAsync(Guid keycloalId, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   

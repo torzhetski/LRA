@@ -48,6 +48,16 @@ public class AccountService : IAccountService
         return response;
     }
 
+    public async Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateAsync(dto, cancellationToken);
+    }
+
+    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateTwoFaAsync(keycloakId, cancellationToken);
+    }
+
     public async Task SoftDeleteAccount(Guid id, CancellationToken cancellationToken)
     {
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);

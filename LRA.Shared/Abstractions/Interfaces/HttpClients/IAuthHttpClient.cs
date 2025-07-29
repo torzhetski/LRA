@@ -11,5 +11,6 @@ public interface IAuthHttpClient
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
     Task ChangeUserPasswordAsync(string newPassword, Guid id, CancellationToken cancellationToken);
+    Task ChangeUserEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task<VerificationDto> TwoFactorVerificateAsync(string token, CancellationToken cancellationToken);
 }

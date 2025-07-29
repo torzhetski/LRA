@@ -11,13 +11,13 @@ using LRA.Account.Domain.Entities;
 
 namespace AccountService.Presentation.Controllers;
 
-[Route("api/test-account")]
-public class TestController : ControllerBase
+[Route("api/account")]
+public class AccountController : ControllerBase
 {
     private IAccountService _accountService;
     private readonly IRabbitMQProducerService _rabbitMqProducerService;
 
-    public TestController(IAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
+    public AccountController(IAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
     {
         _accountService = testService;
         _rabbitMqProducerService = rabbitMqProducerService;
@@ -50,6 +50,22 @@ public class TestController : ControllerBase
         };
         var response = await _accountService.CreateAccountAsync(model, cancellationToken);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPut("update-user")]
+    public async Task<IActionResult> UpdateAsync([FromBody] AccountDto dto, CancellationToken cancellationToken)
+    {
+        await _accountService.UpdateAccountAsync(dto, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("update-twofa")]
+    public async Task<IActionResult> UpdateTwoFaAsync([FromQuery] Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountService.UpdateTwoFaAsync(keycloakId, cancellationToken);
+        return Ok();
     }
 
     [Authorize]

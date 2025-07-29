@@ -153,9 +153,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
             temporary = false
         };
 
-        var request = new HttpRequestMessage(
-            HttpMethod.Put,
-            $"{_options.Value.AdminBaseUrl}users/{keycloakId}/reset-password")
+        var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}/reset-password")
         {
             Content = JsonContent.Create(passwordPayload)
         };
@@ -166,5 +164,29 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Password update failed: {response.StatusCode}");
+    }
+
+    public async Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken)
+    {
+        var accessToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
+
+        var updatePayload = new
+        {
+            email = newEmail,
+            username = newEmail,
+            emailVerified = false
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}")
+        {
+            Content = JsonContent.Create(updatePayload)
+        };
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Failed to update email: {response.StatusCode}");
     }
 }

@@ -126,4 +126,20 @@ public class AuthHttpClient : IAuthHttpClient
 
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task ChangeUserEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("change-email", new Dictionary<string, string?>
+        {
+            ["newEmail"] = newEmail,
+            ["keycloakId"] = keycloakId.ToString(),
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Put, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
 }

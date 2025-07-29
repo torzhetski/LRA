@@ -9,4 +9,5 @@ public interface IKeycklockService
     Task<string> CreateKeycloakUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<string> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken);
     Task ChangeUserPasswordAsync (string newPassword, Guid keycloakId, CancellationToken cancellationToken);
+    Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken);
 }

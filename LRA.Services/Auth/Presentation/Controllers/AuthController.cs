@@ -90,6 +90,14 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [HttpPut("change-email")]
+    public async Task<IActionResult> ChangeUserEmail([FromQuery] string newEmail, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _keycklockService.ChangeUserEmailAsync(keycloakId, newEmail, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
     [HttpGet("reset-password/code")]
     public async Task<IActionResult> ResetUserPassword([FromQuery] string email, CancellationToken cancellationToken)
     {
