@@ -1,61 +1,53 @@
 ﻿using LRA.Auth.Application.Interfaces.Repositories;
 using LRA.Auth.Infrasturcture.Persistence.Interfaces;
-using LRA.Shared.Abstractions.Models.Auth;
-using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
-using LRA.Auth.Domain.Dtos;
-using LRA.Auth.Domain.Entities;
 using LRA.Shared.Utils.Exceptions;
+using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Auth.Infrasturcture.Persistence.Repositories;
 
-public class VerificatioRepository : IVerificationRepository
+public class VerificationRepository : IVerificationRepository
 {
     private readonly IAuthDbContext _context;
 
-    public VerificatioRepository(IAuthDbContext context)
+    public VerificationRepository(IAuthDbContext context)
     {
         _context = context;
     }
 
-    public async Task<VerificationTokenDto> CreateTwoFactorAsync(string email, string jwtToken, CancellationToken cancellationToken)
+    public async Task<string> CreateAsync(string email, CancellationToken cancellationToken)
     {
-        var TwoFaVerify = new TwoFactorVerificationEntity()
+        var TwoFaVerify = new VerificationModel()
         {
             Email = email,
             Token = RandomCode.Generate(),
             Type = VerificationType.TwoFaVerification,
             ExpiresAt = DateTime.UtcNow.AddMinutes(5),
-            JwtToken = jwtToken,
         };
 
         _context.VerificationModels.Add(TwoFaVerify);
         await _context.SaveChangesAsync();
 
-        return new VerificationTokenDto
-        {
-            Id = TwoFaVerify.Id,
-            Token = TwoFaVerify.Token,
-        };
+        return TwoFaVerify.Token;
     }
 
-    public async Task<string> ValidateTwoFactorAsync(string token, CancellationToken cancellationToken)
+    public async Task<bool> ValidateAsync(string token, CancellationToken cancellationToken)
     {
-        var response = await _context.VerificationModels.OfType<TwoFactorVerificationEntity>().FirstOrDefaultAsync(vf => vf.Token == token, cancellationToken);
-        if (response != null && DateTime.UtcNow < response.ExpiresAt && response.Token == token)
+        var response = await _context.VerificationModels.FirstOrDefaultAsync(vf => vf.Token == token, cancellationToken);
+        if (response != null && DateTime.UtcNow < response.ExpiresAt && response.Type == VerificationType.TwoFaVerification)
         {
             _context.VerificationModels.Remove(response);
-            return response.JwtToken;
+            return true;
         }
         else
         {
-            throw new NotFoundException(nameof(response), token);
+            return false;
         }
     }
 
-    public async Task<VerificationTokenDto> CreatePasswordResetAsync(string email, CancellationToken cancellationToken)
+    public async Task<string> CreatePasswordResetAsync(string email, CancellationToken cancellationToken)
     {
         var passwordReset = new VerificationModel()
         {
@@ -68,11 +60,7 @@ public class VerificatioRepository : IVerificationRepository
         _context.VerificationModels.Add(passwordReset);
         await _context.SaveChangesAsync();
 
-        return new VerificationTokenDto
-        {
-            Id = passwordReset.Id,
-            Token = passwordReset.Token,
-        };
+        return passwordReset.Token;
     }
 
     public async Task ValidatePasswordResetAsync(string token, CancellationToken cancellationToken)
@@ -80,7 +68,7 @@ public class VerificatioRepository : IVerificationRepository
         var response = await _context.VerificationModels.FirstOrDefaultAsync(vf => vf.Token == token, cancellationToken);
         if (response != null && DateTime.UtcNow < response.ExpiresAt && response.Token == token)
         {
-            _context.VerificationModels.Remove(response);;
+            _context.VerificationModels.Remove(response); ;
         }
         else
         {

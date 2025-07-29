@@ -28,24 +28,22 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<string> TwoFaVerificationAsync(string token, CancellationToken cancellationToken)
+    public async Task<bool> TwoFaVerification(string token, CancellationToken cancellationToken)
     {
-        var response = await _verificationRepository.ValidateTwoFactorAsync(token, cancellationToken);
+        var response = await _verificationRepository.ValidateAsync(token, cancellationToken);
         return response;
     }
 
-    public async Task<Guid> SendTwoFactorTokenAsync(string email, string jwtToken, CancellationToken cancellationToken)
+    public async Task SendTwoFactorToken(string email, CancellationToken cancellationToken)
     {
-        var response = await _verificationRepository.CreateTwoFactorAsync(email, jwtToken, cancellationToken);
+        var response = await _verificationRepository.CreateAsync(email, cancellationToken);
 
         var message = new EmailMessageModel() 
         {
-            Content =response.Token,
+            Content = response,
             RecipientMail = email,
         };
         await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
-
-        return response.Id;
     }
 
     public async Task PasswordResetVerificationAsync(string token, CancellationToken cancellationToken)
@@ -53,17 +51,15 @@ public class AuthService : IAuthService
         await _verificationRepository.ValidatePasswordResetAsync(token, cancellationToken);
     }
 
-    public async Task<Guid> SendPasswordResetTokenAsync(string email, CancellationToken cancellationToken)
+    public async Task SendPasswordResetTokenAsync(string email, CancellationToken cancellationToken)
     {
         var response = await _verificationRepository.CreatePasswordResetAsync(email, cancellationToken);
 
         var message = new EmailMessageModel()
         {
-            Content = response.Token,
+            Content = response,
             RecipientMail = email,
         };
         await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
-
-        return response.Id;
     }
 }

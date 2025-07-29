@@ -3,26 +3,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace LRA.Account.Infrasturcture.Persistence.Migrations
+namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class EmailVerificationAdded : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "EmailVerification",
+                name: "VerificationModels",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmailVerification", x => x.Id);
+                    table.PrimaryKey("PK_VerificationModels", x => x.Id);
                 });
         }
 
@@ -30,7 +31,7 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EmailVerification");
+                name: "VerificationModels");
         }
     }
 }

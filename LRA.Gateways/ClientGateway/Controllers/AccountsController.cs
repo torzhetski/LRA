@@ -3,6 +3,7 @@ using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Test;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateways.ClientGateway.Controllers;
@@ -14,31 +15,21 @@ namespace Gateways.ClientGateway.Controllers;
 public class AccountsController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    private readonly ITestSubscriptionService _subscriptionService;
 
-    public AccountsController(
-        IAccountService testService, 
-        ITestSubscriptionService subscriptionService)
+    public AccountsController(IAccountService accountService)
     {
-        _accountService = testService;
-        _subscriptionService = subscriptionService;
+        _accountService = accountService;
     }
 
-    [MapToApiVersion("2.0")]
-    [HttpGet("subscription/{id}")]
-    public async Task<IActionResult> GetSubscriptionResponseAsync([FromRoute] int id, CancellationToken cancellationToken)
-    {
-        var response = await _subscriptionService.TestSubscriptionServiceAsync(id, cancellationToken);
-        return Ok(response);
-    }
-
+    [Authorize]
     [HttpGet("account/{id}")]
     public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await _accountService.TestGetFromAccountServiceAsync(id, cancellationToken);
+        var response = await _accountService.GetFromAccountServiceAsync(id, cancellationToken);
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost("account/verify-email")]
     public async Task<IActionResult> VerifyEmailAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
     {
@@ -46,31 +37,27 @@ public class AccountsController : ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpGet("account/paginated")]
     public async Task<IActionResult> GetPaginatedAccountsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
-        var response = await _accountService.TestGetPaginatedFromAccountServiceAsync(pageNumber, pageSize, cancellationToken);
+        var response = await _accountService.GetPaginatedFromAccountServiceAsync(pageNumber, pageSize, cancellationToken);
         return Ok(response);
     }
 
+    [Authorize]
     [HttpGet("accounts")]
     public async Task<IActionResult> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
-        var response = await _accountService.TestGetAllfromAccountServiceAsync(cancellationToken);
+        var response = await _accountService.GetAllfromAccountServiceAsync(cancellationToken);
         return Ok(response);
     }
 
+    [Authorize]
     [HttpDelete("account/soft/{id}")]
     public async Task<IActionResult> TestSoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        await _accountService.TestAccountSoftDelete(id, cancellationToken);
-        return Ok();
-    }
-
-    [HttpPost("account/brocker")]
-    public async Task<IActionResult> SendEmailAsync([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
-    {
-        await _accountService.SendEmailMessageAsync(messageModel, cancellationToken);
+        await _accountService.AccountSoftDelete(id, cancellationToken);
         return Ok();
     }
 }

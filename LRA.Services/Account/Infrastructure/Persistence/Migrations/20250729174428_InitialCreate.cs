@@ -27,11 +27,27 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     IsEmailVerified = table.Column<bool>(type: "boolean", nullable: false),
                     Roles = table.Column<List<string>>(type: "text[]", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    DeletedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    DeletedOnUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsTwoFaEnabled = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Accounts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailVerification",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerification", x => x.Id);
                 });
         }
 
@@ -40,6 +56,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerification");
         }
     }
 }

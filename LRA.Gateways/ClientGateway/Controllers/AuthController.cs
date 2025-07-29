@@ -42,24 +42,38 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
-    [HttpPost("auth/change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, CancellationToken cancellationToken)
+    [HttpPost("twofactor-verification")]
+    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId)) 
-        {
-            return Unauthorized("Missing 'sub' in token");
-        }
+        var response = await _authService.TwoFactorVerificateAsync(model, cancellationToken);
+        return Ok(response);
+    }
 
-        await _authService.ChangeUserPasswordAsync(newPassword, userId, cancellationToken);
+    [HttpPost("auth/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        var response = await _authService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpDelete("keycloak/logout")]
+    public async Task<IActionResult> LogoutSession([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        await _authService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
         return Ok();
     }
 
-    [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromQuery] string token, CancellationToken cancellationToken)
+    [Authorize]
+    [HttpPut("auth/change-password")]
+    public async Task<IActionResult> ChangeUserPasswordAsync([FromBody] PasswordChangeModel newPassword, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFactorVerificateAsync(token, cancellationToken);
-        return Ok(response);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId))
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+
+        await _authService.ChangeUserPasswordAsync(newPassword.Password, userId, cancellationToken);
+        return Ok();
     }
 }

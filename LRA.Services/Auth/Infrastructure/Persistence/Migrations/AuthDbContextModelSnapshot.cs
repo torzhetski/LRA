@@ -28,11 +28,6 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("character varying(21)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -50,21 +45,6 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VerificationModels");
-
-                    b.HasDiscriminator().HasValue("ResetPassword");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("LRA.Auth.Domain.Entities.TwoFactorVerificationEntity", b =>
-                {
-                    b.HasBaseType("LRA.Shared.Abstractions.Models.Auth.VerificationModel");
-
-                    b.Property<string>("JwtToken")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue("TwoFactorVerification");
                 });
 #pragma warning restore 612, 618
         }

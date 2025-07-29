@@ -6,10 +6,10 @@ namespace LRA.Gateways.Client.Interfaces;
 
 public interface IAccountService
 {
-    Task<AccountDto> TestGetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken);
-    Task<PaginatedList<AccountDto>> TestGetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
-    Task<List<AccountDto>> TestGetAllfromAccountServiceAsync(CancellationToken cancellationToken);
+    Task<AccountDto> GetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken);
+    Task<PaginatedList<AccountDto>> GetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<List<AccountDto>> GetAllfromAccountServiceAsync(CancellationToken cancellationToken);
     Task SendEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken);
-    Task TestAccountSoftDelete(Guid id, CancellationToken cancellationToken);
+    Task AccountSoftDelete(Guid id, CancellationToken cancellationToken);
     Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken);
 }
