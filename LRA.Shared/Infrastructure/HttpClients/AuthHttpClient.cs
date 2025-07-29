@@ -9,6 +9,8 @@ using LRA.Shared.Utils.Exceptions;
 using System.Net;
 using System.Numerics;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.WebUtilities;
+using LRA.Shared.Abstractions.Dtos;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -63,7 +65,7 @@ public class AuthHttpClient : IAuthHttpClient
         return content;
     }
 
-    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
         var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/login")
@@ -83,6 +85,36 @@ public class AuthHttpClient : IAuthHttpClient
             }
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        return content;
+        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return token;
+    }
+
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("keycloak/refresh", new Dictionary<string, string?>
+        {
+            ["refreshToken"] = refreshToken,
+        });
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                default:
+                    throw new Exception("Failed to refresh token");
+            }
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+
+        return token;
     }
 }

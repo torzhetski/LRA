@@ -40,4 +40,11 @@ public class AuthController : ControllerBase
         var response = await _authService.LoginUserAsync(model, cancellationToken);
         return Ok(response);
     }
+
+    [HttpPost("auth/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync([FromQuery] string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _authService.RefreshTokenAsync(refreshToken, cancellationToken);
+        return Ok(response);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 
@@ -25,9 +26,15 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<string> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.LoginUserAsync(model, cancellationToken);
+        return response;
+    }
+
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.RefreshTokenAsync(refreshToken, cancellationToken);
         return response;
     }
 }

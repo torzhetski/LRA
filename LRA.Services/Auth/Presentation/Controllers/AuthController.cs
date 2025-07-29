@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Presentation.Controllers;
 
-[Route("api/test-auth")]
-public class TestController : ControllerBase
+[Route("api/auth")]
+public class AuthController : ControllerBase
 {
     private readonly ITestService _testService;
     private readonly IKeycklockService _keycklockService;
 
-    public TestController(ITestService testService, IKeycklockService keycklockService)
+    public AuthController(ITestService testService, IKeycklockService keycklockService)
     {
         _testService = testService;
         _keycklockService = keycklockService;
@@ -47,6 +47,14 @@ public class TestController : ControllerBase
     public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _keycklockService.LoginKeycloakUserAsync(model, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost("keycloak/refresh")]
+    public async Task<IActionResult> RefreshToken([FromQuery] string refreshToken, CancellationToken cancellationToken)
+    {
+        var response = await _keycklockService.RefreshTokenAsync(refreshToken, cancellationToken);
         return Ok(response);
     }
 }
