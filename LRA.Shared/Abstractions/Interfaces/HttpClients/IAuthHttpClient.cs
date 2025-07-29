@@ -10,6 +10,6 @@ public interface IAuthHttpClient
     Task<string> GetRealmConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
-    Task ChangeUserPasswordAsync(string newPassword, string email, CancellationToken cancellationToken);
+    Task ChangeUserPasswordAsync(string newPassword, Guid id, CancellationToken cancellationToken);
     Task<VerificationDto> TwoFactorVerificateAsync(string token, CancellationToken cancellationToken);
 }

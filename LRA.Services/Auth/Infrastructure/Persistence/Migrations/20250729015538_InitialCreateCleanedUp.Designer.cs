@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250726200702_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250729015538_InitialCreateCleanedUp")]
+    partial class InitialCreateCleanedUp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,11 +25,16 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LRA.Auth.Domain.Entities.TwoFactorVerificationEntity", b =>
+            modelBuilder.Entity("LRA.Shared.Abstractions.Models.Auth.VerificationModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -37,10 +42,6 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("JwtToken")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -51,7 +52,22 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TwoFaVerificationModels");
+                    b.ToTable("VerificationModels");
+
+                    b.HasDiscriminator().HasValue("ResetPassword");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("LRA.Auth.Domain.Entities.TwoFactorVerificationEntity", b =>
+                {
+                    b.HasBaseType("LRA.Shared.Abstractions.Models.Auth.VerificationModel");
+
+                    b.Property<string>("JwtToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("TwoFactorVerification");
                 });
 #pragma warning restore 612, 618
         }

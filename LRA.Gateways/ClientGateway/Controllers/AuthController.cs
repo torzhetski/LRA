@@ -4,6 +4,7 @@ using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LRA.Gateways.Client.Controllers;
 
@@ -41,10 +42,17 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPost("auth/change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, string email, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeUserPasswordAsync([FromQuery] string newPassword, CancellationToken cancellationToken)
     {
-        await _authService.ChangeUserPasswordAsync(newPassword, email, cancellationToken);
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId)) 
+        {
+            return Unauthorized("Missing 'sub' in token");
+        }
+
+        await _authService.ChangeUserPasswordAsync(newPassword, userId, cancellationToken);
         return Ok();
     }
 

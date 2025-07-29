@@ -6,25 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LRA.Auth.Infrasturcture.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateCleanedUp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TwoFaVerificationModels",
+                name: "VerificationModels",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    JwtToken = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false)
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    JwtToken = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TwoFaVerificationModels", x => x.Id);
+                    table.PrimaryKey("PK_VerificationModels", x => x.Id);
                 });
         }
 
@@ -32,7 +33,7 @@ namespace LRA.Auth.Infrasturcture.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TwoFaVerificationModels");
+                name: "VerificationModels");
         }
     }
 }

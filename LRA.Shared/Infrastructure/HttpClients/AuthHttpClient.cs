@@ -111,12 +111,12 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task ChangeUserPasswordAsync(string newPassword, string email, CancellationToken cancellationToken)
+    public async Task ChangeUserPasswordAsync(string newPassword, Guid id, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("change-password", new Dictionary<string, string?>
         {
             ["newPassword"] = newPassword,
-            ["email"] = email,
+            ["id"] = id.ToString(),
         });
 
         var request = new HttpRequestMessage(HttpMethod.Post, url);
