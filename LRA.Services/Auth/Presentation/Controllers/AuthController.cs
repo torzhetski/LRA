@@ -89,9 +89,17 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("keycloak/refresh")]
-    public async Task<IActionResult> RefreshToken([FromQuery] string refreshToken, CancellationToken cancellationToken)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var response = await _keycklockService.RefreshTokenAsync(refreshToken, cancellationToken);
+        var response = await _keycklockService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpDelete("keycloak/logout")]
+    public async Task<IActionResult> LogoutSession([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        await _keycklockService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
+        return Ok();
     }
 }

@@ -10,6 +10,7 @@ public interface IAuthService
     Task<string> GetAuthServiceConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
-    Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
+    Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
     Task<VerificationDto> TwoFactorVerificateAsync(TwoFactorLoginModel model, CancellationToken cancellationToken);
 }

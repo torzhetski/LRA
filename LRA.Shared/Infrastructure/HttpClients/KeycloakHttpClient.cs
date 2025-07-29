@@ -121,7 +121,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         return token;
     }
 
-    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
 
@@ -129,7 +129,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         {
             ["grant_type"] = "refresh_token",
             ["client_id"] = "public-client",
-            ["refresh_token"] = refreshToken
+            ["refresh_token"] = refreshTokenModel.RefreshToken
         };
 
         request.Content = new FormUrlEncodedContent(body);
@@ -148,6 +148,26 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return token;
+    }
+
+    public async Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        var body = new Dictionary<string, string>
+        {
+            ["client_id"] = "public-client",
+            ["refresh_token"] = refreshTokenModel.RefreshToken
+        };
+        var request = new HttpRequestMessage( HttpMethod.Post,$"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/logout");
+
+        request.Content = new FormUrlEncodedContent(body);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new Exception($"Logout failed: {response.StatusCode}. {content}");
+        }
     }
 
     private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)

@@ -8,5 +8,6 @@ public interface IKeycklockService
     Task<string> GetKeycloakRealmConfigAsync(CancellationToken cancellationToken);
     Task<string> CreateKeycloakUserAsync(RegistrationModel model, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> LoginKeycloakUserAsync(LoginModel model, CancellationToken cancellationToken);
-    Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
+    Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
 }

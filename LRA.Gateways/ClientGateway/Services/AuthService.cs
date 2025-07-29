@@ -39,9 +39,14 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.RefreshTokenAsync(refreshToken, cancellationToken);
+        var response = await _httpClient.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return response;
+    }
+
+    public async Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        await _httpClient.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
     }
 }

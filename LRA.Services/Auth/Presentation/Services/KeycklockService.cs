@@ -46,9 +46,14 @@ public class KeycklockService : IKeycklockService
         return response;
     }
 
-    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var response = await _keycloakHttpClient.RefreshTokenAsync(refreshToken, cancellationToken);
+        var response = await _keycloakHttpClient.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return response;
+    }
+
+    public async Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        await _keycloakHttpClient.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
     }
 }

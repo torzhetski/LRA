@@ -109,14 +109,13 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task<KeycloakTokenDto> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("keycloak/refresh", new Dictionary<string, string?>
+        var json = JsonSerializer.Serialize(refreshTokenModel);
+        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/refresh")
         {
-            ["refreshToken"] = refreshToken,
-        });
-
-        var request = new HttpRequestMessage(HttpMethod.Post, url);
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
         
         request.Headers.Add("InternalApiKey", _apiKey);
 
@@ -135,5 +134,27 @@ public class AuthHttpClient : IAuthHttpClient
         var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         return token;
+    }
+
+    public async Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(refreshTokenModel);
+        var request = new HttpRequestMessage(HttpMethod.Delete, "keycloak/logout")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                default:
+                    throw new Exception("Failed to logout");
+            }
     }
 }
