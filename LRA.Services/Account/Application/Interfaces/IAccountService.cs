@@ -11,7 +11,7 @@ public interface IAccountService
     Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
-    Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken);
+    Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken);

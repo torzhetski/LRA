@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using LRA.Gateways.Client.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -43,10 +44,15 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("account/soft/{id}")]
-    public async Task<IActionResult> SoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpPut("update-user")]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
-        await _accountService.AccountSoftDelete(id, cancellationToken);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.UpdateAccountAsync(dto, userId, cancellationToken);
         return Ok();
     }
 
@@ -61,6 +67,14 @@ public class AccountsController : ControllerBase
         }
         await _accountService.UpdateAccountTwoFa(userId, cancellationToken);
 
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpDelete("account/soft/{id}")]
+    public async Task<IActionResult> SoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _accountService.AccountSoftDelete(id, cancellationToken);
         return Ok();
     }
 }

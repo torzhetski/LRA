@@ -33,10 +33,10 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-user")]
-    public async Task<IActionResult> UpdateAsync([FromBody] AccountDto dto, CancellationToken cancellationToken)
+    [HttpPut("update-user/{keycloakId}")]
+    public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, [FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountService.UpdateAccountAsync(dto, cancellationToken);
+        await _accountService.UpdateAccountAsync(dto, keycloakId, cancellationToken);
         return Ok();
     }
 

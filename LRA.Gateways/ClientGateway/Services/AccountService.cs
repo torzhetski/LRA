@@ -21,11 +21,6 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public async Task AccountSoftDelete(Guid id, CancellationToken cancellationToken)
-    {
-        await _httpClient.SoftDeleteAsync(id, cancellationToken);
-    }
-
     public async Task<PaginatedList<AccountDto>> GetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
@@ -38,8 +33,18 @@ public class AccountService : IAccountService
         return response;
     }
 
+    public async Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken)
+    {
+        await _httpClient.UpdateAccountAsync(dto, keycloakId, cancellationToken);
+    }
+
     public async Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken)
     {
         await _httpClient.UpdateTwoFaAsync(keycloakId, cancellationToken);
+    }
+
+    public async Task AccountSoftDelete(Guid id, CancellationToken cancellationToken)
+    {
+        await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
 }

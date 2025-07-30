@@ -69,10 +69,10 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
-    public async Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken)
+    public async Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(dto);
-        using var request = new HttpRequestMessage(HttpMethod.Put, "update-user")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"update-user/{keycloakId}")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };

@@ -104,38 +104,22 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync();
     }
 
-    public void Update(AccountDto dto)
+    public void Update(UpdateAccountDto dto, Guid keycloakId)
     {
-        var entity = _context.Accounts.FirstOrDefault(a => a.KeycloakId == dto.KeycloakId);
+        var entity = _context.Accounts.FirstOrDefault(a => a.KeycloakId == keycloakId);
         if (entity == null)
-            throw new NotFoundException(nameof(entity), dto.KeycloakId);
+            throw new NotFoundException(nameof(entity), keycloakId);
 
-        entity.FirstName = dto.FirstName ?? entity.FirstName;
-        entity.LastName = dto.LastName ?? entity.LastName;
-        entity.PhoneNumber = dto.PhoneNumber ?? entity.PhoneNumber;
-        entity.Email = dto.Email ?? entity.Email;
-
-        if (dto.Roles.Any())
-        {
-            foreach (var role in dto.Roles)
-            {
-                if (entity.Roles.Contains(role))
-                {
-                    entity.Roles.Remove(role);
-                }
-                else
-                {
-                    entity.Roles.Add(role);
-                }
-            }
-        }
+        entity.FirstName = dto.FirstName;
+        entity.LastName = dto.LastName;
+        entity.PhoneNumber = dto.PhoneNumber;
 
         entity.UpdatedUtc = DateTime.UtcNow;
     }
 
-    public async Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken)
+    public async Task UpdateAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken)
     {
-        Update(dto);
+        Update(dto, keycloakId);
         await _context.SaveChangesAsync(cancellationToken);
     }
 

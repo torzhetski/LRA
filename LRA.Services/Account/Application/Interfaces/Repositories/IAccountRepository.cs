@@ -15,8 +15,8 @@ public interface IAccountRepository
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
     void Delete(Guid id);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
-    void Update(AccountDto dto);
-    Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
+    void Update(UpdateAccountDto dto, Guid keycloakId);
+    Task UpdateAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
