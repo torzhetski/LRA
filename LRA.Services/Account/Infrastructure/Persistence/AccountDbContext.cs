@@ -13,7 +13,7 @@ public class AccountDbContext : DbContext, IAccountDbContext
     }
 
     public virtual DbSet<AccountEntity> Accounts { get; set; }
-    public virtual DbSet<VerificationModel> EmailVerification { get; set; }
+    public virtual DbSet<VerificationEntity> VerificationModels { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

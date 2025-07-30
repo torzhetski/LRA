@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace LRA.Account.Infrastructure.Persistence.Migrations
+namespace LRA.Account.Infrasturcture.Persistence.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
     partial class AccountDbContextModelSnapshot : ModelSnapshot
@@ -72,7 +72,7 @@ namespace LRA.Account.Infrastructure.Persistence.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("LRA.Shared.Abstractions.Models.Auth.VerificationModel", b =>
+            modelBuilder.Entity("LRA.Shared.Abstractions.Models.Auth.VerificationEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +94,7 @@ namespace LRA.Account.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailVerification");
+                    b.ToTable("VerificationModels");
                 });
 #pragma warning restore 612, 618
         }

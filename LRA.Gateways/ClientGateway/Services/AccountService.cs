@@ -38,13 +38,8 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public async Task SendEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
+    public async Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken)
     {
-        await _httpClient.PostEmailMessageAsync(messageModel, cancellationToken);
-    }
-
-    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
-    {
-        await _httpClient.VerifyEmailAsync(token, email, cancellationToken);
+        await _httpClient.UpdateTwoFaAsync(keycloakId, cancellationToken);
     }
 }

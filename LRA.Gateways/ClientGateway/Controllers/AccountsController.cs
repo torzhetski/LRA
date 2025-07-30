@@ -2,6 +2,7 @@
 using LRA.Gateways.Client.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Gateways.ClientGateway.Controllers;
 
@@ -26,14 +27,6 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("account/verify-email")]
-    public async Task<IActionResult> VerifyEmailAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
-    {
-        await _accountService.VerifyEmailAsync(token, email, cancellationToken);
-        return Ok();
-    }
-
-    [Authorize]
     [HttpGet("account/paginated")]
     public async Task<IActionResult> GetPaginatedAccountsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
     {
@@ -51,9 +44,23 @@ public class AccountsController : ControllerBase
 
     [Authorize]
     [HttpDelete("account/soft/{id}")]
-    public async Task<IActionResult> TestSoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         await _accountService.AccountSoftDelete(id, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("twofa/update")]
+    public async Task<IActionResult> UpdateAccountTwoFa(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.UpdateAccountTwoFa(userId, cancellationToken);
+
         return Ok();
     }
 }

@@ -5,11 +5,11 @@ using LRA.Shared.Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<AccountServiceSettings>(
-    builder.Configuration.GetSection("AccountServiceSettings"));
+builder.Services.Configure<AccountingEndpointsSettings>(
+    builder.Configuration.GetSection("AccountingEndpointsSettings"));
 
-builder.Services.Configure<AuthServiceSettings>(
-    builder.Configuration.GetSection("AuthServiceSettings"));
+builder.Services.Configure<AuthEndpointsSettings>(
+    builder.Configuration.GetSection("AuthEndpointsSettings"));
 
 builder.Services.Configure<SubscriptionServiceSettings>(
     builder.Configuration.GetSection("SubscriptionServiceSettings"));

@@ -2,40 +2,23 @@
 using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Interfaces.RabbitMq;
-using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Exceptions;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace LRA.Account.Application.Services;
 
 public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
-    private readonly IEmailVerificationRepository _emailVerificationRepository;
-    private readonly IRabbitMQProducerService _rabbitMQProducerService;
 
-    public AccountService(
-        IAccountRepository accountRepository,
-        IEmailVerificationRepository emailVerificationRepository,
-        IRabbitMQProducerService rabbitMQProducerService)
+    public AccountService(IAccountRepository accountRepository)
     {
         _accountRepository = accountRepository;
-        _emailVerificationRepository = emailVerificationRepository;
-        _rabbitMQProducerService = rabbitMQProducerService;
     }
 
     public async Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken)
     {
         var id = await _accountRepository.CreateAsync(model, cancellationToken);
-        var token = await _emailVerificationRepository.CreateVerificationTokenAsync(model.Email, cancellationToken);
-
-        var message = new EmailMessageModel()
-        {
-            RecipientMail = model.Email,
-            Content = $"{token}"
-        };
-
-        await _rabbitMQProducerService.SendMessageAsync(message, cancellationToken);
         return id;
     }
 
@@ -46,19 +29,17 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public async Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        await _accountRepository.UpdateAsync(dto, cancellationToken);
+        var response = await _accountRepository.GetByEmailAsync(email, cancellationToken);
+        return response;
     }
 
-    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountRepository.UpdateTwoFaAsync(keycloakId, cancellationToken);
-    }
+        var response = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);
 
-    public async Task SoftDeleteAccount(Guid id, CancellationToken cancellationToken)
-    {
-        await _accountRepository.SoftDeleteAsync(id, cancellationToken);
+        return response;
     }
 
     public PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize)
@@ -73,18 +54,24 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public async Task<bool> VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
+    public async Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken)
     {
-        var result = await _emailVerificationRepository.VerifyTokenAsync(token, email, cancellationToken);
-        if (result)
-        {
-            await _accountRepository.MakeUserVerifiedAsync(email, cancellationToken);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        await _accountRepository.UpdateAsync(dto, cancellationToken);
+    }
+
+    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateTwoFaAsync(keycloakId, cancellationToken);
+    }
+
+    public async Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateEmailAsync(newEmail, keycloakId, cancellationToken);
+    }
+
+    public async Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.SoftDeleteAsync(id, cancellationToken);
     }
 
     public async Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
@@ -94,5 +81,10 @@ public class AccountService : IAccountService
             throw new NotFoundException(nameof(dto), keycloakId);
 
         return dto.IsTwoFaEnabled;
+    }
+
+    public async Task MakeEmailVerifiedAsync(string email, CancellationToken cancellationToken)
+    {
+        await _accountRepository.MakeUserVerifiedAsync(email, cancellationToken);
     }
 }

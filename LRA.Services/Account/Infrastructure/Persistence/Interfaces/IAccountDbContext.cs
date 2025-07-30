@@ -7,7 +7,7 @@ namespace LRA.Account.Infrastructure.Persistence.Interfaces;
 public interface IAccountDbContext
 {
     DbSet<AccountEntity> Accounts { get; set; }
-    DbSet<VerificationModel> EmailVerification { get; set; }
+    DbSet<VerificationEntity> VerificationModels { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

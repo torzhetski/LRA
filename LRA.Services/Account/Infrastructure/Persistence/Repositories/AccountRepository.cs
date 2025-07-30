@@ -32,12 +32,21 @@ public class AccountRepository : IAccountRepository
 
         if (model == null)
         {
-            throw new ArgumentNullException(nameof(model));
+            throw new NotFoundException(nameof(model), id);
         }
 
         return model.FromModelToDto();
     }
 
+    public async Task<AccountDto> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+        if (model == null)
+        {
+            throw new NotFoundException(nameof(model), email);
+        }
+        return model.FromModelToDto();
+    }
 
     public async Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
@@ -45,10 +54,23 @@ public class AccountRepository : IAccountRepository
 
         if (model == null)
         {
-            throw new ArgumentNullException(nameof(model));
+            throw new NotFoundException(nameof(model), keycloakId);
         }
 
         return model.FromModelToDto();
+    }
+
+    public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
+    {
+        var items = _context.Accounts.Select(x => x.FromModelToDto());
+        var paginatedItems = new PaginatedList<AccountDto>(items, pageNumber, pageSize);
+        return paginatedItems;
+    }
+
+    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var items = _context.Accounts.Select(x => x.FromModelToDto());
+        return await items.ToListAsync(cancellationToken);
     }
 
     public void SoftDelete(Guid id)
@@ -119,29 +141,27 @@ public class AccountRepository : IAccountRepository
 
     public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        var entity = await GetByKeycloakIdAsync(keycloakId, cancellationToken);
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId);
         if (entity == null)
+        {
             throw new NotFoundException(nameof(entity), keycloakId);
+        }
 
         entity.IsTwoFaEnabled = !entity.IsTwoFaEnabled;
+        entity.UpdatedUtc = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
+    public async Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken)
     {
-        var items = _context.Accounts.Select(x => x.FromModelToDto());
-        var paginatedItems = new PaginatedList<AccountDto>(items, pageNumber, pageSize);
-        return paginatedItems;
-    }
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), keycloakId);
+        }
 
-    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        var items = _context.Accounts.Select(x => x.FromModelToDto());
-        return await items.ToListAsync(cancellationToken);
-    }
-
-    public async Task SaveChangesAsync(CancellationToken cancellationToken)
-    {
+        entity.Email = newEmail;
+        entity.UpdatedUtc = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
     }
 
@@ -152,6 +172,11 @@ public class AccountRepository : IAccountRepository
             throw new NotFoundException(nameof(entity), email);
 
         entity.IsEmailVerified = true;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

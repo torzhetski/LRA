@@ -73,13 +73,38 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                 case HttpStatusCode.Conflict:
                     throw new AlreadyExistsException("User");
                 default:
-                    throw new Exception("smthing went wrong");
+                    throw new Exception("Login failed");
             }
 
         var location = response.Headers.Location?.ToString();
         var userId = location?.Split('/').Last();
 
         return userId!;
+    }
+
+    public async Task EnableUserAsync(Guid keycloakUserId, CancellationToken cancellationToken)
+    {
+        var adminToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
+
+        using var request = new HttpRequestMessage(HttpMethod.Put,$"{_options.Value.AdminBaseUrl}users/{keycloakUserId}")
+        {
+            Content = 
+            JsonContent.Create(
+                new KeycloakUserEnablingModel
+                {
+                    Enabled = true
+                })
+        };
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new Exception($"Failed to enable user: {response.StatusCode}. {error}");
+        }
     }
 
     public async Task<KeycloakTokenDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)

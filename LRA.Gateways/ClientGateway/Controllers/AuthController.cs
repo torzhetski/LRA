@@ -21,21 +21,28 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("auth/config")]
-    public async Task<IActionResult> GetAuthConfigAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAuthConfig(CancellationToken cancellationToken)
     {
         var response = await _authService.GetAuthServiceConfigAsync(cancellationToken);
         return Ok(response);
     }
 
     [HttpPost("auth/registration")]
-    public async Task<IActionResult> CreateUserAsync([FromBody] RegistrationModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUser([FromBody] RegistrationModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.CreateUserAsync(model, cancellationToken);
         return Ok(response);
     }
 
+    [HttpPost("auth/verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string token, string email, CancellationToken cancellationToken)
+    {
+        await _authService.VerifyEmailAsync(token, email, cancellationToken);
+        return Ok();
+    }
+
     [HttpPost("auth/login")]
-    public async Task<IActionResult> LoginUserAsync([FromBody] LoginModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.LoginUserAsync(model, cancellationToken);
         return Ok(response);
@@ -49,7 +56,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("auth/refresh")]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var response = await _authService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return Ok(response);
@@ -64,15 +71,50 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPut("auth/change-password")]
-    public async Task<IActionResult> ChangeUserPasswordAsync([FromBody] PasswordChangeModel newPassword, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeUserPassword([FromBody] PasswordChangeModel newPassword, CancellationToken cancellationToken)
     {
-        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdStr == null || !Guid.TryParse(userIdStr, out var userId))
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
         {
             return Unauthorized("Missing 'Identifier' in token");
         }
 
         await _authService.ChangeUserPasswordAsync(newPassword.Password, userId, cancellationToken);
+        return Ok();
+    }
+
+    [HttpGet("auth/reset-code")]
+    public async Task<IActionResult> SendResetPasswordCode([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        await _authService.SendResetPasswordCodeAsync(email, cancellationToken);
+        return Ok();
+    }
+
+    [HttpPut("reset-password/verification")]
+    public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        await _authService.ResetUserPasswordAsync(resetPasswordModel, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("change-email/code")]
+    public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
+    {
+        await _authService.SendChangeUserEmailCodeAsync(newEmail, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("change-email/verification")]
+    public async Task<IActionResult> ChangeUserEmail([FromBody] EmailChangeModel newEmailModel, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _authService.ChangeUserEmail(newEmailModel, userId, cancellationToken);
         return Ok();
     }
 }

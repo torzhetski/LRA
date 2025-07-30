@@ -10,6 +10,7 @@ using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
 using System.Net.Http.Json;
+using System.Reflection;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -20,7 +21,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public AuthHttpClient(
         HttpClient httpClient,
-        IOptions<AuthServiceSettings> options)
+        IOptions<AuthEndpointsSettings> options)
     {
         _httpClient = httpClient;
         _apiKey = options.Value.ApiKey;
@@ -91,7 +92,7 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<VerificationDto> TwoFactorVerifyAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        using var request = new HttpRequestMessage(HttpMethod.Post, "twofactor-verification")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "twofactor/verification")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -104,6 +105,22 @@ public class AuthHttpClient : IAuthHttpClient
         var dto = await response.Content.ReadFromJsonAsync<VerificationDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return dto;
+    }
+
+    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("email/verification", new Dictionary<string, string?>
+        {
+            ["token"] = token,
+            ["email"] = email
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
@@ -153,12 +170,11 @@ public class AuthHttpClient : IAuthHttpClient
             }
     }
 
-    public async Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task ChangeUserPasswordAsync(string newPassword, string keycloakId, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("change-password", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString($"change-password/{keycloakId}", new Dictionary<string, string?>
         {
             ["newPassword"] = newPassword,
-            ["keycloakId"] = keycloakId.ToString(),
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Put, url);
@@ -169,15 +185,58 @@ public class AuthHttpClient : IAuthHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task ChangeUserEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task SendResetPasswordCodeAsync(string email, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("change-email", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("reset-password/code", new Dictionary<string, string?>
         {
-            ["newEmail"] = newEmail,
-            ["keycloakId"] = keycloakId.ToString(),
+            ["email"] = email,
         });
 
-        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task ResetPasswordVerifyAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(resetPasswordModel);
+        using var request = new HttpRequestMessage(HttpMethod.Put, "reset-password/verification")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("change-email/code", new Dictionary<string, string?>
+        {
+            ["newEmail"] = newEmail,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task ChangeUserEmailVerifyAsync(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(newEmailModel);
+
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"change-email/verification/{keycloakId}")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);

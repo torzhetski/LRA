@@ -13,10 +13,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
 
-  auth:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-
   stripe-gateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development

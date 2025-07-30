@@ -1,11 +1,10 @@
 ﻿using LRA.Account.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Account.Domain.Entities;
 
-namespace AccountService.Presentation.Controllers;
+namespace LRA.Account.Presentation.Controllers;
 
 [Route("api/account")]
 public class AccountController : ControllerBase
@@ -29,21 +28,8 @@ public class AccountController : ControllerBase
     [HttpDelete("soft/{id}")]
     public async Task<IActionResult> SoftDeleteTest([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        await _accountService.SoftDeleteAccount(id, cancellationToken);
+        await _accountService.SoftDeleteAccountAsync(id, cancellationToken);
         return Ok();
-    }
-
-    [Authorize]
-    [HttpPost("create-user")]
-    public async Task<IActionResult> CreateAsync([FromBody] BaseAccountDto dto, CancellationToken cancellationToken)
-    {
-        var model = new AccountEntity()
-        {
-            KeycloakId = dto.KeycloakId,
-            Email = dto.Email,
-        };
-        var response = await _accountService.CreateAccountAsync(model, cancellationToken);
-        return Ok(response);
     }
 
     [Authorize]
@@ -55,8 +41,8 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-twofa")]
-    public async Task<IActionResult> UpdateTwoFaAsync([FromQuery] Guid keycloakId, CancellationToken cancellationToken)
+    [HttpPut("update-twofa/{keycloakId}")]
+    public async Task<IActionResult> UpdateTwoFaAsync([FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         await _accountService.UpdateTwoFaAsync(keycloakId, cancellationToken);
         return Ok();
@@ -75,27 +61,6 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var response = await _accountService.GetAllAccountsAsync(cancellationToken);
-        return Ok(response);
-    }
-
-    [Authorize]
-    [HttpPost("verify-email")]
-    public async Task<IActionResult> VerifyAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
-    {
-        var result = await _accountService.VerifyEmailAsync(token, email, cancellationToken);
-        if (result)
-            return Ok(new GenericServiceResponse<string>("email verified"));
-        else
-            return BadRequest(new GenericServiceResponse<string>("email not verified"));
-    }
-
-    [Authorize]
-    [HttpGet("two-fa/{keycloakId}")]
-    public async Task<IActionResult> GetAll([FromRoute] Guid keycloakId, CancellationToken cancellationToken)
-    {
-        var data = await _accountService.IsTwoFaEnabledAsync(keycloakId, cancellationToken);
-
-        var response = new GenericServiceResponse<bool>(data);
         return Ok(response);
     }
 }

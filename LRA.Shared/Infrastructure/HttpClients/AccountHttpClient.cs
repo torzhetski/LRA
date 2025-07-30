@@ -15,7 +15,7 @@ public class AccountHttpClient : IAccountHttpClient
     private  HttpClient _httpClient;
     private readonly string _apiKey;
 
-    public AccountHttpClient(HttpClient httpClient, IOptions<AccountServiceSettings> options)
+    public AccountHttpClient(HttpClient httpClient, IOptions<AccountingEndpointsSettings> options)
     {
         _httpClient = httpClient;
         _apiKey = options.Value.ApiKey;
@@ -69,19 +69,6 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
-    public async Task CreateAccountAsync(BaseAccountDto dto, CancellationToken cancellationToken)
-    {
-        var json = JsonSerializer.Serialize(dto);
-        using var request = new HttpRequestMessage(HttpMethod.Post, "create-user")
-        {
-            Content = new StringContent(json, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Add("InternalApiKey", _apiKey);
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-    }
-
     public async Task UpdateAccountAsync(AccountDto dto, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(dto);
@@ -95,13 +82,9 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
+    public async Task UpdateTwoFaAsync(string keycloakId, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("update-twofa", new Dictionary<string, string?>
-        {
-            ["keycloakId"] = keycloakId.ToString(),
-        });
-        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"update-twofa/{keycloakId}");
         
         request.Headers.Add("InternalApiKey", _apiKey);
 
@@ -112,35 +95,6 @@ public class AccountHttpClient : IAccountHttpClient
     public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Delete, $"soft/{id}");
-        request.Headers.Add("InternalApiKey", _apiKey);
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task PostEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken)
-    {
-        var json = JsonSerializer.Serialize(messageModel);
-        using var request = new HttpRequestMessage(HttpMethod.Post, "brocker")
-        {
-            Content = new StringContent(json, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Add("InternalApiKey", _apiKey);
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
-    {
-        var url = QueryHelpers.AddQueryString("verify-email", new Dictionary<string, string?>
-        {
-            ["token"] = token,
-            ["email"] = email
-        });
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);

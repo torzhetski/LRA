@@ -27,6 +27,11 @@ public class AuthService : IAuthService
         return response;
     }
 
+    public async Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken)
+    {
+        await _httpClient.VerifyEmailAsync(token, email, cancellationToken);
+    }
+
     public async Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _httpClient.LoginUserAsync(model, cancellationToken);
@@ -50,8 +55,28 @@ public class AuthService : IAuthService
         await _httpClient.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
     }
 
-    public async Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task ChangeUserPasswordAsync(string newPassword, string keycloakId, CancellationToken cancellationToken)
     {
         await _httpClient.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
+    }
+
+    public async Task SendResetPasswordCodeAsync(string email, CancellationToken cancellationToken)
+    {
+        await _httpClient.SendResetPasswordCodeAsync(email, cancellationToken);
+    }
+
+    public async Task ResetUserPasswordAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        await _httpClient.ResetPasswordVerifyAsync(resetPasswordModel, cancellationToken);
+    }
+
+    public async Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken)
+    {
+        await _httpClient.SendChangeUserEmailCodeAsync(newEmail, cancellationToken);
+    }
+
+    public async Task ChangeUserEmail(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken)
+    {
+        await _httpClient.ChangeUserEmailVerifyAsync(newEmailModel, keycloakId, cancellationToken);
     }
 }

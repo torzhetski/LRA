@@ -10,6 +10,7 @@ public static class ServiceInjection
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddHostedService<AccountRabbitMQConsumer>();
 
         return services;

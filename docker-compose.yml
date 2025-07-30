@@ -28,15 +28,6 @@ services:
       - account-db
       - rabbitmq
 
-  auth:
-    build:
-      context: .
-      dockerfile: LRA.Services/Auth/Presentation/Dockerfile
-    container_name: auth
-    depends_on:
-      - auth-db
-      - rabbitmq
-
   email:
     build:
       context: .
@@ -63,16 +54,6 @@ services:
        POSTGRES_PASSWORD: postgres
      volumes:
       - account-db-data:/var/lib/postgresql/data
-
-  auth-db:
-    image: postgres:16
-    container_name: auth-db
-    environment:
-      POSTGRES_DB: authdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - auth-db-data:/var/lib/postgresql/data
 
   subscription-db:
     image: postgres:16
@@ -121,7 +102,6 @@ services:
 
 volumes:
   account-db-data:
-  auth-db-data:
   subscription-db-data:
   rabbitmq-data:
   keycloak-db-data:

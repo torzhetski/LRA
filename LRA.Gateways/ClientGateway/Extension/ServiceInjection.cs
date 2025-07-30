@@ -7,7 +7,6 @@ using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
-using LRA.Shared.Presentation.Handlers;
 using Microsoft.Extensions.Options;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -40,13 +39,13 @@ public static class ServiceInjection
     {
         services.AddHttpClient<IAccountHttpClient, AccountHttpClient>((provider, client) =>
         {
-            var options = provider.GetRequiredService<IOptions<AccountServiceSettings>>().Value;
+            var options = provider.GetRequiredService<IOptions<AccountingEndpointsSettings>>().Value;
             client.BaseAddress = new Uri(options.Url);
         });
 
         services.AddHttpClient<IAuthHttpClient, AuthHttpClient>((provider, client) =>
         {
-            var options = provider.GetRequiredService<IOptions<AuthServiceSettings>>().Value;
+            var options = provider.GetRequiredService<IOptions<AuthEndpointsSettings>>().Value;
             client.BaseAddress = new Uri(options.Url);
         });
 
