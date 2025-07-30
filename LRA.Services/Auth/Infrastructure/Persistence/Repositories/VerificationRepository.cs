@@ -1,12 +1,12 @@
 ﻿using LRA.Auth.Application.Interfaces.Repositories;
-using LRA.Auth.Infrasturcture.Persistence.Interfaces;
+using LRA.Auth.Infrastructure.Persistence.Interfaces;
 using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils;
 using Microsoft.EntityFrameworkCore;
 using LRA.Shared.Utils.Exceptions;
 using LRA.Shared.Abstractions.Models.Auth;
 
-namespace LRA.Auth.Infrasturcture.Persistence.Repositories;
+namespace LRA.Auth.Infrastructure.Persistence.Repositories;
 
 public class VerificationRepository : IVerificationRepository
 {

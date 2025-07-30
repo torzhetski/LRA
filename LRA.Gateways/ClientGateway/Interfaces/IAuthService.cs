@@ -12,6 +12,6 @@ public interface IAuthService
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
     Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);
-    Task<VerificationDto> TwoFactorVerificateAsync(TwoFactorLoginModel model, CancellationToken cancellationToken);
-    Task ChangeUserPasswordAsync (string newPassword, Guid keycloakId, CancellationToken cancellationToken);
+    Task<VerificationDto> TwoFactorVerifyAsync(TwoFactorLoginModel model, CancellationToken cancellationToken);
+    Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken);
 }

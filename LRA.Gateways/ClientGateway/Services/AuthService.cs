@@ -33,9 +33,9 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<VerificationDto> TwoFactorVerificateAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
+    public async Task<VerificationDto> TwoFactorVerifyAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.TwoFactorVerificateAsync(model, cancellationToken);
+        var response = await _httpClient.TwoFactorVerifyAsync(model, cancellationToken);
         return response;
     }
 

@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 
-namespace LRA.Auth.Infrasturcture.Persistence.Exstensions;
+namespace LRA.Auth.Infrastructure.Persistence.Extensions;
 
-public static class AplicationPiplineInjection
+public static class ApplicationPipelineInjection
 {
-    public static async Task<IApplicationBuilder> ApplyMigrations(this  IApplicationBuilder app)
+    public static async Task<IApplicationBuilder> ApplyMigrations(this IApplicationBuilder app)
     {
         using (var scope = app.ApplicationServices.CreateScope())
         {

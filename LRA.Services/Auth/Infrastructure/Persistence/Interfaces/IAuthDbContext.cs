@@ -1,7 +1,7 @@
 ﻿using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
-namespace LRA.Auth.Infrasturcture.Persistence.Interfaces;
+namespace LRA.Auth.Infrastructure.Persistence.Interfaces;
 
 public interface IAuthDbContext
 {

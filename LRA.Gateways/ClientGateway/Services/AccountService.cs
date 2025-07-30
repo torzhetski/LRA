@@ -10,7 +10,7 @@ public class AccountService : IAccountService
 {
     private readonly IAccountHttpClient _httpClient;
 
-    public AccountService (IAccountHttpClient accountHttpClient)
+    public AccountService(IAccountHttpClient accountHttpClient)
     {
         _httpClient = accountHttpClient;
     }
@@ -25,14 +25,14 @@ public class AccountService : IAccountService
     {
         await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
-    
+
     public async Task<PaginatedList<AccountDto>> GetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
         return response;
     }
 
-    public async Task<List<AccountDto>> GetAllfromAccountServiceAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountDto>> GetAllFromAccountServiceAsync(CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetAllAsync(cancellationToken);
         return response;

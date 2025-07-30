@@ -7,6 +7,6 @@ public class VerificationModel
     public Guid Id { get; set; }
     public required string Email { get; set; }
     public required string Token { get; set; }
-    public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddDays(1);
+    public required DateTime ExpiresAt { get; set; }
     public required VerificationType Type { get; set; }
 }

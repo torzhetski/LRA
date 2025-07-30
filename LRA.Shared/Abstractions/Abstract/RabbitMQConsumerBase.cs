@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using System.Threading.Channels;
 
 namespace LRA.Shared.Abstractions.RabbitMQProvider.Services;
 

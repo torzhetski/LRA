@@ -1,11 +1,11 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Account.Infrasturcture.Persistence.Interfaces;
+using LRA.Account.Infrastructure.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Utils;
 using LRA.Shared.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace LRA.Account.Infrasturcture.Persistence.Repositories;
+namespace LRA.Account.Infrastructure.Persistence.Repositories;
 
 public class EmailVerificationRepository : IEmailVerificationRepository
 {
@@ -39,7 +39,7 @@ public class EmailVerificationRepository : IEmailVerificationRepository
         else
         {
             _context.EmailVerification.Remove(verification);
-            return true;    
+            return true;
         }
     }
 }

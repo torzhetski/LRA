@@ -1,11 +1,11 @@
 ﻿using LRA.Auth.Application.Interfaces.Repositories;
-using LRA.Auth.Infrasturcture.Persistence.Interfaces;
-using LRA.Auth.Infrasturcture.Persistence.Repositories;
+using LRA.Auth.Infrastructure.Persistence.Interfaces;
+using LRA.Auth.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LRA.Auth.Infrasturcture.Persistence.Exstensions;
+namespace LRA.Auth.Infrastructure.Persistence.Extensions;
 
 public static class ServiceInjection
 {

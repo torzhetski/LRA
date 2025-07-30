@@ -2,8 +2,6 @@
 using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Test;
-using LRA.Account.Domain.Mappers;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Exceptions;
@@ -62,7 +60,7 @@ public class AccountService : IAccountService
     {
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);
     }
-    
+
     public PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize)
     {
         var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);

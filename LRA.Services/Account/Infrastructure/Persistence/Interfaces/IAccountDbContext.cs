@@ -2,7 +2,7 @@
 using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
-namespace LRA.Account.Infrasturcture.Persistence.Interfaces;
+namespace LRA.Account.Infrastructure.Persistence.Interfaces;
 
 public interface IAccountDbContext
 {

@@ -9,7 +9,6 @@ using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
-using System.Reflection;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -19,7 +18,7 @@ public class AuthHttpClient : IAuthHttpClient
     private readonly string _apiKey;
 
     public AuthHttpClient(
-        HttpClient httpClient, 
+        HttpClient httpClient,
         IOptions<AuthServiceSettings> options)
     {
         _httpClient = httpClient;
@@ -49,13 +48,13 @@ public class AuthHttpClient : IAuthHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        
+
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Conflict:
                     throw new AlreadyExistsException("User");
-                default: 
+                default:
                     throw new Exception("smthing went wrong");
             }
 
@@ -75,11 +74,12 @@ public class AuthHttpClient : IAuthHttpClient
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        if(!response.IsSuccessStatusCode)
-            switch (response.StatusCode) {
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
                 case HttpStatusCode.Unauthorized:
                     throw new UnauthorizedAccessException("Invalid user credentials");
-                default: 
+                default:
                     throw new Exception("smthing went wrong");
             }
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -89,7 +89,7 @@ public class AuthHttpClient : IAuthHttpClient
         return dto;
     }
 
-    public async Task<VerificationDto> TwoFactorVerificateAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
+    public async Task<VerificationDto> TwoFactorVerifyAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
         var request = new HttpRequestMessage(HttpMethod.Post, "twofactor-verification")
@@ -116,7 +116,7 @@ public class AuthHttpClient : IAuthHttpClient
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
-        
+
         request.Headers.Add("InternalApiKey", _apiKey);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);

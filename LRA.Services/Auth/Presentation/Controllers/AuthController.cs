@@ -1,6 +1,5 @@
 ﻿using LRA.Auth.Application.Interfaces;
 using LRA.Auth.Presentation.Interfaces;
-using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Verification;
 using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
@@ -13,19 +12,19 @@ namespace AuthService.Presentation.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly IKeycklockService _keycklockService;
+    private readonly IKeycloakService _keycloakService;
 
-    public AuthController(IAuthService authService, IKeycklockService keycklockService)
+    public AuthController(IAuthService authService, IKeycloakService keycloakService)
     {
         _authService = authService;
-        _keycklockService = keycklockService;
+        _keycloakService = keycloakService;
     }
 
     [Authorize]
     [HttpGet("keycloak/config")]
     public async Task<IActionResult> GetRealmConfig(CancellationToken cancellationToken)
     {
-        var response = await _keycklockService.GetKeycloakRealmConfigAsync(cancellationToken);
+        var response = await _keycloakService.GetKeycloakRealmConfigAsync(cancellationToken);
         return Ok(response);
     }
 
@@ -33,7 +32,7 @@ public class AuthController : ControllerBase
     [HttpPost("keycloak/registration")]
     public async Task<IActionResult> CreateUser([FromBody] RegistrationModel model, CancellationToken cancellationToken)
     {
-        var response = await _keycklockService.CreateKeycloakUserAsync(model, cancellationToken);
+        var response = await _keycloakService.CreateKeycloakUserAsync(model, cancellationToken);
         return Ok(response);
     }
 
@@ -41,7 +40,7 @@ public class AuthController : ControllerBase
     [HttpPost("keycloak/login")]
     public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
     {
-        var response = await _keycklockService.LoginKeycloakUserAsync(model, cancellationToken);
+        var response = await _keycloakService.LoginKeycloakUserAsync(model, cancellationToken);
 
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(response.AccessToken);
@@ -67,13 +66,13 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel twoFaModel, CancellationToken cancellationToken)
+    public async Task<IActionResult> VerifyUser([FromBody] TwoFactorLoginModel twoFaModel, CancellationToken cancellationToken)
     {
         var response = await _authService.TwoFaVerification(twoFaModel.TwoFactorToken, cancellationToken);
 
         if (response)
         {
-            var tokens = await _keycklockService.LoginKeycloakUserAsync(twoFaModel, cancellationToken);
+            var tokens = await _keycloakService.LoginKeycloakUserAsync(twoFaModel, cancellationToken);
             var verificationDto = new VerificationDto()
             {
                 IsVerificationRequired = false,
@@ -83,7 +82,7 @@ public class AuthController : ControllerBase
         }
         else
         {
-            return BadRequest("Invalid twofa token");
+            return BadRequest("Invalid twofactor token");
         }
     }
 
@@ -91,7 +90,7 @@ public class AuthController : ControllerBase
     [HttpPost("keycloak/refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var response = await _keycklockService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
+        var response = await _keycloakService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return Ok(response);
     }
 
@@ -99,15 +98,15 @@ public class AuthController : ControllerBase
     [HttpDelete("keycloak/logout")]
     public async Task<IActionResult> LogoutSession([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        await _keycklockService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
+        await _keycloakService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
         return Ok();
     }
 
     [Authorize]
     [HttpPut("change-password")]
-    public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromQuery] Guid keycloakId ,CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _keycklockService.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
+        await _keycloakService.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
         return Ok();
     }
 
@@ -115,7 +114,7 @@ public class AuthController : ControllerBase
     [HttpPut("change-email")]
     public async Task<IActionResult> ChangeUserEmail([FromQuery] string newEmail, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _keycklockService.ChangeUserEmailAsync(keycloakId, newEmail, cancellationToken);
+        await _keycloakService.ChangeUserEmailAsync(keycloakId, newEmail, cancellationToken);
         return Ok();
     }
 
@@ -133,7 +132,7 @@ public class AuthController : ControllerBase
     {
         await _authService.PasswordResetVerificationAsync(token, cancellationToken);
         //вот тут надо получить айдишник по мейлу - либо я подниму таблицу в этом сервисе, либо обращаться к аккаунту чтоб получить айдишник, или же по имейлу можно вытащить из кейклока айдишник
-        //дальше просто вызываем тот же await _keycklockService.ChangeUserPasswordAsync(newPassword, id, cancellationToken); что и в обычной смене пароля
+        //дальше просто вызываем тот же await _keycloakService.ChangeUserPasswordAsync(newPassword, id, cancellationToken); что и в обычной смене пароля
         return Ok();
     }
 }

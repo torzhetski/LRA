@@ -2,7 +2,7 @@
 
 namespace LRA.Account.Domain.Entities;
 
-public class AccountEntity : IBaseEntity, ISoftDeleteble
+public class AccountEntity : IBaseEntity, ISoftDeletable
 {
     public Guid Id { get; set; }
     public required Guid KeycloakId { get; set; }

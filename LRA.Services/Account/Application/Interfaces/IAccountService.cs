@@ -1,6 +1,5 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Interfaces;
 

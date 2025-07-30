@@ -14,9 +14,9 @@ public class ClientGatewayExceptionHandler : IExceptionHandler
 
         var response = exception switch
         {
-            AlreadyExistsException alreadyExsistseEx => new ProblemDetails
+            AlreadyExistsException alreadyExistsEx => new ProblemDetails
             {
-                Title = alreadyExsistseEx.Message,
+                Title = alreadyExistsEx.Message,
                 Status = StatusCodes.Status400BadRequest
             },
             UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails

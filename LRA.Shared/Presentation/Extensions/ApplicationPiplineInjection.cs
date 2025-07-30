@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LRA.Shared.Presentation.Extensions;
 
-public static class AplicationPiplineInjection
+public static class ApplicationPipelineInjection
 {
     public static IApplicationBuilder AddSwaggerVersioning(this IApplicationBuilder app)
     {

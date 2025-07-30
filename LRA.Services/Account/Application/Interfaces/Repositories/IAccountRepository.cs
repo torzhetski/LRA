@@ -1,6 +1,5 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Account.Application.Interfaces.Repositories;
 
@@ -15,7 +14,7 @@ public interface IAccountRepository
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     void Update(AccountDto dto);
     Task UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
-    Task UpdateTwoFaAsync(Guid keycloalId, CancellationToken cancellationToken);
+    Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   

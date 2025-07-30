@@ -13,9 +13,9 @@ public class BaseExceptionHandler : IExceptionHandler
 
         var response = exception switch
         {
-            AlreadyExistsException alreadyExsistseEx => new ProblemDetails
+            AlreadyExistsException alreadyExistsEx => new ProblemDetails
             {
-                Title = alreadyExsistseEx.Message,
+                Title = alreadyExistsEx.Message,
                 Status = StatusCodes.Status409Conflict
             },
             UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails

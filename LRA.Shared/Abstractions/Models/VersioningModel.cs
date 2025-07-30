@@ -3,5 +3,5 @@
 public class VersioningModel
 {
     public required string Version { get; set; }
-    public bool IsSupproted { get; set; }
+    public bool IsSupported { get; set; }
 }

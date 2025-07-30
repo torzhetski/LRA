@@ -1,13 +1,13 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
-using LRA.Account.Infrasturcture.Persistence.Interfaces;
+using LRA.Account.Infrastructure.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.EntityFrameworkCore;
 using LRA.Account.Domain.Mappers;
 using LRA.Shared.Utils.Exceptions;
 
-namespace LRA.Account.Infrasturcture.Persistence.Repositories;
+namespace LRA.Account.Infrastructure.Persistence.Repositories;
 
 public class AccountRepository : IAccountRepository
 {
@@ -30,7 +30,7 @@ public class AccountRepository : IAccountRepository
     {
         var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-        if (model == null) 
+        if (model == null)
         {
             throw new ArgumentNullException(nameof(model));
         }
@@ -54,7 +54,7 @@ public class AccountRepository : IAccountRepository
     public void SoftDelete(Guid id)
     {
         var entity = _context.Accounts.FirstOrDefault(x => x.Id == id);
-        if (entity != null) 
+        if (entity != null)
         {
             entity.IsDeleted = true;
             entity.DeletedOnUtc = DateTime.UtcNow;
@@ -117,11 +117,11 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateTwoFaAsync(Guid keycloalId, CancellationToken cancellationToken)
+    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        var entity = await GetByKeycloakIdAsync(keycloalId, cancellationToken);
+        var entity = await GetByKeycloakIdAsync(keycloakId, cancellationToken);
         if (entity == null)
-            throw new NotFoundException(nameof(entity), keycloalId);
+            throw new NotFoundException(nameof(entity), keycloakId);
 
         entity.IsTwoFaEnabled = !entity.IsTwoFaEnabled;
         await _context.SaveChangesAsync(cancellationToken);

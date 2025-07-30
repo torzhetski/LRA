@@ -27,7 +27,7 @@ public class VersioningController : ControllerBase
             return Ok(new VersioningModel
             {
                 Version = version,
-                IsSupproted = false
+                IsSupported = false
             });
         }
 
@@ -36,7 +36,7 @@ public class VersioningController : ControllerBase
             return Ok(new VersioningModel
             {
                 Version = version,
-                IsSupproted = false
+                IsSupported = false
             });
         }
 
@@ -46,7 +46,7 @@ public class VersioningController : ControllerBase
             return Ok(new VersioningModel
             {
                 Version = version,
-                IsSupproted = false
+                IsSupported = false
             });
         }
 
@@ -60,7 +60,7 @@ public class VersioningController : ControllerBase
         return Ok(new VersioningModel
         {
             Version = version,
-            IsSupproted = isSupported
+            IsSupported = isSupported
         });
     }
 
@@ -71,7 +71,7 @@ public class VersioningController : ControllerBase
             .Select(v => new VersioningModel
             {
                 Version = v.ApiVersion.ToString(),
-                IsSupproted = !v.IsDeprecated
+                IsSupported = !v.IsDeprecated
             })
             .ToList();
 

@@ -3,5 +3,5 @@
 public class PasswordChangeModel
 {
     public required string Password { get; set; }
-    public string ConfirmPassword { get; set; }
+    public required string ConfirmPassword { get; set; }
 }

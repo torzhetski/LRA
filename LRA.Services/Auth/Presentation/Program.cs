@@ -1,4 +1,4 @@
-using LRA.Auth.Infrasturcture.Persistence.Exstensions;
+using LRA.Auth.Infrastructure.Persistence.Extensions;
 using LRA.Auth.Application.Extension;
 using LRA.Shared.Presentation.Middlewares;
 using LRA.Shared.Infrastructure.Settings;
@@ -6,7 +6,7 @@ using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Infrastructure.HttpClients;
 using Microsoft.Extensions.Options;
 using LRA.Auth.Presentation.Interfaces;
-using LRA.Auth.Presentaion.Services;
+using LRA.Auth.Presentation.Services;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Infrastructure.RabbitMq;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
@@ -32,7 +32,7 @@ builder.Services.AddHttpClient<IAccountHttpClient, AccountHttpClient>((provider,
     client.BaseAddress = new Uri(options.Url);
 });
 
-builder.Services.AddScoped<IKeycklockService, KeycklockService>();
+builder.Services.AddScoped<IKeycloakService, KeycloakService>();
 
 builder.Services.AddSingleton<IRabbitMQProducerService, RabbitMQProducerService>();
 

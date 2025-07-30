@@ -1,17 +1,13 @@
 ﻿using Asp.Versioning;
 using LRA.Gateways.Client.Interfaces;
-using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Models;
-using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateways.ClientGateway.Controllers;
 
-[Route("api/v{version:apiVersion}/test-clients")]
+[Route("api/v{version:apiVersion}/clients")]
 [ApiController]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 public class AccountsController : ControllerBase
 {
     private readonly IAccountService _accountService;
@@ -49,7 +45,7 @@ public class AccountsController : ControllerBase
     [HttpGet("accounts")]
     public async Task<IActionResult> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
-        var response = await _accountService.GetAllfromAccountServiceAsync(cancellationToken);
+        var response = await _accountService.GetAllFromAccountServiceAsync(cancellationToken);
         return Ok(response);
     }
 

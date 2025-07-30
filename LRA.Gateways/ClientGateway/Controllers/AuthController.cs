@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace LRA.Gateways.Client.Controllers;
 
-[Route("api/v{version:apiVersion}/test-clients")]
+[Route("api/v{version:apiVersion}/clients")]
 [ApiController]
 [ApiVersion("1.0")]
 public class AuthController : ControllerBase
@@ -43,9 +43,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("twofactor-verification")]
-    public async Task<IActionResult> VerificateUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> VerifyUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
-        var response = await _authService.TwoFactorVerificateAsync(model, cancellationToken);
+        var response = await _authService.TwoFactorVerifyAsync(model, cancellationToken);
         return Ok(response);
     }
 

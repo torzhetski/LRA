@@ -1,10 +1,6 @@
-﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Shared.Abstractions.Test;
-using LRA.Account.Application.Interfaces;
+﻿using LRA.Account.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using LRA.Shared.Abstractions.Interfaces.RabbitMq;
-using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Account.Domain.Entities;
@@ -15,12 +11,10 @@ namespace AccountService.Presentation.Controllers;
 public class AccountController : ControllerBase
 {
     private IAccountService _accountService;
-    private readonly IRabbitMQProducerService _rabbitMqProducerService;
 
-    public AccountController(IAccountService testService, IRabbitMQProducerService rabbitMqProducerService)
+    public AccountController(IAccountService testService)
     {
         _accountService = testService;
-        _rabbitMqProducerService = rabbitMqProducerService;
     }
 
     [Authorize]
@@ -69,16 +63,8 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("brocker")]
-    public async Task<IActionResult> SendBrockerMessage([FromBody] EmailMessageModel messageModel, CancellationToken cancellationToken)
-    {
-        await _rabbitMqProducerService.SendMessageAsync(messageModel, cancellationToken);
-        return Ok();
-    }
-
-    [Authorize]
     [HttpGet("paginated")]
-    public IActionResult GetPaginated([FromQuery] int pageNumber,[FromQuery] int PageSize)
+    public IActionResult GetPaginated([FromQuery] int pageNumber, [FromQuery] int PageSize)
     {
         var response = _accountService.GetPaginatedAccounts(pageNumber, PageSize);
         return Ok(response);
@@ -97,7 +83,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> VerifyAsync([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
     {
         var result = await _accountService.VerifyEmailAsync(token, email, cancellationToken);
-        if(result)
+        if (result)
             return Ok(new GenericServiceResponse<string>("email verified"));
         else
             return BadRequest(new GenericServiceResponse<string>("email not verified"));

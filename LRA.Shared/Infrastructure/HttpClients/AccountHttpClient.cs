@@ -2,7 +2,6 @@
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
-using LRA.Shared.Abstractions.Test;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -99,11 +98,11 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task UpdateTwoFaAsync(Guid keycloakid, CancellationToken cancellationToken)
+    public async Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("update-twofa", new Dictionary<string, string?>
         {
-            ["keycloakId"] = keycloakid.ToString(),
+            ["keycloakId"] = keycloakId.ToString(),
         });
         var request = new HttpRequestMessage(HttpMethod.Put, url);
         

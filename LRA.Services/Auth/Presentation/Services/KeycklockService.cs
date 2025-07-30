@@ -2,17 +2,16 @@
 using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models.Auth;
 
-namespace LRA.Auth.Presentaion.Services;
+namespace LRA.Auth.Presentation.Services;
 
-public class KeycklockService : IKeycklockService
+public class KeycloakService : IKeycloakService
 {
     private readonly IKeycloakHttpClient _keycloakHttpClient;
     private readonly IAccountHttpClient _accountHttpClient;
 
-    public KeycklockService(IKeycloakHttpClient keycloakHttpClient, IAccountHttpClient accountHttpClient)
+    public KeycloakService(IKeycloakHttpClient keycloakHttpClient, IAccountHttpClient accountHttpClient)
     {
         _keycloakHttpClient = keycloakHttpClient;
         _accountHttpClient = accountHttpClient;

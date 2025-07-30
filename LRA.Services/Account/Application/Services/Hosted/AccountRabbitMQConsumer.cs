@@ -1,5 +1,4 @@
-﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Account.Domain.Entities;
+﻿using LRA.Account.Domain.Entities;
 using RabbitMQ.Client.Events;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.RabbitMQProvider.Services;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using LRA.Account.Application.Interfaces;
@@ -36,7 +34,7 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         {
             token.ThrowIfCancellationRequested();
         }
-        catch (OperationCanceledException ex) 
+        catch (OperationCanceledException ex)
         {
             _logger.LogError(ex, ex.Message);
         }

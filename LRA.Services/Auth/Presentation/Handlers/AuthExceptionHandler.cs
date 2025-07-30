@@ -1,6 +1,4 @@
-﻿using LRA.Shared.Presentation.Handlers;
-using LRA.Shared.Utils.Exceptions;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 

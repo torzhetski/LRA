@@ -1,6 +1,4 @@
-﻿using LRA.Shared.Abstractions.Test;
-
-namespace LRA.Auth.Application.Interfaces;
+﻿namespace LRA.Auth.Application.Interfaces;
 
 public interface IAuthService
 {

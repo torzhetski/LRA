@@ -1,9 +1,9 @@
-﻿using LRA.Account.Infrasturcture.Persistence.Interfaces;
+﻿using LRA.Account.Infrastructure.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Models.Auth;
 
-namespace LRA.Account.Infrasturcture.Persistence;
+namespace LRA.Account.Infrastructure.Persistence;
 
 public class AccountDbContext : DbContext, IAccountDbContext
 {

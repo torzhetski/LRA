@@ -1,5 +1,5 @@
 using LRA.Account.Application.Extension;
-using LRA.Account.Infrasturcture.Persistence.Exstensions;
+using LRA.Account.Infrastructure.Persistence.Extensions;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
 using LRA.Shared.Infrastructure.RabbitMq;
