@@ -14,5 +14,4 @@ public interface IAccountHttpClient
     Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken);
     Task PostEmailMessageAsync(EmailMessageModel messageModel, CancellationToken cancellationToken);
     Task VerifyEmailAsync (string token, string email, CancellationToken cancellationToken);
-    Task<bool> IsTwoFaEnabledAsync (Guid keycloakId, CancellationToken cancellationToken);
 }

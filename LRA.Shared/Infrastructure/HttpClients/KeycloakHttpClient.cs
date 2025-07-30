@@ -1,9 +1,9 @@
 ﻿using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
+using LRA.Shared.Abstractions.Models.Keycloak;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Utils.Exceptions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Headers;
@@ -28,9 +28,9 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
     public async Task<string> GetServiceSettingsAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.KeycloakBaseUrl}.well-known/openid-configuration");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"{_options.Value.KeycloakBaseUrl}.well-known/openid-configuration");
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
@@ -43,21 +43,21 @@ public class KeycloakHttpClient : IKeycloakHttpClient
     {
         var _userManagementToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
 
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AdminBaseUrl}users");
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AdminBaseUrl}users");
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _userManagementToken);
 
-        var userData = new
+        var userData = new KeycloakUserCreateModel
         {
-            email = model.Email,
-            username = model.Email,
-            enabled = true,
-            credentials = new[]
+            Email = model.Email,
+            Username = model.Email,
+            Enabled = false,
+            Credentials = new List<KeycloakCredentialModel>()
             {
-            new {
-                type = "password",
-                value = model.Password,
-                temporary = false
+            new KeycloakCredentialModel() {
+                    Type = "password",
+                    Value = model.Password,
+                    Temporary = false
                 }
             }
         };
@@ -65,7 +65,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var json = JsonSerializer.Serialize(userData);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -84,7 +84,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
     public async Task<KeycloakTokenDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
 
         var body = new Dictionary<string, string>
         {
@@ -95,7 +95,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         };
 
         request.Content = new FormUrlEncodedContent(body);
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -106,15 +106,14 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                     throw new Exception("Failed to login");
             }
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return token;
     }
 
     public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
 
         var body = new Dictionary<string, string>
         {
@@ -124,7 +123,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         };
 
         request.Content = new FormUrlEncodedContent(body);
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -135,8 +134,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                     throw new Exception("Failed to refresh token");
             }
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return token;
     }
@@ -148,11 +146,11 @@ public class KeycloakHttpClient : IKeycloakHttpClient
             ["client_id"] = "public-client",
             ["refresh_token"] = refreshTokenModel.RefreshToken
         };
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/logout");
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/logout");
 
         request.Content = new FormUrlEncodedContent(body);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -165,21 +163,21 @@ public class KeycloakHttpClient : IKeycloakHttpClient
     {
         var accessToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
 
-        var passwordPayload = new
+        var passwordPayload = new KeycloakCredentialModel
         {
-            type = "password",
-            value = newPassword,
-            temporary = false
+            Type = "password",
+            Value = newPassword,
+            Temporary = false
         };
 
-        var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}/reset-password")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}/reset-password")
         {
             Content = JsonContent.Create(passwordPayload)
         };
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Password update failed: {response.StatusCode}");
@@ -189,21 +187,21 @@ public class KeycloakHttpClient : IKeycloakHttpClient
     {
         var accessToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
 
-        var updatePayload = new
+        var updatePayload = new UpdateKeycloakEmailModel
         {
-            email = newEmail,
-            username = newEmail,
-            emailVerified = false
+            Email = newEmail,
+            Username = newEmail,
+            EmailVerified = true
         };
 
-        var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}")
         {
             Content = JsonContent.Create(updatePayload)
         };
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Failed to update email: {response.StatusCode}");
@@ -211,7 +209,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
     
         private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AccessTokenUrl}");
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AccessTokenUrl}");
 
         var body = new Dictionary<string, string>
         {
@@ -223,7 +221,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
 
         request.Content = new FormUrlEncodedContent(body);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);

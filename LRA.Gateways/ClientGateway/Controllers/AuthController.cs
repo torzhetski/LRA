@@ -2,7 +2,6 @@
 using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

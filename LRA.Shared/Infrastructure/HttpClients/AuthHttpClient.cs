@@ -9,6 +9,7 @@ using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
+using System.Net.Http.Json;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -27,10 +28,10 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task<string> GetRealmConfigAsync(CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak/config");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak/config");
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request);
+        using var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -41,13 +42,13 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/registration")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/registration")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -66,13 +67,13 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/login")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/login")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -82,9 +83,7 @@ public class AuthHttpClient : IAuthHttpClient
                 default:
                     throw new Exception("smthing went wrong");
             }
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var dto = await response.Content.ReadFromJsonAsync<VerificationDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return dto;
     }
@@ -92,19 +91,17 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<VerificationDto> TwoFactorVerifyAsync(TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        var request = new HttpRequestMessage(HttpMethod.Post, "twofactor-verification")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "twofactor-verification")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        var dto = JsonSerializer.Deserialize<VerificationDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var dto = await response.Content.ReadFromJsonAsync<VerificationDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return dto;
     }
@@ -112,14 +109,14 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(refreshTokenModel);
-        var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/refresh")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/refresh")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
 
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -129,9 +126,7 @@ public class AuthHttpClient : IAuthHttpClient
                 default:
                     throw new Exception("Failed to refresh token");
             }
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        var token = JsonSerializer.Deserialize<KeycloakTokenDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return token;
     }
@@ -139,14 +134,14 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task LogoutUserSessionAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(refreshTokenModel);
-        var request = new HttpRequestMessage(HttpMethod.Delete, "keycloak/logout")
+        using var request = new HttpRequestMessage(HttpMethod.Delete, "keycloak/logout")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
 
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             switch (response.StatusCode)
@@ -166,10 +161,10 @@ public class AuthHttpClient : IAuthHttpClient
             ["keycloakId"] = keycloakId.ToString(),
         });
 
-        var request = new HttpRequestMessage(HttpMethod.Put, url);
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
     }
@@ -182,10 +177,10 @@ public class AuthHttpClient : IAuthHttpClient
             ["keycloakId"] = keycloakId.ToString(),
         });
 
-        var request = new HttpRequestMessage(HttpMethod.Put, url);
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request, cancellationToken);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
     }
