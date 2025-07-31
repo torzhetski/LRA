@@ -59,4 +59,10 @@ public class KeycloakService : IKeycloakService
     {
         await _keycloakHttpClient.ChangeUserEmailAsync(keycloakId, newEmail, cancellationToken);
     }
+
+    public async Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken)
+    {
+        var response = await _keycloakHttpClient.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
+        return response;
+    }
 }

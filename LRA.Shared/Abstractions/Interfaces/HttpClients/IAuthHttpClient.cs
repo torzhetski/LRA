@@ -18,4 +18,5 @@ public interface IAuthHttpClient
     Task ResetPasswordVerifyAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken);
     Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken);
     Task ChangeUserEmailVerifyAsync(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
 }

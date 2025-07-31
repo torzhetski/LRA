@@ -44,8 +44,7 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         {
             var content = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            var dto = JsonSerializer.Deserialize<BaseAccountDto>(content);
-            await CreateUserOnDatabaseAsync(dto, token);
+           //
 
             await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
         };
@@ -62,19 +61,5 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         _connection?.Dispose();
         _channel?.Dispose();
         base.Dispose();
-    }
-
-    private async Task CreateUserOnDatabaseAsync(BaseAccountDto dto, CancellationToken cancellationToken)
-    {
-        var model = new AccountEntity()
-        {
-            KeycloakId = dto.KeycloakId,
-            Email = dto.Email,
-        };
-        using (var scope = _serviceProvider.CreateScope())
-        {
-            var accountRepository = scope.ServiceProvider.GetService<IAccountService>();
-            await accountRepository!.CreateAccountAsync(model, cancellationToken);
-        }
     }
 }

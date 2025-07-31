@@ -20,4 +20,5 @@ public interface IAuthService
     Task ResetUserPasswordAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken);
     Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken);
     Task ChangeUserEmail(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> GetTokenByGoogleCode(string code, CancellationToken cancellationToken);
 }

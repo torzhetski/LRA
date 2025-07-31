@@ -4,6 +4,7 @@ using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Utils.Exceptions;
 using System.Runtime.InteropServices.Marshalling;
+using System.Security.AccessControl;
 
 namespace LRA.Account.Application.Services;
 
@@ -16,10 +17,17 @@ public class AccountService : IAccountService
         _accountRepository = accountRepository;
     }
 
-    public async Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken)
+    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken)
     {
-        var id = await _accountRepository.CreateAsync(model, cancellationToken);
-        return id;
+        if (!await _accountRepository.IsAccountExists(keycloakId, cancellationToken))
+        {
+            var model = new AccountEntity()
+            {
+                KeycloakId = keycloakId,
+                Email = email,
+            };
+            var id = await _accountRepository.CreateAsync(model, cancellationToken);
+        }
     }
 
     public async Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)

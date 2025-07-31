@@ -10,7 +10,6 @@ using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
 using System.Net.Http.Json;
-using System.Reflection;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -242,5 +241,24 @@ public class AuthHttpClient : IAuthHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("keycloak/login-google", new Dictionary<string, string?>
+        {
+            ["code"] = code,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return token;
     }
 }

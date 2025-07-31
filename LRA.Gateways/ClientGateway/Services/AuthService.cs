@@ -79,4 +79,10 @@ public class AuthService : IAuthService
     {
         await _httpClient.ChangeUserEmailVerifyAsync(newEmailModel, keycloakId, cancellationToken);
     }
+
+    public async Task<KeycloakTokenDto> GetTokenByGoogleCode(string code, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
+        return response;
+    }
 }

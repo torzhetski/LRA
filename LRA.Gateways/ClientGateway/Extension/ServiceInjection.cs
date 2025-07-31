@@ -7,7 +7,10 @@ using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace LRA.Gateways.Client.Extension;
@@ -23,14 +26,6 @@ public static class ServiceInjection
         services.AddFluentValidationAutoValidation();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
         services.AddProblemDetails();
-        services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
-            {
-                options.Authority = "http://keycloak:8080/realms/keycloak-auth";
-                options.Audience = "account";
-                options.RequireHttpsMetadata = false;
-            });
-        services.AddAuthorization();
 
         return services;
     }
@@ -55,6 +50,19 @@ public static class ServiceInjection
             client.BaseAddress = new Uri(options.Url);
         });
 
+        return services;
+    }
+
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = configuration["JWTSettings:Authority"];
+                    options.Audience = configuration["JWTSettings:Audience"];
+                    options.RequireHttpsMetadata = configuration.GetValue<bool>("JWTSettings:RequireHttpsMetadata");
+                });
+        services.AddAuthorization();
         return services;
     }
 }

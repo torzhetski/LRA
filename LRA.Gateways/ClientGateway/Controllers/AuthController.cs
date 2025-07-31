@@ -48,6 +48,13 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("auth/login-google")]
+    public async Task<IActionResult> LoginUserByGoogleCode([FromQuery] string code, CancellationToken cancellationToken)
+    {
+        var response = await _authService.GetTokenByGoogleCode(code, cancellationToken);
+        return Ok(response);
+    }
+
     [HttpPost("twofactor-verification")]
     public async Task<IActionResult> VerifyUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
