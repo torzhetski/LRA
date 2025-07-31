@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\LRA.Shared\Presentation\LRA.Shared.Presentation.csproj" />
     <ProjectReference Include="..\..\..\LRA.Shared\Utils\LRA.Shared.Utils.csproj" />
     <ProjectReference Include="..\Application\LRA.Subscription.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\External\StripeProvider\LRA.Subscription.Infrasturcture.External.StripeProvider.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\LRA.Subscription.Infrasturcture.Persistence.csproj" />
   </ItemGroup>
 

@@ -3,7 +3,7 @@ using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Subscription.Application.Services;
 
-public class TestService : ITestService
+public class SubscriptionService : ISubscriptionService
 {
     public TestMessageModel TestResponse(int id)
     {

@@ -2,7 +2,7 @@
 
 namespace LRA.Subscription.Application.Interfaces;
 
-public interface ITestService
+public interface ISubscriptionService
 {
     TestMessageModel TestResponse(int id);
 }
