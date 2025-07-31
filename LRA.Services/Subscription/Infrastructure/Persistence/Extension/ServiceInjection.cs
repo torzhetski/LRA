@@ -17,6 +17,7 @@ public static class ServiceInjection
             options.UseNpgsql(connString));
 
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         return services;
     }

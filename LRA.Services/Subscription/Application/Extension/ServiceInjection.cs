@@ -9,6 +9,8 @@ public static class ServiceInjection
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<ICustomerProviderService, CustomerProviderService>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }

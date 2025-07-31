@@ -1,8 +1,10 @@
 ﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using LRA.Shared.Abstractions.Test;
 using System.Text.Json;
+using LRA.Shared.Abstractions.Models;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Json;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -17,17 +19,44 @@ public class SubscriptionHttpClient : ISubscriptionHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken)
+
+    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, string email, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"/{id}");
+        var url = QueryHelpers.AddQueryString("chekout-session", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+            ["email"] = email
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
-        var response = await _httpClient.SendAsync(request);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
         response.EnsureSuccessStatusCode();
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var model = JsonSerializer.Deserialize<TestMessageModel>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        var redirectUrl = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
-        return model;
+        return redirectUrl;
+    }
+
+    public async Task<RedirectUrlModel> GetCustomerPortalSessionAsync(string keycloakId, string email, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("customers-portal-session", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+            ["email"] = email
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var redirectUrl = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return redirectUrl;
     }
 }

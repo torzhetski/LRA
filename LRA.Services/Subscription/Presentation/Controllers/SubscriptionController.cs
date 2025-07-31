@@ -7,18 +7,26 @@ namespace LRA.Subscription.Presentation.Controllers;
 [ApiController]
 public class SubscriptionController : ControllerBase
 {
-    private ISubscriptionService _subscriptionService;
+    private readonly IPaymentService _paymentService;
 
-    public SubscriptionController(ISubscriptionService testService)
+    public SubscriptionController(IPaymentService paymentService)
     {
-        _subscriptionService = testService;
+        _paymentService = paymentService;
     }
 
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetInfo([FromRoute] int id)
+    [HttpGet("chekout-session")]
+    public async Task<IActionResult> GetChekoutSession([FromQuery] Guid keycloakId, string email, CancellationToken cancellationToken)
     {
-        var response = _subscriptionService.TestResponse(id);
-        return Ok(response);
+        var url = await _paymentService.GetCheckoutSessionUrlAsync(keycloakId, email, cancellationToken);
+        return Ok(url);
+    }
+
+    [Authorize]
+    [HttpGet("customers-portal-session")]
+    public async Task<IActionResult> GetCustomersPortalSession([FromQuery] Guid keycloakId, string email, CancellationToken cancellationToken)
+    {
+        var url = await _paymentService.GetCustomersPortalUrlAsync(keycloakId, email, cancellationToken);
+        return Ok(url);
     }
 }
