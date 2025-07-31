@@ -39,6 +39,45 @@ namespace LRA.Subscription.Infrasturcture.Persistence.Migrations
 
                     b.ToTable("Customers");
                 });
+
+            modelBuilder.Entity("LRA.Subscription.Domain.Entities.SubscriptionEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("CancelAtThePeriodEnd")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PriceId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions");
+                });
 #pragma warning restore 612, 618
         }
     }
