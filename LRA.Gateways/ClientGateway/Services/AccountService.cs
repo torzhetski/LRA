@@ -21,18 +21,6 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public async Task<PaginatedList<AccountDto>> GetPaginatedFromAccountServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
-        return response;
-    }
-
-    public async Task<List<AccountDto>> GetAllFromAccountServiceAsync(CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.GetAllAsync(cancellationToken);
-        return response;
-    }
-
     public async Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken)
     {
         await _httpClient.UpdateAccountAsync(dto, keycloakId, cancellationToken);
