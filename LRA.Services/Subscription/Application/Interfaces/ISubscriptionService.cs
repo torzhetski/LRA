@@ -1,7 +1,9 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Subscription.Application.Interfaces;
 
 public interface ISubscriptionService
 {
+    Task HandleWebhooksAsync(StripeWebhookModel webhookModel, CancellationToken cancellationToken);
 }

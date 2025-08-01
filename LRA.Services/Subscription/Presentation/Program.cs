@@ -5,6 +5,7 @@ using LRA.Subscription.Infrasturcture.External.StripeProvider.Extension;
 using LRA.Subscription.Infrastructure.Persistence.Extensions;
 using LRA.Subscription.Infrasturcture.External.StripeProvider.Settings;
 using LRA.Subscription.Domain.Settings;
+using LRA.Shared.Abstractions.Settings.RabbitMq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.Configure<StripeSettings>(
 
 builder.Services.Configure<PriceSettings>(
     builder.Configuration.GetSection("StripePrice"));
+
+builder.Services.Configure<RabbitMQSettings>(
+    builder.Configuration.GetSection("RabbitMqSettings"));
 
 builder.Services.AddDatabase(builder.Configuration);
 
