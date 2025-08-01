@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("email/verification")]
+    [HttpPut("email/verification")]
     public async Task<IActionResult> VerifyEmail([FromQuery] string token, [FromQuery] string email, CancellationToken cancellationToken)
     {
         var result = await _authService.VerifyEmailAsync(token, email, cancellationToken);
@@ -108,7 +108,7 @@ public class AuthController : ControllerBase
         {
             var account = await _accountService.GetAccountByEmailAsync(email, cancellationToken);
             await _keycloakService.EnableKeycloakUserAsync(account.KeycloakId, cancellationToken);
-            await _accountService.MakeEmailVerifiedAsync(email, cancellationToken);
+            await _accountService.VerifyEmailAsync(email, cancellationToken);
             return Ok();
         }
         else
@@ -116,7 +116,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("keycloak/refresh")]
+    [HttpPost("keycloak/refreshment")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var response = await _keycloakService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
@@ -132,7 +132,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("change-password/{keycloakId}")]
+    [HttpPut("new-password/{keycloakId}")]
     public async Task<IActionResult> ChangeUserPassword([FromQuery] string newPassword, [FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         await _keycloakService.ChangeUserPasswordAsync(newPassword, keycloakId, cancellationToken);
@@ -140,7 +140,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("reset-password/code")]
+    [HttpGet("reset-code")]
     public async Task<IActionResult> SendResetUserPasswordCode([FromQuery] string email, CancellationToken cancellationToken)
     {
         await _authService.SendPasswordResetTokenAsync(email, 5, cancellationToken);
@@ -148,7 +148,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("reset-password/verification")]
+    [HttpPut("reset-code/verification")]
     public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
     {
         var verified = await _authService.VerifyPasswordResetTokenAsync(resetPasswordModel.ResetPasswordToken, resetPasswordModel.Email, cancellationToken);
@@ -165,7 +165,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("change-email/code")]
+    [HttpGet("newemail-code")]
     public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
     {
         await _authService.SendEmailChangingTokenAsync(newEmail, 5, cancellationToken);
@@ -173,7 +173,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("change-email/verification/{keycloakId}")]
+    [HttpPut("newemail-code/verification/{keycloakId}")]
     public async Task<IActionResult> ChangeUserEmail([FromBody] EmailChangeModel newEmailModel, [FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         var verified = await _authService.VerifyEmailChangeAsync(newEmailModel.EmailChangeToken, newEmailModel.NewEmail, cancellationToken);

@@ -1,8 +1,6 @@
-﻿
+﻿namespace LRA.Shared.Utils;
 
-namespace LRA.Shared.Utils;
-
-public static class RandomCode
+public static class CodeGenerator
 {
     public static string Generate(int length = 6)
     {

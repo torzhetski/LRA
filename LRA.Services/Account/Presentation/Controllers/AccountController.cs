@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Account.Domain.Entities;
 
 namespace LRA.Account.Presentation.Controllers;
 
@@ -33,7 +32,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-user/{keycloakId}")]
+    [HttpPut("{keycloakId}")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, [FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         await _accountService.UpdateAccountAsync(dto, keycloakId, cancellationToken);
@@ -41,7 +40,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-twofa/{keycloakId}")]
+    [HttpPut("twofactor/{keycloakId}")]
     public async Task<IActionResult> UpdateTwoFaAsync([FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         await _accountService.UpdateTwoFaAsync(keycloakId, cancellationToken);
@@ -57,7 +56,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var response = await _accountService.GetAllAccountsAsync(cancellationToken);
