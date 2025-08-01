@@ -187,7 +187,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("keycloak/login-google")]
+    [HttpGet("keycloak/google-login")]
     public async Task<IActionResult> LoginUserByGoogleCode([FromQuery] string code, CancellationToken cancellationToken)
     {
         var response = await _keycloakService.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
@@ -199,5 +199,13 @@ public class AuthController : ControllerBase
 
         await _accountService.CreateAccountAsync(email, keycloakId, cancellationToken);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("google-url")]
+    public IActionResult GetGoogleLoginUrl()
+    {
+        var url = _keycloakService.GetGoogleLoginUrl();
+        return Ok(url);
     }
 }

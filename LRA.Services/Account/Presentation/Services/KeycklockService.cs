@@ -2,17 +2,23 @@
 using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Auth;
+using LRA.Shared.Infrastructure.Settings;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 
 namespace LRA.Account.Presentation.Services;
 
 public class KeycloakService : IKeycloakService
 {
     private readonly IKeycloakHttpClient _keycloakHttpClient;
+    private readonly IOptions<KeycloakGoogleProviderSettings> _settings;
 
-    public KeycloakService(IKeycloakHttpClient keycloakHttpClient)
+    public KeycloakService(IKeycloakHttpClient keycloakHttpClient, IOptions<KeycloakGoogleProviderSettings> settings)
     {
         _keycloakHttpClient = keycloakHttpClient;
+        _settings = settings;
     }
 
     public async Task<string> GetKeycloakRealmConfigAsync(CancellationToken cancellationToken)
@@ -64,5 +70,25 @@ public class KeycloakService : IKeycloakService
     {
         var response = await _keycloakHttpClient.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
         return response;
+    }
+
+    public RedirectUrlModel GetGoogleLoginUrl()
+    {
+        var url = QueryHelpers.AddQueryString($"{_settings.Value.BaseServerUrl}/realms/{_settings.Value.Realm}/protocol/openid-connect/auth", new Dictionary<string, string?>
+        {
+            ["client_id"] = _settings.Value.ClientId,
+            ["response_type"] = "code",
+            ["redirect_uri"] = _settings.Value.RedirectUri,
+            ["scope"] = "openid",
+            ["kc_idp_hint"] = "google",
+
+        });
+
+        var redirectUrl = new RedirectUrlModel() 
+        { 
+            RedirectUrl = url 
+        };
+
+        return redirectUrl;
     }
 }

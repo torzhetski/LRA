@@ -1,5 +1,6 @@
 ﻿using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Verification;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Test;
 using Microsoft.AspNetCore.Mvc;
@@ -21,4 +22,5 @@ public interface IAuthService
     Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken);
     Task ChangeUserEmail(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> GetTokenByGoogleCode(string code, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken);
 }

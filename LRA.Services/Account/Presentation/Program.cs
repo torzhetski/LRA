@@ -20,6 +20,9 @@ builder.Services.Configure<RabbitMQSettings>(
 builder.Services.Configure<KeycloakServiceSettings>(
     builder.Configuration.GetSection("KeycloakServiceSettings"));
 
+builder.Services.Configure<KeycloakGoogleProviderSettings>(
+    builder.Configuration.GetSection("KeycloakGoogleProviderSettings"));
+
 builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
 
 builder.Services.AddScoped<IKeycloakService, KeycloakService>();

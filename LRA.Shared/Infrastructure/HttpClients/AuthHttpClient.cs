@@ -10,6 +10,9 @@ using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
 using System.Net.Http.Json;
+using LRA.Shared.Abstractions.Models;
+using System.Threading;
+using System;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -245,7 +248,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("keycloak/login-google", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("keycloak/google-login", new Dictionary<string, string?>
         {
             ["code"] = code,
         });
@@ -260,5 +263,18 @@ public class AuthHttpClient : IAuthHttpClient
         var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return token;
+    }
+
+    public async Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "google-url");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var url = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return url;
     }
 }

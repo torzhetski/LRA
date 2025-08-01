@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Dtos;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Account.Presentation.Interfaces;
@@ -14,4 +15,5 @@ public interface IKeycloakService
     Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken);
     Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
+    RedirectUrlModel GetGoogleLoginUrl();
 }

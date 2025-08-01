@@ -4,6 +4,7 @@ using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LRA.Gateways.Client.Controllers;
 
@@ -47,7 +48,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("auth/login-google")]
+    [HttpGet("google-login")]
     public async Task<IActionResult> LoginUserByGoogleCode([FromQuery] string code, CancellationToken cancellationToken)
     {
         var response = await _authService.GetTokenByGoogleCode(code, cancellationToken);
@@ -122,5 +123,12 @@ public class AuthController : ControllerBase
         }
         await _authService.ChangeUserEmail(newEmailModel, userId, cancellationToken);
         return Ok();
+    }
+
+    [HttpGet("google-url")]
+    public async Task<IActionResult> GetGoogleLoginUrl(CancellationToken cancellationToken)
+    {
+        var url = await _authService.GetGoogleLoginUrlAsync(cancellationToken);
+        return Ok(url);
     }
 }

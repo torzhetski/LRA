@@ -2,6 +2,7 @@
 using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Verification;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Auth;
 
 namespace LRA.Gateways.Client.Services;
@@ -83,6 +84,12 @@ public class AuthService : IAuthService
     public async Task<KeycloakTokenDto> GetTokenByGoogleCode(string code, CancellationToken cancellationToken)
     {
         var response = await _httpClient.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
+        return response;
+    }
+
+    public async Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetGoogleLoginUrlAsync(cancellationToken);
         return response;
     }
 }
