@@ -83,7 +83,7 @@ public class AccountService : IAccountService
         return dto.IsTwoFaEnabled;
     }
 
-    public async Task MakeEmailVerifiedAsync(string email, CancellationToken cancellationToken)
+    public async Task VerifyEmailAsync(string email, CancellationToken cancellationToken)
     {
         await _accountRepository.MakeUserVerifiedAsync(email, cancellationToken);
     }

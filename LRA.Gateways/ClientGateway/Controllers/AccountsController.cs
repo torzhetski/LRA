@@ -44,7 +44,7 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("update-user")]
+    [HttpPut("account")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -57,7 +57,7 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("twofa/update")]
+    [HttpPut("twofactor")]
     public async Task<IActionResult> UpdateAccountTwoFa(CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -67,14 +67,6 @@ public class AccountsController : ControllerBase
         }
         await _accountService.UpdateAccountTwoFa(userId, cancellationToken);
 
-        return Ok();
-    }
-
-    [Authorize]
-    [HttpDelete("account/soft/{id}")]
-    public async Task<IActionResult> SoftDeleteResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        await _accountService.AccountSoftDelete(id, cancellationToken);
         return Ok();
     }
 }
