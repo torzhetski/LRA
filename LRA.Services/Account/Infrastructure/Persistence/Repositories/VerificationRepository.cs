@@ -22,8 +22,9 @@ public class VerificationRepository : IVerificationRepository
         var TwoFaVerify = new VerificationEntity()
         {
             Email = email,
-            Token = RandomCode.Generate(),
+            Token = CodeGenerator.Generate(),
             Type = type,
+            IsUsed = false,
             ExpiresAt = DateTime.UtcNow.AddMinutes(tokenLifetime),
         };
 
@@ -35,10 +36,18 @@ public class VerificationRepository : IVerificationRepository
 
     public async Task<bool> ValidateAsync(string token, string email, VerificationType type ,CancellationToken cancellationToken)
     {
-        var response = await _context.VerificationModels.FirstOrDefaultAsync(vf => vf.Token == token, cancellationToken);
-        if (response != null && DateTime.UtcNow < response.ExpiresAt && response.Type == type && response.Email == email)
+        var response = await _context.VerificationModels.FirstOrDefaultAsync(vf => 
+            vf.Token == token &&
+            DateTime.UtcNow < vf.ExpiresAt &&
+            vf.Type == type &&
+            vf.Email == email &&
+            vf.IsUsed == false, 
+            cancellationToken);
+
+        if (response != null )
         {
-            _context.VerificationModels.Remove(response);
+            response.IsUsed = true;
+            await SaveChangesAsync(cancellationToken);
             return true;
         }
         else

@@ -57,7 +57,7 @@ public class AccountHttpClient : IAccountHttpClient
 
     public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"");
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"all");
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -72,7 +72,7 @@ public class AccountHttpClient : IAccountHttpClient
     public async Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(dto);
-        using var request = new HttpRequestMessage(HttpMethod.Put, $"update-user/{keycloakId}")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"{keycloakId}")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -84,7 +84,7 @@ public class AccountHttpClient : IAccountHttpClient
 
     public async Task UpdateTwoFaAsync(string keycloakId, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Put, $"update-twofa/{keycloakId}");
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"twofactor/{keycloakId}");
         
         request.Headers.Add("InternalApiKey", _apiKey);
 

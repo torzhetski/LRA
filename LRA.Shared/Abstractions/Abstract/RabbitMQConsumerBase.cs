@@ -29,13 +29,6 @@ public abstract class RabbitMQConsumerBase : BackgroundService
         _connection = await factory.CreateConnectionAsync(token);
         _channel = await _connection.CreateChannelAsync(cancellationToken: token);
 
-        //await _channel.ExchangeDeclareAsync(
-        //    exchange: _options.Value.Consumer,
-        //    type: ExchangeType.Fanout,
-        //    durable: true,
-        //    autoDelete: false,
-        //    cancellationToken: token);
-
         await _channel.QueueDeclareAsync(
             queue: _options.Value.Consumer.QueueName,
             durable: true,
@@ -43,12 +36,6 @@ public abstract class RabbitMQConsumerBase : BackgroundService
             autoDelete: false,
             arguments: null,
             cancellationToken: token);
-
-        //await _channel.QueueBindAsync(
-        //    queue: _options.Value.Consumer.QueueName,
-        //    exchange: _options.Value.ExchangeName,
-        //    routingKey: default,
-        //    cancellationToken: token);
 
         await base.StartAsync(token);
     }
