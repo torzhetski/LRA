@@ -114,7 +114,7 @@ public class AuthHttpClient : IAuthHttpClient
             ["email"] = email
         });
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -125,7 +125,7 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(refreshTokenModel);
-        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/refresh")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/refreshment")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -171,7 +171,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task ChangeUserPasswordAsync(string newPassword, string keycloakId, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString($"change-password/{keycloakId}", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString($"new-password/{keycloakId}", new Dictionary<string, string?>
         {
             ["newPassword"] = newPassword,
         });
@@ -186,7 +186,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task SendResetPasswordCodeAsync(string email, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("reset-password/code", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("reset-code", new Dictionary<string, string?>
         {
             ["email"] = email,
         });
@@ -202,7 +202,7 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task ResetPasswordVerifyAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(resetPasswordModel);
-        using var request = new HttpRequestMessage(HttpMethod.Put, "reset-password/verification")
+        using var request = new HttpRequestMessage(HttpMethod.Put, "reset-code/verification")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -215,7 +215,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("change-email/code", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("newemail-code", new Dictionary<string, string?>
         {
             ["newEmail"] = newEmail,
         });
@@ -232,7 +232,7 @@ public class AuthHttpClient : IAuthHttpClient
     {
         var json = JsonSerializer.Serialize(newEmailModel);
 
-        using var request = new HttpRequestMessage(HttpMethod.Put, $"change-email/verification/{keycloakId}")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"newemail-code/verification/{keycloakId}")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };

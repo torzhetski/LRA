@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace LRA.Gateways.Client.Controllers;
 
-[Route("api/v{version:apiVersion}/clients")]
+[Route("api/v{version:apiVersion}/clients/auth")]
 [ApiController]
 [ApiVersion("1.0")]
 public class AuthController : ControllerBase
@@ -19,29 +19,28 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [Authorize]
-    [HttpGet("auth/config")]
+    [HttpGet("config")]
     public async Task<IActionResult> GetAuthConfig(CancellationToken cancellationToken)
     {
         var response = await _authService.GetAuthServiceConfigAsync(cancellationToken);
         return Ok(response);
     }
 
-    [HttpPost("auth/registration")]
+    [HttpPost("registration")]
     public async Task<IActionResult> CreateUser([FromBody] RegistrationModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.CreateUserAsync(model, cancellationToken);
         return Ok(response);
     }
 
-    [HttpPost("auth/verify-email")]
+    [HttpPut("email/verification")]
     public async Task<IActionResult> VerifyEmail([FromQuery] string token, string email, CancellationToken cancellationToken)
     {
         await _authService.VerifyEmailAsync(token, email, cancellationToken);
         return Ok();
     }
 
-    [HttpPost("auth/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.LoginUserAsync(model, cancellationToken);
@@ -55,21 +54,21 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("twofactor-verification")]
+    [HttpPost("twofactor/verification")]
     public async Task<IActionResult> VerifyUser([FromBody] TwoFactorLoginModel model, CancellationToken cancellationToken)
     {
         var response = await _authService.TwoFactorVerifyAsync(model, cancellationToken);
         return Ok(response);
     }
 
-    [HttpPost("auth/refresh")]
+    [HttpPost("refreshment")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         var response = await _authService.RefreshTokenAsync(refreshTokenModel, cancellationToken);
         return Ok(response);
     }
 
-    [HttpDelete("keycloak/logout")]
+    [HttpDelete("logout")]
     public async Task<IActionResult> LogoutSession([FromBody] RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
     {
         await _authService.LogoutUserSessionAsync(refreshTokenModel, cancellationToken);
@@ -77,7 +76,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("auth/change-password")]
+    [HttpPut("new-password")]
     public async Task<IActionResult> ChangeUserPassword([FromBody] PasswordChangeModel newPassword, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -90,14 +89,14 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("auth/reset-code")]
+    [HttpGet("reset-code")]
     public async Task<IActionResult> SendResetPasswordCode([FromQuery] string email, CancellationToken cancellationToken)
     {
         await _authService.SendResetPasswordCodeAsync(email, cancellationToken);
         return Ok();
     }
 
-    [HttpPut("reset-password/verification")]
+    [HttpPut("reset-code/verification")]
     public async Task<IActionResult> ResetUserPassword([FromBody] ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
     {
         await _authService.ResetUserPasswordAsync(resetPasswordModel, cancellationToken);
@@ -105,7 +104,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("change-email/code")]
+    [HttpGet("newemail-code")]
     public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
     {
         await _authService.SendChangeUserEmailCodeAsync(newEmail, cancellationToken);
@@ -113,7 +112,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("change-email/verification")]
+    [HttpPut("newemail-code/verification")]
     public async Task<IActionResult> ChangeUserEmail([FromBody] EmailChangeModel newEmailModel, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
