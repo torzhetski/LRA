@@ -14,7 +14,7 @@ public class UpdateAccountValidator : AbstractValidator<UpdateAccountDto>
             .MaximumLength(25).WithMessage("Last name must not exceed 25 characters.");
 
         RuleFor(x => x.PhoneNumber)
-            .Matches(@"^\+375\d{9}$") 
+            .Matches(@"^\+\d{1,3}\d{6,12}$") 
             .WithMessage("Phone number is invalid.");
     }
 }
