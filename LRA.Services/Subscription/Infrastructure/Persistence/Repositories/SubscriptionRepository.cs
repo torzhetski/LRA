@@ -39,6 +39,12 @@ public class SubscriptionRepository : ISubscriptionRepository
         await _context.SaveChangesAsync(token);
     }
 
+    public async Task<bool> HasCustomerActiveSubscription(string customerId, CancellationToken cancellationToken)
+    {
+        var response = await _context.Subscriptions.Where(x => x.CustomerId == customerId && x.Status == "active").AnyAsync(cancellationToken);
+        return response;
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);

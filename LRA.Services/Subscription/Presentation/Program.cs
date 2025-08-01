@@ -6,6 +6,7 @@ using LRA.Subscription.Infrastructure.Persistence.Extensions;
 using LRA.Subscription.Infrasturcture.External.StripeProvider.Settings;
 using LRA.Subscription.Domain.Settings;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
+using LRA.Shared.Presentation.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,12 +27,17 @@ builder.Services.AddStripeServices();
 
 builder.Services.AddControllers();
 
+builder.Services.AddExceptionHandler<BaseExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     await app.ApplyMigrations();
 }
+
+app.UseExceptionHandler();
 
 app.UseMiddleware<ApiKeyValidationMiddleware>();
 

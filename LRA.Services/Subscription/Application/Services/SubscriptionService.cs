@@ -47,4 +47,10 @@ public class SubscriptionService : ISubscriptionService
             _logger.LogError(ex, ex.Message);
         }
     }
+
+    public async Task<bool> HasCustomerActiveSubscription(string customerId, CancellationToken cancellationToken)
+    {
+        var response = await _subscriptionRepository.HasCustomerActiveSubscription(customerId, cancellationToken);
+        return response;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Utils.Exceptions;
 using LRA.Subscription.Application.Interfaces;
 using LRA.Subscription.Domain.Settings;
 using Microsoft.Extensions.Options;
@@ -10,23 +11,35 @@ public class PaymentService : IPaymentService
 {
     private readonly IStripeService _stripeService;
     private readonly ICustomerProviderService _customerService;
+    private readonly ISubscriptionService _subscriptionService;
     private readonly IOptions<PriceSettings> _priceOptions;
 
     public PaymentService(
         IStripeService service,
         IOptions<PriceSettings> priceOptions,
-        ICustomerProviderService customerService)
+        ICustomerProviderService customerService,
+        ISubscriptionService subscriptionService)
     {
         _stripeService = service;
         _priceOptions = priceOptions;
         _customerService = customerService;
+        _subscriptionService = subscriptionService;
     }
 
     public async Task<RedirectUrlModel> GetCheckoutSessionUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken)
     {
         var customerId = await _customerService.GetCustomerId(keycloakId, email, cancellationToken);
-        var url = await _stripeService.CreateCheckoutSessionAsync(customerId, _priceOptions.Value.Id, cancellationToken);
-        return url;
+
+        var hasActiv = await _subscriptionService.HasCustomerActiveSubscription(customerId, cancellationToken);
+        if (hasActiv) 
+        { 
+            throw new AlreadyExistsException("Subscription");    
+        }
+        else
+        {
+            var url = await _stripeService.CreateCheckoutSessionAsync(customerId, _priceOptions.Value.Id, cancellationToken);
+            return url;
+        }
     }
 
     public async Task<RedirectUrlModel> GetCustomersPortalUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken)
