@@ -10,7 +10,6 @@ using LRA.Shared.Abstractions.Dtos.Verification;
 using Microsoft.AspNetCore.WebUtilities;
 using LRA.Shared.Abstractions.Dtos;
 using System.Net.Http.Json;
-using System.Reflection;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -52,13 +51,15 @@ public class AuthHttpClient : IAuthHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Conflict:
-                    throw new AlreadyExistsException("User");
+                    throw new AlreadyExistsException("Account");
                 default:
-                    throw new Exception("smthing went wrong");
+                    throw new Exception("Account creation failed");
             }
+        }
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -77,13 +78,16 @@ public class AuthHttpClient : IAuthHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
-                    throw new UnauthorizedAccessException("Invalid user credentials");
+                    throw new UnauthorizedAccessException("Invalid account credentials");
                 default:
-                    throw new Exception("smthing went wrong");
+                    throw new Exception("Account login failed");
             }
+        }
+
         var dto = await response.Content.ReadFromJsonAsync<VerificationDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return dto;
@@ -136,6 +140,7 @@ public class AuthHttpClient : IAuthHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
@@ -143,6 +148,8 @@ public class AuthHttpClient : IAuthHttpClient
                 default:
                     throw new Exception("Failed to refresh token");
             }
+        }
+
         var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return token;
@@ -161,6 +168,7 @@ public class AuthHttpClient : IAuthHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
@@ -168,6 +176,7 @@ public class AuthHttpClient : IAuthHttpClient
                 default:
                     throw new Exception("Failed to logout");
             }
+        }
     }
 
     public async Task ChangeUserPasswordAsync(string newPassword, string keycloakId, CancellationToken cancellationToken)
@@ -216,7 +225,7 @@ public class AuthHttpClient : IAuthHttpClient
 
     public async Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken)
     {
-        var url = QueryHelpers.AddQueryString("newemail-code", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("new-email-code", new Dictionary<string, string?>
         {
             ["newEmail"] = newEmail,
         });
@@ -233,7 +242,7 @@ public class AuthHttpClient : IAuthHttpClient
     {
         var json = JsonSerializer.Serialize(newEmailModel);
 
-        using var request = new HttpRequestMessage(HttpMethod.Put, $"newemail-code/verification/{keycloakId}")
+        using var request = new HttpRequestMessage(HttpMethod.Put, $"new-email-code/verification/{keycloakId}")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
