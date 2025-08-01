@@ -63,4 +63,12 @@ public class AccountController : ControllerBase
         var response = await _accountService.GetAllAccountsAsync(cancellationToken);
         return Ok(response);
     }
+
+    [HttpGet("{keycloakId}/roles")]
+    public async Task<IActionResult> GetRolesByKeycloakId([FromRoute] Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var roles = await _accountService.GetRolesByKeycloakIdAsync(keycloakId, cancellationToken);
+
+        return Ok(roles);
+    }
 }

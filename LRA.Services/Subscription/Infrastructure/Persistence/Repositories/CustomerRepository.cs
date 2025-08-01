@@ -26,6 +26,12 @@ public class CustomerRepository : ICustomerRepository
         return entity;
     }
 
+    public async Task<CustomerEntity?> GetKeycloakIdOrDefaultByCustomerAysnc(string customerId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Customers.FirstOrDefaultAsync(x => x.StripeCustomerId == customerId, cancellationToken);
+        return entity;
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);

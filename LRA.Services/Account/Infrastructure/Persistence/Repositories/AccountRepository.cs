@@ -73,6 +73,15 @@ public class AccountRepository : IAccountRepository
         return await items.ToListAsync(cancellationToken);
     }
 
+    public async Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.Include(a => a.Roles).FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
+
+        var roles = entity?.Roles.Select(x => x.RoleName).ToList() ?? new List<string>();
+
+        return roles;
+    }
+
     public void SoftDelete(Guid id)
     {
         var entity = _context.Accounts.FirstOrDefault(x => x.Id == id);
@@ -146,6 +155,30 @@ public class AccountRepository : IAccountRepository
 
         entity.Email = newEmail;
         entity.UpdatedUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateRolesAsync(List<string> roleNames, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.KeycloakId == keycloakId, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), keycloakId);
+        }
+
+        var rolesFromDb = await _context.Roles
+            .Where(r => roleNames.Contains(r.RoleName))
+            .ToListAsync(cancellationToken);
+
+        entity.Roles.Clear();
+        foreach (var role in rolesFromDb)
+        {
+            entity.Roles.Add(role);
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 

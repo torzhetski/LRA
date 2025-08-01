@@ -4,6 +4,8 @@ using LRA.Subscription.Domain.Defenitions;
 using LRA.Subscription.Application.Interfaces.Repositories;
 using Microsoft.Extensions.Logging;
 using LRA.Shared.Utils.Exceptions;
+using LRA.Shared.Abstractions.Interfaces.RabbitMq;
+using LRA.Shared.Utils.Constants;
 
 namespace LRA.Subscription.Application.Services;
 
@@ -11,16 +13,25 @@ public class SubscriptionService : ISubscriptionService
 {
     private readonly IStripeEventConverter _converter;
     private readonly ISubscriptionRepository _subscriptionRepository;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly IRabbitMQProducerService _producerService;
     private readonly ILogger<SubscriptionService> _logger;
 
-    public SubscriptionService(IStripeEventConverter converter, ISubscriptionRepository subscriptionRepository, ILogger<SubscriptionService> logger)
+    public SubscriptionService(
+        IStripeEventConverter converter,
+        ISubscriptionRepository subscriptionRepository,
+        ILogger<SubscriptionService> logger,
+        ICustomerRepository customerRepository,
+        IRabbitMQProducerService producerService)
     {
         _converter = converter;
         _logger = logger;
         _subscriptionRepository = subscriptionRepository;
+        _customerRepository = customerRepository;
+        _producerService = producerService;
     }
 
-    public async Task HandleWebhooksAsync(StripeWebhookModel webhookModel, CancellationToken token)
+    public async Task HandleWebhooksAsync(StripeWebhookModel webhookModel, CancellationToken cancellationToken)
     {
         try
         {
@@ -29,14 +40,43 @@ public class SubscriptionService : ISubscriptionService
             switch (eventDTO.EventType)
             {
                 case EventTypes.CustomerSubscriptionCreated:
-                    await _subscriptionRepository.AddSubsriptionAsync(eventDTO.Entity, token);
-                    break;
+                    {
+                        var subscription = eventDTO.Entity;
+                        await _subscriptionRepository.AddSubsriptionAsync(subscription, cancellationToken);
+
+                        var customer = await _customerRepository.GetKeycloakIdOrDefaultByCustomerAysnc(subscription.CustomerId, cancellationToken);
+                        if (customer == null)
+                            throw new Exception("Adding role failed");
+                        var roles = new UpdateRolesModel()
+                        {
+                            KeycloakId = customer.KeycloakId,
+                            RoleNames = new List<string>() { SystemRoles.Client },
+                        };
+                        await _producerService.SendMessageAsync(roles, cancellationToken);
+
+                        break;
+                    }
                 case EventTypes.CustomerSubscriptionUpdated:
-                    await _subscriptionRepository.UpdateSubsriptionAsync(eventDTO.Entity, token);
+                    await _subscriptionRepository.UpdateSubsriptionAsync(eventDTO.Entity, cancellationToken);
                     break;
                 case EventTypes.CustomerSubscriptionDeleted:
-                    await _subscriptionRepository.UpdateSubsriptionAsync(eventDTO.Entity, token);
-                    break;
+                    {
+                        var subscription = eventDTO.Entity;
+                        await _subscriptionRepository.UpdateSubsriptionAsync(subscription, cancellationToken);
+
+                        var customer = await _customerRepository.GetKeycloakIdOrDefaultByCustomerAysnc(subscription.CustomerId, cancellationToken);
+                        if (customer == null)
+                            throw new Exception("Removinh role failed");
+
+                        var roles = new UpdateRolesModel()
+                        {
+                            KeycloakId = customer.KeycloakId,
+                            RoleNames = new List<string>() {},
+                        };
+                        await _producerService.SendMessageAsync(roles, cancellationToken);
+
+                        break;
+                    }
                 default:
                     throw new UnknownEventTypeException(eventDTO.EventType);
 

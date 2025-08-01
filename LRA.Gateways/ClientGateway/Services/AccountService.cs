@@ -47,4 +47,10 @@ public class AccountService : IAccountService
     {
         await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
+
+    public async Task<List<string>> GetRolesById(string keycloakId, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetRolesByKeycloakId(keycloakId, cancellationToken);
+        return response;
+    }
 }

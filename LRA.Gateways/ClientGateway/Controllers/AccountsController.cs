@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -43,7 +44,7 @@ public class AccountsController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
+    [Authorize(Policy = ServerPolicy.RequireClient)]
     [HttpPut("update-user")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
