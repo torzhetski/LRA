@@ -105,7 +105,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("newemail-code")]
+    [HttpGet("new-email-code")]
     public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
     {
         await _authService.SendChangeUserEmailCodeAsync(newEmail, cancellationToken);
@@ -113,7 +113,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("newemail-code/verification")]
+    [HttpPut("new-email-code/verification")]
     public async Task<IActionResult> ChangeUserEmail([FromBody] EmailChangeModel newEmailModel, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

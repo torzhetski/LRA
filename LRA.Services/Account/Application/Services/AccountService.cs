@@ -3,8 +3,6 @@ using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Utils.Exceptions;
-using System.Runtime.InteropServices.Marshalling;
-using System.Security.AccessControl;
 
 namespace LRA.Account.Application.Services;
 

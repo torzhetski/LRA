@@ -160,7 +160,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("newemail-code")]
+    [HttpGet("new-email-code")]
     public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
     {
         await _authService.SendEmailChangingTokenAsync(newEmail, 5, cancellationToken);
@@ -168,7 +168,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut("newemail-code/verification/{keycloakId}")]
+    [HttpPut("new-email-code/verification/{keycloakId}")]
     public async Task<IActionResult> ChangeUserEmail([FromBody] EmailChangeModel newEmailModel, [FromRoute] Guid keycloakId, CancellationToken cancellationToken)
     {
         var verified = await _authService.VerifyEmailChangeAsync(newEmailModel.EmailChangeToken, newEmailModel.NewEmail, cancellationToken);

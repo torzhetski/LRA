@@ -68,13 +68,15 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Conflict:
-                    throw new AlreadyExistsException("User");
+                    throw new AlreadyExistsException("Account");
                 default:
                     throw new Exception("Login failed");
             }
+        }
 
         var location = response.Headers.Location?.ToString();
         var userId = location?.Split('/').Last();
@@ -123,6 +125,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
@@ -130,6 +133,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                 default:
                     throw new Exception("Failed to login");
             }
+        }
 
         var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
@@ -151,6 +155,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             switch (response.StatusCode)
             {
                 case HttpStatusCode.BadRequest:
@@ -158,6 +163,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                 default:
                     throw new Exception("Failed to refresh token");
             }
+        }
 
         var token = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
@@ -205,7 +211,9 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             throw new Exception($"Password update failed: {response.StatusCode}");
+        }
     }
 
     public async Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken)
@@ -229,7 +237,9 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
+        {
             throw new Exception($"Failed to update email: {response.StatusCode}");
+        }
     }
 
     public async Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken)
