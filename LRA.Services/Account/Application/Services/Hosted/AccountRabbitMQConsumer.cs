@@ -11,6 +11,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using LRA.Account.Application.Interfaces;
 using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Utils.Enums;
 
 namespace LRA.Account.Application.Services.Hosted;
 
@@ -45,8 +46,8 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         {
             var content = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            var roles = JsonSerializer.Deserialize<UpdateRolesModel>(content);
-            await UpdateUserRolesAsync(roles, token);
+            var role = JsonSerializer.Deserialize<UpdateRoleModel>(content);
+            await UpdateUserRolesAsync(role, token);
 
             await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
         };
@@ -65,12 +66,22 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         base.Dispose();
     }
 
-    private async Task UpdateUserRolesAsync(UpdateRolesModel roles, CancellationToken cancellationToken)
+    private async Task UpdateUserRolesAsync(UpdateRoleModel role, CancellationToken cancellationToken)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
-            var accountRepository = scope.ServiceProvider.GetService<IAccountService>();
-            await accountRepository!.UpdateRolesAsync(roles.RoleNames, roles.KeycloakId, cancellationToken);
+            var accountService = scope.ServiceProvider.GetService<IAccountService>();
+            
+            if(role.UpdateType == UpdateType.Add)
+            {
+                await accountService.AddRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
+            }
+
+            if(role.UpdateType == UpdateType.Remove)
+            {
+                await accountService.RemoveRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
+
+            }
         }
     }
 }

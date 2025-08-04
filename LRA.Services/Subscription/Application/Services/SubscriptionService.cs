@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using LRA.Shared.Utils.Exceptions;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Utils.Constants;
+using LRA.Shared.Utils.Enums;
 
 namespace LRA.Subscription.Application.Services;
 
@@ -47,12 +48,14 @@ public class SubscriptionService : ISubscriptionService
                         var customer = await _customerRepository.GetKeycloakIdOrDefaultByCustomerAysnc(subscription.CustomerId, cancellationToken);
                         if (customer == null)
                             throw new Exception("Adding role failed");
-                        var roles = new UpdateRolesModel()
+
+                        var role = new UpdateRoleModel()
                         {
                             KeycloakId = customer.KeycloakId,
-                            RoleNames = new List<string>() { SystemRoles.Client },
+                            RoleName = SystemRoles.Client,
+                            UpdateType = UpdateType.Add
                         };
-                        await _producerService.SendMessageAsync(roles, cancellationToken);
+                        await _producerService.SendMessageAsync(role, cancellationToken);
 
                         break;
                     }
@@ -68,12 +71,13 @@ public class SubscriptionService : ISubscriptionService
                         if (customer == null)
                             throw new Exception("Removinh role failed");
 
-                        var roles = new UpdateRolesModel()
+                        var role = new UpdateRoleModel()
                         {
                             KeycloakId = customer.KeycloakId,
-                            RoleNames = new List<string>() {},
+                            RoleName = SystemRoles.Client,
+                            UpdateType = UpdateType.Remove
                         };
-                        await _producerService.SendMessageAsync(roles, cancellationToken);
+                        await _producerService.SendMessageAsync(role, cancellationToken);
 
                         break;
                     }

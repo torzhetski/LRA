@@ -74,9 +74,14 @@ public class AccountService : IAccountService
         await _accountRepository.UpdateEmailAsync(newEmail, keycloakId, cancellationToken);
     }
 
-    public async Task UpdateRolesAsync(List<string> roleNames, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountRepository.UpdateRolesAsync(roleNames, keycloakId, cancellationToken);
+        await _accountRepository.AddRoleAsync(roleName, keycloakId, cancellationToken);
+    }
+
+    public async Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
     public async Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken)

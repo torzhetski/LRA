@@ -158,7 +158,7 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateRolesAsync(List<string> roleNames, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
     {
         var entity = await _context.Accounts
             .Include(a => a.Roles)
@@ -169,17 +169,37 @@ public class AccountRepository : IAccountRepository
             throw new NotFoundException(nameof(entity), keycloakId);
         }
 
-        var rolesFromDb = await _context.Roles
-            .Where(r => roleNames.Contains(r.RoleName))
-            .ToListAsync(cancellationToken);
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
 
-        entity.Roles.Clear();
-        foreach (var role in rolesFromDb)
+
+        if (!entity.Roles.Contains(roleFromDb)) 
         {
-            entity.Roles.Add(role);
+            entity.Roles.Add(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.KeycloakId == keycloakId, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), keycloakId);
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
+
+
+        if (entity.Roles.Contains(roleFromDb))
+        {
+            entity.Roles.Remove(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
     }
 
     public async Task MakeUserVerifiedAsync(string email, CancellationToken cancellationToken)

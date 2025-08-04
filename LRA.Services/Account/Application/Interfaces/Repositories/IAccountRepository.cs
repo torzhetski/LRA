@@ -20,7 +20,8 @@ public interface IAccountRepository
     Task UpdateAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
-    Task UpdateRolesAsync(List<string> roleNames, Guid keycloakId, CancellationToken cancellationToken);
+    Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

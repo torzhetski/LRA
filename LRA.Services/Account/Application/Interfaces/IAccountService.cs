@@ -15,7 +15,8 @@ public interface IAccountService
     Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
-    Task UpdateRolesAsync(List<string> roleNames, Guid keycloakId, CancellationToken cancellationToken);
+    Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken);
     Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task VerifyEmailAsync(string email, CancellationToken cancellationToken);
