@@ -28,22 +28,6 @@ public class AccountsController : ControllerBase
         return Ok(response);
     }
 
-    [Authorize]
-    [HttpGet("account/paginated")]
-    public async Task<IActionResult> GetPaginatedAccountsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
-    {
-        var response = await _accountService.GetPaginatedFromAccountServiceAsync(pageNumber, pageSize, cancellationToken);
-        return Ok(response);
-    }
-
-    [Authorize]
-    [HttpGet("accounts")]
-    public async Task<IActionResult> GetAllAccountsAsync(CancellationToken cancellationToken)
-    {
-        var response = await _accountService.GetAllFromAccountServiceAsync(cancellationToken);
-        return Ok(response);
-    }
-
     [Authorize(Policy = ServerPolicy.RequireClient)]
     [HttpPut("account")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
