@@ -1,5 +1,6 @@
 ﻿using LRA.Gateways.AdminGateway.Inetrfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Presentation.Services;
 using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,24 @@ namespace LRA.Gateways.AdminGateway.Controllers;
 [ApiController]
 public class AccountController : ControllerBase
 {
-    private readonly IAccountService _accountService;
+    private readonly IAdminAccountService _accountService;
 
-    public AccountController(IAccountService accountService)
+    public AccountController(IAdminAccountService accountService)
     {
         _accountService = accountService;
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpGet("account")]
+    public async Task<IActionResult> GetAccountResponseAsync(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        var response = await _accountService.GetAccountAsync(userId, cancellationToken);
+        return Ok(response);
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]

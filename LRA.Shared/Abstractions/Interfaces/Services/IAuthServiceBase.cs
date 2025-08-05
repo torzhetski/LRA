@@ -2,9 +2,9 @@
 using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Models.Auth;
 
-namespace LRA.Gateways.AdminGateway.Inetrfaces;
+namespace LRA.Shared.Abstractions.Interfaces.Services;
 
-public interface IAuthService
+public interface IAuthServiceBase
 {
     Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken);

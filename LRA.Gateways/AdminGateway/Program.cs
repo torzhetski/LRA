@@ -1,8 +1,14 @@
 using LRA.Gateways.AdminGateway.Extension;
+using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Presentation.Configuration;
 using LRA.Shared.Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<AccountingEndpointsSettings>(
+    builder.Configuration.GetSection("AccountingEndpointsSettings"));
+
+builder.Services.Configure<AuthEndpointsSettings>(
+    builder.Configuration.GetSection("AuthEndpointsSettings"));
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -24,11 +30,12 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.Services.AddServices();
 
+builder.Services.AddTypedHttpClients();
+
 builder.Services.AddRolesPolicy();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 

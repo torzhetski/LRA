@@ -1,9 +1,10 @@
 ﻿using LRA.Shared.Abstractions.Dtos.Account;
 
-namespace LRA.Gateways.AdminGateway.Inetrfaces;
+namespace LRA.Shared.Abstractions.Interfaces.Services;
 
-public interface IAccountService
+public interface IAccountServiceBase
 {
+    Task<AccountDto> GetAccountAsync(string keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken);
 }

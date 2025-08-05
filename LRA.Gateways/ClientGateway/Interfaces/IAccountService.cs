@@ -6,7 +6,7 @@ namespace LRA.Gateways.Client.Interfaces;
 
 public interface IAccountService
 {
-    Task<AccountDto> GetAccountAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDto> GetAccountAsync(string id, CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken);
     Task AccountSoftDelete(Guid id, CancellationToken cancellationToken);

@@ -1,31 +1,17 @@
 ﻿using LRA.Gateways.AdminGateway.Inetrfaces;
-using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Presentation.Services;
 
 namespace LRA.Gateways.AdminGateway.Services;
 
-public class AccountService : IAccountService, IRoleProvider
+public class AccountService : AccountServiceBase, IAdminAccountService
 {
-    private readonly IAccountHttpClient _httpClient;
-
-    public AccountService(IAccountHttpClient accountHttpClient)
+    public AccountService(IAccountHttpClient accountHttpClient) : base(accountHttpClient)
     {
-        _httpClient = accountHttpClient;
     }
 
-    public Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken)
+    public void SomeAdminMethod()
     {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<string>> GetRolesById(string userId, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+        Console.WriteLine("Hello world");
     }
 }

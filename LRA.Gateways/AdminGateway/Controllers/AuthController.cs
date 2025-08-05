@@ -11,9 +11,9 @@ namespace LRA.Gateways.AdminGateway.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IAdminAuthService _authService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAdminAuthService authService)
     {
         _authService = authService;
     }

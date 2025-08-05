@@ -17,9 +17,17 @@ public class AccountController : ControllerBase
 
     [Authorize]
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetInfo([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAccountById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountService.GetAccountByIdAsync(id, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("keycloak/{keycloakId}")]
+    public async Task<IActionResult> GetAccountByKeycloakId([FromRoute] Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var response = await _accountService.GetAccountByKeycloakIdAsync(keycloakId, cancellationToken);
         return Ok(response);
     }
 

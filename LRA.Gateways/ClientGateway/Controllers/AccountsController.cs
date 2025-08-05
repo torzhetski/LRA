@@ -20,14 +20,6 @@ public class AccountsController : ControllerBase
         _accountService = accountService;
     }
 
-    [Authorize]
-    [HttpGet("account/{id}")]
-    public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        var response = await _accountService.GetAccountAsync(id, cancellationToken);
-        return Ok(response);
-    }
-
     [Authorize(Policy = ServerPolicy.RequireClient)]
     [HttpPut("account")]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)

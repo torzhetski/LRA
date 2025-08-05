@@ -14,7 +14,7 @@ public class AccountService : IAccountService, IRoleProvider
         _httpClient = accountHttpClient;
     }
 
-    public async Task<AccountDto> GetAccountAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountAsync(string id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetByIdAsync(id, cancellationToken);
         return response;
