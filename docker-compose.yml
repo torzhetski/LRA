@@ -18,7 +18,16 @@ services:
       - "7002:8081"
     depends_on:
       - rabbitmq
-    
+
+  admin-gateway:
+    build:
+      context: .
+      dockerfile: LRA.Gateways/AdminGateway/Dockerfile
+    container_name: admin-gateway
+    ports:
+      - "5003:8080"
+      - "7003:8081"
+
   account:
     build:
       context: .

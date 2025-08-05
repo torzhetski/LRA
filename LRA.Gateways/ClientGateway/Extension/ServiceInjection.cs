@@ -1,15 +1,15 @@
 ﻿using FluentValidation;
 using LRA.Gateways.Client.Handlers;
 using LRA.Gateways.Client.Interfaces;
-using LRA.Gateways.Client.Requirement;
 using LRA.Gateways.Client.Services;
 using LRA.Gateways.Client.Validators;
+using LRA.Shared.Abstractions.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Presentation.Requirement;
 using LRA.Shared.Utils.Constants;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -23,8 +23,8 @@ public static class ServiceInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
-        services.AddScoped<IAuthorizationHandler, SystemRoleHandler>();
         services.AddFluentValidationAutoValidation();
+        services.AddScoped<IRoleProvider, AccountService>();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
         services.AddProblemDetails();
 

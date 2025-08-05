@@ -1,12 +1,11 @@
 ﻿using LRA.Gateways.Client.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Abstractions.Models;
-using LRA.Shared.Abstractions.Test;
 
 namespace LRA.Gateways.Client.Services;
 
-public class AccountService : IAccountService
+public class AccountService : IAccountService, IRoleProvider
 {
     private readonly IAccountHttpClient _httpClient;
 
@@ -15,7 +14,7 @@ public class AccountService : IAccountService
         _httpClient = accountHttpClient;
     }
 
-    public async Task<AccountDto> GetFromAccountServiceAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetByIdAsync(id, cancellationToken);
         return response;

@@ -1,5 +1,5 @@
-﻿using LRA.Gateways.Client.Interfaces;
-using LRA.Gateways.Client.Requirement;
+﻿using LRA.Shared.Abstractions.Interfaces;
+using LRA.Shared.Presentation.Requirement;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -7,11 +7,11 @@ namespace LRA.Gateways.Client.Handlers;
 
 public class SystemRoleHandler : AuthorizationHandler<SystemRoleRequirement>
 {
-    private readonly IAccountService _accountService;
+    private readonly IRoleProvider _roleProvider;
 
-    public SystemRoleHandler(IAccountService accountService)
+    public SystemRoleHandler(IRoleProvider accountService)
     {
-        _accountService = accountService;
+        _roleProvider = accountService;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SystemRoleRequirement requirement)
@@ -25,9 +25,9 @@ public class SystemRoleHandler : AuthorizationHandler<SystemRoleRequirement>
             return;
         }
 
-        var roles = await _accountService.GetRolesById(keycloakId, CancellationToken.None);
+        var roles = await _roleProvider.GetRolesById(keycloakId, CancellationToken.None);
 
-        if (roles.Contains(requirement.RequiredRole))
+        if (roles.Any(role => requirement.AllowedRoles.Contains(role)))
         {
             context.Succeed(requirement);
         }

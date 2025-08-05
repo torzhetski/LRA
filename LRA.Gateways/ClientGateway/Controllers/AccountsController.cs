@@ -24,7 +24,7 @@ public class AccountsController : ControllerBase
     [HttpGet("account/{id}")]
     public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var response = await _accountService.GetFromAccountServiceAsync(id, cancellationToken);
+        var response = await _accountService.GetAccountAsync(id, cancellationToken);
         return Ok(response);
     }
 
