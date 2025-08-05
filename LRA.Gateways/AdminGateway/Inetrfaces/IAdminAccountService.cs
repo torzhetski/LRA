@@ -6,5 +6,4 @@ namespace LRA.Gateways.AdminGateway.Inetrfaces;
 
 public interface IAdminAccountService : IAccountServiceBase, IRoleProvider
 {
-    void SomeAdminMethod();
 }

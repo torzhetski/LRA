@@ -9,9 +9,4 @@ public class AccountService : AccountServiceBase, IAdminAccountService
     public AccountService(IAccountHttpClient accountHttpClient) : base(accountHttpClient)
     {
     }
-
-    public void SomeAdminMethod()
-    {
-        Console.WriteLine("Hello world");
-    }
 }

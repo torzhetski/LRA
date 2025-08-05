@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
-[Route("api/admin")]
+[Route("api/account")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -20,8 +20,8 @@ public class AccountController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
-    [HttpGet("account")]
-    public async Task<IActionResult> GetAccountResponseAsync(CancellationToken cancellationToken)
+    [HttpGet]
+    public async Task<IActionResult> GetAccountAsync(CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
@@ -33,7 +33,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
-    [HttpPut("account")]
+    [HttpPut]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

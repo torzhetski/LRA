@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
-[Route("api/admin/auth")]
+[Route("api/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {

@@ -9,9 +9,4 @@ public class AuthService : AuthServiceBase, IAdminAuthService
     public AuthService(IAuthHttpClient httpClient) : base(httpClient)
     {
     }
-
-    public void SomeAdminMethod()
-    {
-        Console.WriteLine("Hello world");
-    }
 }
