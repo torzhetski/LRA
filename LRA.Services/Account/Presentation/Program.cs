@@ -23,8 +23,18 @@ builder.Services.Configure<RabbitMQSettings>(
 builder.Services.Configure<KeycloakServiceSettings>(
     builder.Configuration.GetSection("KeycloakServiceSettings"));
 
+
 builder.Services.Configure<AdminSettings>(
     builder.Configuration.GetSection("AdminSettings"));
+
+builder.Services.Configure<KeycloakGoogleProviderSettings>(
+    builder.Configuration.GetSection("KeycloakGoogleProviderSettings"));
+
+builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
+
+builder.Services.AddScoped<IKeycloakService, KeycloakService>();
+
+builder.Services.AddSingleton<IRabbitMQProducerService, RabbitMQProducerService>();
 
 builder.Services.AddDatabase(builder.Configuration);
 

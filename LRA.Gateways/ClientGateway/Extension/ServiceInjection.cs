@@ -10,7 +10,10 @@ using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace LRA.Gateways.Client.Extension;
@@ -57,12 +60,12 @@ public static class ServiceInjection
     public static IServiceCollection ConfigureAuthentication(this IServiceCollection services)
     {
         services.AddAuthentication("Bearer")
-        .AddJwtBearer("Bearer", options =>
-        {
-            options.Authority = "http://keycloak:8080/realms/keycloak-auth";
-            options.Audience = "account";
-            options.RequireHttpsMetadata = false;
-        });
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = configuration["JWTSettings:Authority"];
+                    options.Audience = configuration["JWTSettings:Audience"];
+                    options.RequireHttpsMetadata = configuration.GetValue<bool>("JWTSettings:RequireHttpsMetadata");
+                });
         services.AddAuthorization(options =>
         {
             options.AddPolicy(ServerPolicy.RequireClient, policy =>
