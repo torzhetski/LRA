@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LRA.Subscription.Infrasturcture.Persistence.Exstensions;
+namespace LRA.Subscription.Infrasturcture.Persistence.Extension;
 
 public static class ServiceInjection
 {
@@ -17,6 +17,7 @@ public static class ServiceInjection
             options.UseNpgsql(connString));
 
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         return services;
     }

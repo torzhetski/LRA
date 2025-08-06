@@ -1,8 +1,9 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
 public interface ISubscriptionHttpClient
 {
-    Task<TestMessageModel> GetAsync(int id, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, string email, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetCustomerPortalSessionAsync(string keycloakId, string email, CancellationToken cancellationToken);
 }

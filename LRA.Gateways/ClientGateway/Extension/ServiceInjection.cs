@@ -18,7 +18,7 @@ public static class ServiceInjection
     {
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ITestSubscriptionService, TestSubscriptionService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
         services.AddFluentValidationAutoValidation();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
