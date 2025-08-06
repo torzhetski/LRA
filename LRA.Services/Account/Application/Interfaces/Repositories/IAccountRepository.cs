@@ -11,6 +11,7 @@ public interface IAccountRepository
     Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     void SoftDelete (Guid id);
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
     void Delete(Guid id);
@@ -19,6 +20,8 @@ public interface IAccountRepository
     Task UpdateAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
+    Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

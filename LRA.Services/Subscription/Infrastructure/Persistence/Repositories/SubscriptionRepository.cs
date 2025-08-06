@@ -23,7 +23,7 @@ public class SubscriptionRepository : ISubscriptionRepository
 
     public async Task UpdateSubsriptionAsync(SubscriptionEntity entity, CancellationToken token)
     {
-        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == entity.Id, cancellationToken: token);
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.StripeSubscriptionId == entity.StripeSubscriptionId, cancellationToken: token);
 
         if (subscription == null)
         {
@@ -37,6 +37,12 @@ public class SubscriptionRepository : ISubscriptionRepository
         subscription.LastUpdated = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(token);
+    }
+
+    public async Task<bool> HasCustomerActiveSubscription(string customerId, CancellationToken cancellationToken)
+    {
+        var response = await _context.Subscriptions.Where(x => x.CustomerId == customerId && x.Status == "active").AnyAsync(cancellationToken);
+        return response;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

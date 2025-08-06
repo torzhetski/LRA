@@ -13,8 +13,9 @@ public class AccountEntity : IBaseEntity, ISoftDeletable
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedUtc { get; set; }
     public bool IsEmailVerified { get; set; }
-    public List<string> Roles { get; set; } = new List<string>();
     public bool IsDeleted { get; set; }
     public DateTime? DeletedOnUtc { get; set; }
     public bool IsTwoFaEnabled { get; set; } = true;
+
+    public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
 }
