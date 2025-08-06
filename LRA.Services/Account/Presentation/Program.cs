@@ -1,8 +1,11 @@
 using LRA.Account.Application.Extension;
 using LRA.Account.Infrastructure.Persistence.Extensions;
+using LRA.Account.Presentation.Extensions;
 using LRA.Account.Presentation.Handlers;
 using LRA.Account.Presentation.Interfaces;
 using LRA.Account.Presentation.Services;
+using LRA.Account.Presentation.Settings;
+using LRA.Account.Presentation.Utils;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
@@ -20,6 +23,13 @@ builder.Services.Configure<RabbitMQSettings>(
 builder.Services.Configure<KeycloakServiceSettings>(
     builder.Configuration.GetSection("KeycloakServiceSettings"));
 
+
+builder.Services.Configure<AdminSettings>(
+    builder.Configuration.GetSection("AdminSettings"));
+
+builder.Services.Configure<KeycloakGoogleProviderSettings>(
+    builder.Configuration.GetSection("KeycloakGoogleProviderSettings"));
+
 builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
 
 builder.Services.AddScoped<IKeycloakService, KeycloakService>();
@@ -30,16 +40,17 @@ builder.Services.AddDatabase(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 
-builder.Services.AddControllers();
+builder.Services.AddPresentation();
 
-builder.Services.AddExceptionHandler<BaseExceptionHandler>();
-builder.Services.AddExceptionHandler<AccountExceptionHandler>();
-builder.Services.AddProblemDetails();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
+    await seeder.SeedAdminIfNotExistsAsync(CancellationToken.None);
     await app.ApplyMigrations();
 }
 

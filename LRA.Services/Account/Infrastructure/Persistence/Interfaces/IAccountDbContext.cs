@@ -8,6 +8,7 @@ public interface IAccountDbContext
 {
     DbSet<AccountEntity> Accounts { get; set; }
     DbSet<VerificationEntity> VerificationModels { get; set; }
+    DbSet<RoleEntity> Roles { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

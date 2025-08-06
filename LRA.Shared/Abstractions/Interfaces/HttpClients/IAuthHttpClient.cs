@@ -1,6 +1,8 @@
 ﻿using LRA.Shared.Abstractions.Dtos.Verification;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Abstractions.Dtos;
+using System.Dynamic;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
@@ -18,4 +20,6 @@ public interface IAuthHttpClient
     Task ResetPasswordVerifyAsync(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken);
     Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken);
     Task ChangeUserEmailVerifyAsync(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken);
+    Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken);
 }

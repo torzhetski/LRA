@@ -1,6 +1,6 @@
 ﻿using LRA.Subscription.Infrasturcture.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using LRA.Shared.Abstractions.Test;
+using LRA.Subscription.Domain.Entities;
 
 namespace LRA.Subscription.Infrasturcture.Persistence;
 
@@ -11,5 +11,6 @@ public class SubscriptionDbContext : DbContext, ISubscriptionDbContext
     {
     }
 
-    public virtual DbSet<TestModel> TestModels { get; set; }
+    public virtual DbSet<CustomerEntity> Customers { get; set; }
+    public virtual DbSet<SubscriptionEntity> Subscriptions { get; set; }
 }

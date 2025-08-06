@@ -1,7 +1,8 @@
 ﻿using LRA.Subscription.Application.Interfaces.Repositories;
 using LRA.Subscription.Infrasturcture.Persistence.Interfaces;
-using LRA.Shared.Abstractions.Test;
+using LRA.Subscription.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using LRA.Shared.Utils.Exceptions;
 
 namespace LRA.Subscription.Infrasturcture.Persistence.Repositories;
 
@@ -14,24 +15,34 @@ public class SubscriptionRepository : ISubscriptionRepository
         _context = context;
     }
 
-    public async Task<Guid> CreateAsync(TestModel model)
+    public async Task AddSubsriptionAsync(SubscriptionEntity entity, CancellationToken token)
     {
-        _context.TestModels.Add(model);
-        await _context.SaveChangesAsync();
-
-        return model.Id;
+        _context.Subscriptions.Add(entity);
+        await _context.SaveChangesAsync(token);
     }
 
-    public async Task<TestModel> GetAsync(Guid id, CancellationToken cancellationToken)
+    public async Task UpdateSubsriptionAsync(SubscriptionEntity entity, CancellationToken token)
     {
-        var model = await _context.TestModels.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var subscription = await _context.Subscriptions.FirstOrDefaultAsync(s => s.StripeSubscriptionId == entity.StripeSubscriptionId, cancellationToken: token);
 
-        if (model == null)
+        if (subscription == null)
         {
-            throw new ArgumentNullException(nameof(model));
+            throw new NotFoundException(nameof(entity), entity.Id);
         }
 
-        return model;
+        subscription.Status = entity.Status;
+        subscription.StartDate = entity.StartDate; 
+        subscription.EndDate = entity.EndDate;
+        subscription.CancelAtThePeriodEnd = entity.CancelAtThePeriodEnd;
+        subscription.LastUpdated = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(token);
+    }
+
+    public async Task<bool> HasCustomerActiveSubscription(string customerId, CancellationToken cancellationToken)
+    {
+        var response = await _context.Subscriptions.Where(x => x.CustomerId == customerId && x.Status == "active").AnyAsync(cancellationToken);
+        return response;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

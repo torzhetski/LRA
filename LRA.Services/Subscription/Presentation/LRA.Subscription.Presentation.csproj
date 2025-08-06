@@ -10,6 +10,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
@@ -19,6 +27,7 @@
     <ProjectReference Include="..\..\..\LRA.Shared\Presentation\LRA.Shared.Presentation.csproj" />
     <ProjectReference Include="..\..\..\LRA.Shared\Utils\LRA.Shared.Utils.csproj" />
     <ProjectReference Include="..\Application\LRA.Subscription.Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\External\StripeProvider\LRA.Subscription.Infrasturcture.External.StripeProvider.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\LRA.Subscription.Infrasturcture.Persistence.csproj" />
   </ItemGroup>
 

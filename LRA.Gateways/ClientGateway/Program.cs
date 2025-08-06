@@ -4,7 +4,7 @@ using LRA.Shared.Presentation.Configuration;
 using LRA.Shared.Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Logging.AddConsole();
 builder.Services.Configure<AccountingEndpointsSettings>(
     builder.Configuration.GetSection("AccountingEndpointsSettings"));
 
@@ -17,6 +17,8 @@ builder.Services.Configure<SubscriptionServiceSettings>(
 builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();
+
+builder.Services.ConfigureAuthentication();
 
 builder.Services.AddVersioning();
 
@@ -41,6 +43,8 @@ builder.WebHost.ConfigureKestrel(options =>
 
     options.ListenAnyIP(httpPort);
 });
+
+builder.Services.ConfigureAuthentication(builder.Configuration);
 
 builder.Services.AddControllers();
 
