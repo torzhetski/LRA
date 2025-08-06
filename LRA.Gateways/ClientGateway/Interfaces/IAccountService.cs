@@ -10,4 +10,5 @@ public interface IAccountService
     Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken);
     Task AccountSoftDelete(Guid id, CancellationToken cancellationToken);
+    Task<List<string>> GetRolesById(string keycloakId, CancellationToken cancellationToken);
 }

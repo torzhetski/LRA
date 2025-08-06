@@ -10,6 +10,5 @@ public class AccountDto
     public string? PhoneNumber { get; set; }
     public DateTime CreatedUtc { get; set; }
     public DateTime? UpdatedUtc { get; set; }
-    public List<string> Roles { get; set; } = new List<string>();
     public bool IsTwoFaEnabled { get; set; } = true;
 }

@@ -73,6 +73,15 @@ public class AccountRepository : IAccountRepository
         return await items.ToListAsync(cancellationToken);
     }
 
+    public async Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.Include(a => a.Roles).FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
+
+        var roles = entity?.Roles.Select(x => x.RoleName).ToList() ?? new List<string>();
+
+        return roles;
+    }
+
     public void SoftDelete(Guid id)
     {
         var entity = _context.Accounts.FirstOrDefault(x => x.Id == id);
@@ -147,6 +156,50 @@ public class AccountRepository : IAccountRepository
         entity.Email = newEmail;
         entity.UpdatedUtc = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.KeycloakId == keycloakId, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), keycloakId);
+        }
+
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
+
+
+        if (!entity.Roles.Contains(roleFromDb)) 
+        {
+            entity.Roles.Add(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.KeycloakId == keycloakId, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), keycloakId);
+        }
+
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
+
+
+        if (entity.Roles.Contains(roleFromDb))
+        {
+            entity.Roles.Remove(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
     }
 
     public async Task MakeUserVerifiedAsync(string email, CancellationToken cancellationToken)

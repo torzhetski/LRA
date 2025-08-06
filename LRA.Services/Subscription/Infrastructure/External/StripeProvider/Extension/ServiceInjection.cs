@@ -1,4 +1,5 @@
 ﻿using LRA.Subscription.Application.Interfaces;
+using LRA.Subscription.Infrasturcture.External.StripeProvider.Converter;
 using LRA.Subscription.Infrasturcture.External.StripeProvider.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
@@ -14,6 +15,7 @@ public static class ServiceInjection
         services.AddScoped<Stripe.BillingPortal.SessionService>();
         services.AddScoped<CustomerService>();
         services.AddScoped<IStripeService, StripeService>();
+        services.AddScoped<IStripeEventConverter, StripeEventConverter>();
 
         return services;
     }

@@ -1,12 +1,15 @@
 ﻿using FluentValidation;
 using LRA.Gateways.Client.Handlers;
 using LRA.Gateways.Client.Interfaces;
+using LRA.Gateways.Client.Requirement;
 using LRA.Gateways.Client.Services;
 using LRA.Gateways.Client.Validators;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Utils.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -23,6 +26,7 @@ public static class ServiceInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
+        services.AddScoped<IAuthorizationHandler, SystemRoleHandler>();
         services.AddFluentValidationAutoValidation();
         services.AddExceptionHandler<ClientGatewayExceptionHandler>();
         services.AddProblemDetails();
@@ -53,7 +57,7 @@ public static class ServiceInjection
         return services;
     }
 
-    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services)
     {
         services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
@@ -62,7 +66,11 @@ public static class ServiceInjection
                     options.Audience = configuration["JWTSettings:Audience"];
                     options.RequireHttpsMetadata = configuration.GetValue<bool>("JWTSettings:RequireHttpsMetadata");
                 });
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(ServerPolicy.RequireClient, policy =>
+                policy.Requirements.Add(new SystemRoleRequirement(SystemRoles.Client)));
+        });
         return services;
     }
 }

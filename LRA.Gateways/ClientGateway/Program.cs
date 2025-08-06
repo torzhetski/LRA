@@ -18,6 +18,8 @@ builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();
 
+builder.Services.ConfigureAuthentication();
+
 builder.Services.AddVersioning();
 
 builder.Services.AddEndpointsApiExplorer();
