@@ -57,7 +57,7 @@ public static class ServiceInjection
         return services;
     }
 
-    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services)
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>

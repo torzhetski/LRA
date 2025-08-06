@@ -102,22 +102,22 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Id = new Guid("7f2e843e-1ffb-4ef5-b13c-1eecf50df577"),
                             RoleName = "SuperAdmin"
                         },
                         new
                         {
-                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Id = new Guid("f496959f-8e1a-4a4f-b5d2-49f32c6e82af"),
                             RoleName = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Id = new Guid("9d773595-f07e-4c44-a00e-b5bdc388ba11"),
                             RoleName = "Client"
                         },
                         new
                         {
-                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Id = new Guid("39c39491-7a96-4e2d-831e-d38def097117"),
                             RoleName = "Paramedic"
                         });
                 });
@@ -134,6 +134,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Token")
                         .IsRequired()

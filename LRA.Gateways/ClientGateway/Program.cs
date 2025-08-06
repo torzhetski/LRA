@@ -18,7 +18,7 @@ builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();
 
-builder.Services.ConfigureAuthentication();
+builder.Services.ConfigureAuthentication(builder.Configuration);
 
 builder.Services.AddVersioning();
 
@@ -43,8 +43,6 @@ builder.WebHost.ConfigureKestrel(options =>
 
     options.ListenAnyIP(httpPort);
 });
-
-builder.Services.ConfigureAuthentication(builder.Configuration);
 
 builder.Services.AddControllers();
 

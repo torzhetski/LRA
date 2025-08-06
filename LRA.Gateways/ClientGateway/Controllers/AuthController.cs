@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LRA.Gateways.Client.Controllers;
 
-[Route("api/v{version:apiVersion}/clients/auth")]
+[Route("api/v{version:apiVersion}/auth")]
 [ApiController]
 [ApiVersion("1.0")]
 public class AuthController : ControllerBase

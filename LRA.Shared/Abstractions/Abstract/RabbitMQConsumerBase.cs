@@ -29,14 +29,6 @@ public abstract class RabbitMQConsumerBase : BackgroundService
         _connection = await factory.CreateConnectionAsync(token);
         _channel = await _connection.CreateChannelAsync(cancellationToken: token);
 
-        await _channel.QueueDeclareAsync(
-            queue: _options.Value.Consumer.QueueName,
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null,
-            cancellationToken: token);
-
         await base.StartAsync(token);
     }
 }

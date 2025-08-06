@@ -1,6 +1,4 @@
-﻿using LRA.Account.Domain.Entities;
-using RabbitMQ.Client.Events;
-using LRA.Shared.Abstractions.Dtos.Account;
+﻿using RabbitMQ.Client.Events;
 using LRA.Shared.Abstractions.RabbitMQProvider.Services;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
 using Microsoft.Extensions.Logging;

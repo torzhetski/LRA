@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Gateways.ClientGateway.Controllers;
 
-[Route("api/v{version:apiVersion}/clients")]
+[Route("api/v{version:apiVersion}/account")]
 [ApiController]
 [ApiVersion("1.0")]
 public class AccountsController : ControllerBase
@@ -21,7 +21,7 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("account/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountService.GetFromAccountServiceAsync(id, cancellationToken);
@@ -29,7 +29,7 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireClient)]
-    [HttpPut("account")]
+    [HttpPut]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
