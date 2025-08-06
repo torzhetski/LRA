@@ -17,7 +17,6 @@ public static class AccountMapper
             PhoneNumber = model.PhoneNumber,
             CreatedUtc = model.CreatedUtc,
             UpdatedUtc = model.UpdatedUtc,
-            Roles = model.Roles,
             IsTwoFaEnabled = model.IsTwoFaEnabled,
         };
     }

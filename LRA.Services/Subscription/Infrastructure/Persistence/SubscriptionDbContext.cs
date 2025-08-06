@@ -12,4 +12,5 @@ public class SubscriptionDbContext : DbContext, ISubscriptionDbContext
     }
 
     public virtual DbSet<CustomerEntity> Customers { get; set; }
+    public virtual DbSet<SubscriptionEntity> Subscriptions { get; set; }
 }

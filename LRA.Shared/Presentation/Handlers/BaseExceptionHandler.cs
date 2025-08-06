@@ -26,7 +26,7 @@ public class BaseExceptionHandler : IExceptionHandler
             NotFoundException notFoundEx => new ProblemDetails
             {
                 Title = notFoundEx.Message,
-                Status = StatusCodes.Status400BadRequest
+                Status = StatusCodes.Status404NotFound
             },
             _ => null!
         };
