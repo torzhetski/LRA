@@ -53,6 +53,12 @@ public class AccountService : IAccountService
         return response;
     }
 
+    public async Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var response = await _accountRepository.GetRolesByKeycloakIdAsync(keycloakId, cancellationToken);
+        return response;
+    }
+
     public async Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken)
     {
         await _accountRepository.UpdateAsync(dto, keycloakId, cancellationToken);
@@ -66,6 +72,16 @@ public class AccountService : IAccountService
     public async Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken)
     {
         await _accountRepository.UpdateEmailAsync(newEmail, keycloakId, cancellationToken);
+    }
+
+    public async Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.AddRoleAsync(roleName, keycloakId, cancellationToken);
+    }
+
+    public async Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
     public async Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken)

@@ -5,6 +5,8 @@ using System.Text.Json;
 using LRA.Shared.Abstractions.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Http.Json;
+using LRA.Shared.Utils.Exceptions;
+using System.Net;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -33,7 +35,14 @@ public class SubscriptionHttpClient : ISubscriptionHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Conflict:
+                    throw new AlreadyExistsException("Subscription");
+                default:
+                    throw new Exception("Problems with chekout session");
+            }
 
         var redirectUrl = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
