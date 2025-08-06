@@ -1,6 +1,4 @@
-﻿using LRA.Shared.Abstractions.Models;
-
-namespace LRA.Email.SmtpService.Interfaces;
+﻿namespace LRA.Email.SmtpService.Interfaces;
 
 public interface IMessageService
 {

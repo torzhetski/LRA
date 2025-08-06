@@ -3,7 +3,6 @@ using LRA.Email.SmtpService.Settings;
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
-using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Email.SmtpService.Services;
 

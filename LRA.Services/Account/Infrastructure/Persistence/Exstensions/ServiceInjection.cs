@@ -1,11 +1,11 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Account.Infrasturcture.Persistence.Interfaces;
-using LRA.Account.Infrasturcture.Persistence.Repositories;
+using LRA.Account.Infrastructure.Persistence.Interfaces;
+using LRA.Account.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LRA.Account.Infrasturcture.Persistence.Exstensions;
+namespace LRA.Account.Infrastructure.Persistence.Extensions;
 
 public static class ServiceInjection
 {
@@ -17,6 +17,7 @@ public static class ServiceInjection
             options.UseNpgsql(connString));
 
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IVerificationRepository, VerificationRepository>();
 
         return services;
     }

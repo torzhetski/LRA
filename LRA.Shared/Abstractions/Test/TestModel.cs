@@ -2,7 +2,7 @@
 
 namespace LRA.Shared.Abstractions.Test;
 
-public class TestModel : IBaseEntity, ISoftDeleteble
+public class TestModel : IBaseEntity, ISoftDeletable
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }

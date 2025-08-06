@@ -3,7 +3,6 @@ using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LRA.Shared.Presentation.Configuration;

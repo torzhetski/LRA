@@ -1,6 +1,6 @@
 ﻿namespace LRA.Shared.Abstractions.Interfaces.Entities;
 
-public interface ISoftDeleteble
+public interface ISoftDeletable
 {
     bool IsDeleted { get; set; }
 

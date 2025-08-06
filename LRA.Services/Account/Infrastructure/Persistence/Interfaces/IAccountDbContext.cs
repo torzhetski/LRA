@@ -1,11 +1,13 @@
-﻿using LRA.Shared.Abstractions.Test;
+﻿using LRA.Account.Domain.Entities;
+using LRA.Shared.Abstractions.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 
-namespace LRA.Account.Infrasturcture.Persistence.Interfaces;
+namespace LRA.Account.Infrastructure.Persistence.Interfaces;
 
 public interface IAccountDbContext
 {
-    DbSet<TestModel> TestModels { get; set; }
+    DbSet<AccountEntity> Accounts { get; set; }
+    DbSet<VerificationEntity> VerificationModels { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
