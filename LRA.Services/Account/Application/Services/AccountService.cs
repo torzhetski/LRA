@@ -4,7 +4,9 @@ using LRA.Account.Domain.Entities;
 using LRA.Account.Domain.Settings;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Stripe;
+using LRA.Shared.Utils;
 using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils.Exceptions;
 using Microsoft.Extensions.Options;
@@ -29,7 +31,7 @@ public class AccountService : IAccountService
         _queueRoutingKey = rabbitMqProducerOptions.Value.SubscriptionQueueRoutingKey;
     }
 
-    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken)
+    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken, CredentialsDetailsEntity credentials = null)
     {
         if (!await _accountRepository.IsAccountExists(keycloakId, cancellationToken))
         {
@@ -37,6 +39,7 @@ public class AccountService : IAccountService
             {
                 KeycloakId = keycloakId,
                 Email = email,
+                CredentialsDetailsEntity = credentials,
             };
             var id = await _accountRepository.CreateAsync(model, cancellationToken);
 
@@ -47,6 +50,16 @@ public class AccountService : IAccountService
             };
             await _rabbitMQProducerService.SendMessageAsync(customerModel, _queueName, _queueRoutingKey, cancellationToken);
         }
+    }
+
+    public async Task CreateAccountWithTempPasswordAsync(string email, Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var credentials = new CredentialsDetailsEntity()
+        {
+            IsPasswordUsed = false,
+            ExpiresAt = DateTime.UtcNow.AddDays(1),
+        };
+        await CreateAccountAsync(email, keycloakId, cancellationToken, credentials);
     }
 
     public async Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)

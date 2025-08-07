@@ -1,11 +1,13 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Application.Interfaces;
 
 public interface IAccountService
 {
-    Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken);
+    Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken, CredentialsDetailsEntity credentials = null);
+    Task CreateAccountWithTempPasswordAsync(string email, Guid keycloakId, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);

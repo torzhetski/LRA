@@ -2,7 +2,9 @@
 using LRA.Account.Domain.Entities;
 using LRA.Account.Presentation.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Verification;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Auth;
+using LRA.Shared.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -32,7 +34,7 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("keycloak/registration")]
+    [HttpPost("account/registration")]
     public async Task<IActionResult> CreateUser([FromBody] RegistrationModel registrationModel, CancellationToken cancellationToken)
     {
         var keycloakId = await _keycloakService.CreateKeycloakUserAsync(registrationModel, cancellationToken);
@@ -42,6 +44,34 @@ public class AuthController : ControllerBase
         await _authService.SendEmailVerificationTokenAsync(registrationModel.Email, 60, cancellationToken);
 
         return Ok(keycloakId);
+    }
+
+    [Authorize]
+    [HttpPost("account-with-temp-pass/registration")]
+    public async Task<IActionResult> CreateUserWithTempPassword([FromQuery] string email, string role, CancellationToken cancellationToken)
+    {
+        var tempPassword = StringGenerator.GeneratePassword();
+
+        var registrationModel = new RegistrationModel
+        {
+            Email = email,
+            Password = tempPassword,
+            ConfirmPassword = tempPassword,
+        };
+        var keycloakIdStr = await _keycloakService.CreateKeycloakUserAsync(registrationModel, cancellationToken);
+
+        var keycloakId = Guid.Parse(keycloakIdStr);
+        await _keycloakService.EnableKeycloakUserAsync(keycloakId, cancellationToken);
+
+        await _accountService.CreateAccountWithTempPasswordAsync(registrationModel.Email, keycloakId, cancellationToken);
+        await _accountService.AddRoleAsync(role, keycloakId, cancellationToken);
+
+        var passwordModel = new TempPasswordModel() 
+        { 
+            TempPassword = tempPassword 
+        };    
+
+        return Ok(passwordModel);
     }
 
     [Authorize]

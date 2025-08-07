@@ -45,7 +45,7 @@ public class AuthHttpClient : IAuthHttpClient
     public async Task<string> CreateUserAsync(RegistrationModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        using var request = new HttpRequestMessage(HttpMethod.Post, "keycloak/registration")
+        using var request = new HttpRequestMessage(HttpMethod.Post, "account/registration")
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -67,6 +67,22 @@ public class AuthHttpClient : IAuthHttpClient
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
 
         return content;
+    }
+
+    public async Task<TempPasswordModel> CreateUserWithTempPassword(string email, string role, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("account-with-temp-pass/registration", new Dictionary<string, string?>
+        {
+            ["email"] = email,
+            ["role"] = role,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        var password = await response.Content.ReadFromJsonAsync<TempPasswordModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        return password;
     }
 
     public async Task<VerificationDto> LoginUserAsync(LoginModel model, CancellationToken cancellationToken)
