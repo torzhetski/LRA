@@ -23,5 +23,6 @@ public interface IAccountRepository
     Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
+    Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

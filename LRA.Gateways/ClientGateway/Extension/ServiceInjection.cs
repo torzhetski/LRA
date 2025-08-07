@@ -54,15 +54,15 @@ public static class ServiceInjection
         return services;
     }
 
-    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services)
+    public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication("Bearer")
-        .AddJwtBearer("Bearer", options =>
-        {
-            options.Authority = "http://keycloak:8080/realms/keycloak-auth";
-            options.Audience = "account";
-            options.RequireHttpsMetadata = false;
-        });
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = configuration["JWTSettings:Authority"];
+                    options.Audience = configuration["JWTSettings:Audience"];
+                    options.RequireHttpsMetadata = configuration.GetValue<bool>("JWTSettings:RequireHttpsMetadata");
+                });
         services.AddAuthorization(options =>
         {
             options.AddPolicy(ServerPolicy.RequireClient, policy =>

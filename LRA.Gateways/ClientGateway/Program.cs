@@ -2,9 +2,16 @@ using LRA.Gateways.Client.Extension;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Presentation.Configuration;
 using LRA.Shared.Presentation.Extensions;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .Enrich.FromLogContext()
+    .MinimumLevel.Debug()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Logging.AddConsole();
 builder.Services.Configure<AccountingEndpointsSettings>(
     builder.Configuration.GetSection("AccountingEndpointsSettings"));
 
@@ -18,7 +25,7 @@ builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();
 
-builder.Services.ConfigureAuthentication();
+builder.Services.ConfigureAuthentication(builder.Configuration);
 
 builder.Services.AddVersioning();
 

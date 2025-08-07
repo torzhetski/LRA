@@ -1,5 +1,6 @@
 using LRA.Gateways.Stripe.Inerfaces;
 using LRA.Gateways.Stripe.Services;
+using LRA.Gateways.Stripe.Settings;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
 using LRA.Shared.Infrastructure.RabbitMq;
@@ -8,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<RabbitMQSettings>(
     builder.Configuration.GetSection("RabbitMqSettings"));
+
+builder.Services.Configure<StripeRabbitMqProducerSettings>(
+    builder.Configuration.GetSection("StripeRabbitMqProducerSettings"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

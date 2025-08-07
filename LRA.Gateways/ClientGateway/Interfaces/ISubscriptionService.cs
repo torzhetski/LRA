@@ -4,6 +4,6 @@ namespace LRA.Gateways.Client.Interfaces;
 
 public interface ISubscriptionService
 {
-    Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, string email, CancellationToken cancellationToken);
-    Task<RedirectUrlModel> GetCustomersPortalUrlAsync(string keycloakId, string email, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetCustomersPortalUrlAsync(string keycloakId, CancellationToken cancellationToken);
 }

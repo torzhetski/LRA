@@ -19,9 +19,9 @@ public class AccountRepository : IAccountRepository
     }
 
     public async Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken)
-    {
+    {    
         _context.Accounts.Add(model);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken); 
 
         return model.Id;
     }
@@ -210,6 +210,12 @@ public class AccountRepository : IAccountRepository
 
         entity.IsEmailVerified = true;
         await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
+        return !(entity == null);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

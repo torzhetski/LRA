@@ -34,17 +34,12 @@ public class Seeder
             };
 
             var keycloakIdStr = await _keycloakService.CreateKeycloakUserAsync(creationModel, cancellationToken);
-            var KeycloakId = Guid.Parse(keycloakIdStr);
+            var keycloakId = Guid.Parse(keycloakIdStr);
 
-            await _keycloakService.EnableKeycloakUserAsync(KeycloakId, cancellationToken);
+            await _keycloakService.EnableKeycloakUserAsync(keycloakId, cancellationToken);
 
-            var acoountModel = new AccountEntity()
-            {
-                KeycloakId = KeycloakId,
-                Email = _settings.Value.AdminEmail,
-            };
-            await _accountService.CreateAccountAsync(acoountModel, cancellationToken);
-            await _accountService.AddRoleAsync(SystemRoles.SuperAdmin, KeycloakId, cancellationToken);
+            await _accountService.CreateAccountAsync(_settings.Value.AdminEmail, keycloakId, cancellationToken);
+            await _accountService.AddRoleAsync(SystemRoles.SuperAdmin, keycloakId, cancellationToken);
         }
         catch (AlreadyExistsException ex) 
         {

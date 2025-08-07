@@ -116,7 +116,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var body = new Dictionary<string, string>
         {
             ["grant_type"] = "password",
-            ["client_id"] = $"public-client",
+            ["client_id"] = _options.Value.PublicClientId,
             ["username"] = model.Email,
             ["password"] = model.Password,
         };
@@ -147,7 +147,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var body = new Dictionary<string, string>
         {
             ["grant_type"] = "refresh_token",
-            ["client_id"] = "public-client",
+            ["client_id"] = _options.Value.PublicClientId,
             ["refresh_token"] = refreshTokenModel.RefreshToken
         };
 
@@ -159,7 +159,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
             switch (response.StatusCode)
             {
                 case HttpStatusCode.BadRequest:
-                    throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                    throw new UnauthorizedAccessException("Invalid or expired refresh token" );
                 default:
                     throw new Exception("Failed to refresh token");
             }
@@ -174,7 +174,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
     {
         var body = new Dictionary<string, string>
         {
-            ["client_id"] = "public-client",
+            ["client_id"] = _options.Value.PublicClientId,
             ["refresh_token"] = refreshTokenModel.RefreshToken
         };
         using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/logout");
@@ -241,14 +241,42 @@ public class KeycloakHttpClient : IKeycloakHttpClient
             throw new Exception($"Failed to update email: {response.StatusCode}");
         }
     }
-    
-        private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)
+
+    public async Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post,
+            $"{_options.Value.KeycloakBaseUrl}protocol/openid-connect/token");
+
+        var body = new Dictionary<string, string>
+        {
+            ["grant_type"] = "authorization_code",
+            ["code"] = code,
+            ["client_id"] = _options.Value.PublicClientId,
+            ["redirect_uri"] = _options.Value.GoogleLoginRedirectUrl
+        };
+
+        request.Content = new FormUrlEncodedContent(body);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new Exception($"Google auth failed: {response.StatusCode} - {error}");
+        }
+
+        var tokens = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return tokens;
+    }
+
+    private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, $"{_options.Value.AccessTokenUrl}");
 
         var body = new Dictionary<string, string>
         {
-            ["client_id"] = $"{_options.Value.ClientId}",
+            ["client_id"] = $"{_options.Value.AdminClientId}",
             ["username"] = $"{_options.Value.Username}",
             ["password"] = $"{_options.Value.Password}",
             ["grant_type"] = $"password"

@@ -14,15 +14,15 @@ public class SubscriptionService : ISubscriptionService
         _httpClient = httpClient;
     }
 
-    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetChekoutSessionAsync(keycloakId, email, cancellationToken);
+        var response = await _httpClient.GetChekoutSessionAsync(keycloakId, cancellationToken);
         return response;
     }
 
-    public async Task<RedirectUrlModel> GetCustomersPortalUrlAsync(string keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetCustomersPortalUrlAsync(string keycloakId, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetCustomerPortalSessionAsync(keycloakId, email, cancellationToken);
+        var response = await _httpClient.GetCustomerPortalSessionAsync(keycloakId, cancellationToken);
         return response;
     }
 }

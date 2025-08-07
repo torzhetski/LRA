@@ -1,6 +1,8 @@
-﻿namespace LRA.Subscription.Domain.Entities;
+﻿using LRA.Shared.Abstractions.Interfaces.Entities;
 
-public class SubscriptionEntity
+namespace LRA.Subscription.Domain.Entities;
+
+public class SubscriptionEntity : IBaseEntity
 {
     public Guid Id { get; set; }
     public required string StripeSubscriptionId { get; set; }

@@ -14,9 +14,9 @@ public class AccountService : IAccountService, IRoleProvider
         _httpClient = accountHttpClient;
     }
 
-    public async Task<AccountDto> GetAccountAsync(string id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetAccountAsync(string keycloakId, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetByIdAsync(id, cancellationToken);
+        var response = await _httpClient.GetByKeycloakIdAsync(keycloakId, cancellationToken);
         return response;
     }
 
@@ -28,11 +28,6 @@ public class AccountService : IAccountService, IRoleProvider
     public async Task UpdateAccountTwoFa(string keycloakId, CancellationToken cancellationToken)
     {
         await _httpClient.UpdateTwoFaAsync(keycloakId, cancellationToken);
-    }
-
-    public async Task AccountSoftDelete(Guid id, CancellationToken cancellationToken)
-    {
-        await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
 
     public async Task<List<string>> GetRolesById(string keycloakId, CancellationToken cancellationToken)

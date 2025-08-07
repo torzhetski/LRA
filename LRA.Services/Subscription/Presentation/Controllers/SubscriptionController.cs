@@ -16,17 +16,17 @@ public class SubscriptionController : ControllerBase
 
     [Authorize]
     [HttpGet("chekout-session")]
-    public async Task<IActionResult> GetChekoutSession([FromQuery] Guid keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetChekoutSession([FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        var url = await _paymentService.GetCheckoutSessionUrlAsync(keycloakId, email, cancellationToken);
+        var url = await _paymentService.GetCheckoutSessionUrlAsync(keycloakId, cancellationToken);
         return Ok(url);
     }
 
     [Authorize]
     [HttpGet("customers-portal-session")]
-    public async Task<IActionResult> GetCustomersPortalSession([FromQuery] Guid keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetCustomersPortalSession([FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        var url = await _paymentService.GetCustomersPortalUrlAsync(keycloakId, email, cancellationToken);
+        var url = await _paymentService.GetCustomersPortalUrlAsync(keycloakId, cancellationToken);
         return Ok(url);
     }
 }

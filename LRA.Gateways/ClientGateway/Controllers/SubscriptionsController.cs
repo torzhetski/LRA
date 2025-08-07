@@ -23,13 +23,12 @@ public class SubscriptionsController : ControllerBase
     public async Task<IActionResult> GetChekoutSession(CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        if (userId == null || email == null)
+        if (userId == null)
         {
-            return Unauthorized("Missing 'Claims' in token");
+            return Unauthorized("Missing 'Identifier' in token");
         }
 
-        var url = await _subscriptionService.GetChekoutSessionAsync(userId, email, cancellationToken);
+        var url = await _subscriptionService.GetChekoutSessionAsync(userId, cancellationToken);
         return Ok(url);
     }
 
@@ -38,13 +37,12 @@ public class SubscriptionsController : ControllerBase
     public async Task<IActionResult> GetCustomersPortalSession(CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        if (userId == null || email == null)
+        if (userId == null)
         {
-            return Unauthorized("Missing 'Claims' in token");
+            return Unauthorized("Missing 'Identifier' in token");
         }
 
-        var url = await _subscriptionService.GetCustomersPortalUrlAsync(userId, email, cancellationToken);
+        var url = await _subscriptionService.GetCustomersPortalUrlAsync(userId, cancellationToken);
         return Ok(url);
     }
 }

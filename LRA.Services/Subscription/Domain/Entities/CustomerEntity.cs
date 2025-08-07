@@ -1,8 +1,11 @@
-﻿namespace LRA.Subscription.Domain.Entities;
+﻿using LRA.Shared.Abstractions.Interfaces.Entities;
 
-public class CustomerEntity
+namespace LRA.Subscription.Domain.Entities;
+
+public class CustomerEntity : IBaseEntity
 {
     public Guid Id { get; set; }
     public required Guid KeycloakId { get; set; }
     public required string StripeCustomerId { get; set; }
+    public required string Email { get; set; }
 }

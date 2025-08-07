@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Gateways.ClientGateway.Controllers;
 
-[Route("api/v{version:apiVersion}/clients")]
+[Route("api/v{version:apiVersion}/account")]
 [ApiController]
 [ApiVersion("1.0")]
 public class AccountsController : ControllerBase
@@ -20,8 +20,21 @@ public class AccountsController : ControllerBase
         _accountService = accountService;
     }
 
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAccountResponseAsync(CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        var response = await _accountService.GetAccountAsync(userId, cancellationToken);
+        return Ok(response);
+    }
+
     [Authorize(Policy = ServerPolicy.RequireClient)]
-    [HttpPut("account")]
+    [HttpPut]
     public async Task<IActionResult> UpdateAsync([FromBody] UpdateAccountDto dto, CancellationToken cancellationToken)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

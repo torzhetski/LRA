@@ -11,22 +11,30 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using LRA.Subscription.Application.Interfaces;
 using LRA.Shared.Abstractions.Models;
+using LRA.Subscription.Domain.Settings;
+using LRA.Shared.Abstractions.Models.Stripe;
+using LRA.Shared.Utils.Enums;
+using System.Data;
+using System.Threading;
 
 namespace LRA.Subscription.Application.Services.Hosted;
 
-public class SubscriptionRabbitMQConsumer : RabbitMQConsumerBase
+public class CustomerRabbitMQConsumer : RabbitMQConsumerBase
 {
-    private readonly ILogger<SubscriptionRabbitMQConsumer> _logger;
+    private readonly ILogger<CustomerRabbitMQConsumer> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IOptions<SubscriptionRabbitMqConsumerSettings> _subscriptionOptions;
 
-    public SubscriptionRabbitMQConsumer(
+    public CustomerRabbitMQConsumer(
         IOptions<RabbitMQSettings> options,
-        ILogger<SubscriptionRabbitMQConsumer> logger,
-        IServiceProvider serviceProvider)
-        : base(options)
+        ILogger<CustomerRabbitMQConsumer> logger,
+        IServiceProvider serviceProvider,
+        IOptions<SubscriptionRabbitMqConsumerSettings> subscriptionOptions)
+        : base(options, subscriptionOptions.Value.CustomerUpdateQueue)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _subscriptionOptions = subscriptionOptions;
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
@@ -37,7 +45,11 @@ public class SubscriptionRabbitMQConsumer : RabbitMQConsumerBase
         }
         catch (OperationCanceledException ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(
+            ex,
+            "The background consumer task was cancelled: {ErrorDescription}",
+            ex.Message
+            );
         }
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -45,14 +57,14 @@ public class SubscriptionRabbitMQConsumer : RabbitMQConsumerBase
         {
             var content = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            var dto = JsonSerializer.Deserialize<StripeWebhookModel>(content);
-            await ProcessWebhookAsync(dto, token);
+            var dto = JsonSerializer.Deserialize<CustomerUpdateModel>(content);
+            await StripeCustomerCreate(dto, token);
 
             await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
         };
 
         await _channel.BasicConsumeAsync(
-            _options.Value.Consumer.QueueName,
+            _subscriptionOptions.Value.CustomerUpdateQueue,
             false,
             consumer,
             token);
@@ -65,12 +77,13 @@ public class SubscriptionRabbitMQConsumer : RabbitMQConsumerBase
         base.Dispose();
     }
 
-    private async Task ProcessWebhookAsync(StripeWebhookModel dto, CancellationToken token)
+    private async Task StripeCustomerCreate(CustomerUpdateModel model, CancellationToken token)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
-            var subscriptionService = scope.ServiceProvider.GetService<ISubscriptionService>();
-            await subscriptionService!.HandleWebhooksAsync(dto, token);
+            var _customerService = scope.ServiceProvider.GetRequiredService<ICustomerProviderService>();
+            
+            await _customerService.CreateStripeCustomer(model.KeycloakId, model.Email, token);
         }
     }
 }

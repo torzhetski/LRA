@@ -1,24 +1,52 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
+using LRA.Account.Domain.Settings;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Interfaces.RabbitMq;
+using LRA.Shared.Abstractions.Models.Stripe;
+using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils.Exceptions;
+using Microsoft.Extensions.Options;
 
 namespace LRA.Account.Application.Services;
 
 public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly IRabbitMQProducerService _rabbitMQProducerService;
+    private readonly string _queueName;
+    private readonly string _queueRoutingKey;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(
+        IAccountRepository accountRepository,
+        IRabbitMQProducerService rabbitMQProducerService,
+        IOptions<AccountRabbitMqProducerSettings> rabbitMqProducerOptions)
     {
         _accountRepository = accountRepository;
+        _rabbitMQProducerService = rabbitMQProducerService;
+        _queueName = rabbitMqProducerOptions.Value.SubscriptionQueue;
+        _queueRoutingKey = rabbitMqProducerOptions.Value.SubscriptionQueueRoutingKey;
     }
 
-    public async Task<Guid> CreateAccountAsync(AccountEntity model, CancellationToken cancellationToken)
+    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken)
     {
-        var id = await _accountRepository.CreateAsync(model, cancellationToken);
-        return id;
+        if (!await _accountRepository.IsAccountExists(keycloakId, cancellationToken))
+        {
+            var model = new AccountEntity()
+            {
+                KeycloakId = keycloakId,
+                Email = email,
+            };
+            var id = await _accountRepository.CreateAsync(model, cancellationToken);
+
+            var customerModel = new CustomerUpdateModel()
+            {
+                KeycloakId = keycloakId,
+                Email = email,
+            };
+            await _rabbitMQProducerService.SendMessageAsync(customerModel, _queueName, _queueRoutingKey, cancellationToken);
+        }
     }
 
     public async Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)

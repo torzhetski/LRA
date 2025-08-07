@@ -1,6 +1,4 @@
-﻿using LRA.Account.Domain.Entities;
-using RabbitMQ.Client.Events;
-using LRA.Shared.Abstractions.Dtos.Account;
+﻿using RabbitMQ.Client.Events;
 using LRA.Shared.Abstractions.RabbitMQProvider.Services;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
 using Microsoft.Extensions.Logging;
@@ -12,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using LRA.Account.Application.Interfaces;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Enums;
+using LRA.Account.Domain.Settings;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace LRA.Account.Application.Services.Hosted;
 
@@ -19,15 +20,18 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
 {
     private readonly ILogger<AccountRabbitMQConsumer> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IOptions<AccountRabbitMqConsumerSettings> _accountOptions;
 
     public AccountRabbitMQConsumer(
         IOptions<RabbitMQSettings> options,
         ILogger<AccountRabbitMQConsumer> logger,
-        IServiceProvider serviceProvider)
-        : base(options)
+        IServiceProvider serviceProvider,
+        IOptions<AccountRabbitMqConsumerSettings> accountOptions)
+        : base(options, accountOptions.Value.RoleUpdateQueue)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _accountOptions = accountOptions;
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
@@ -38,7 +42,11 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         }
         catch (OperationCanceledException ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(
+            ex,
+            "The background consumer task was cancelled: {ErrorDescription}",
+            ex.Message
+            );
         }
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -53,7 +61,7 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         };
 
         await _channel.BasicConsumeAsync(
-            _options.Value.Consumer.QueueName,
+            _accountOptions.Value.RoleUpdateQueue,
             false,
             consumer,
             token);
@@ -71,16 +79,16 @@ public class AccountRabbitMQConsumer : RabbitMQConsumerBase
         using (var scope = _serviceProvider.CreateScope())
         {
             var accountService = scope.ServiceProvider.GetService<IAccountService>();
-            
-            if(role.UpdateType == UpdateType.Add)
-            {
-                await accountService.AddRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
-            }
 
-            if(role.UpdateType == UpdateType.Remove)
+            switch (role.UpdateType)
             {
-                await accountService.RemoveRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
+                case RoleUpdateType.Add:
+                    await accountService.AddRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
+                    break;
 
+                case RoleUpdateType.Remove:
+                    await accountService.RemoveRoleAsync(role.RoleName, role.KeycloakId, cancellationToken);
+                    break;
             }
         }
     }
