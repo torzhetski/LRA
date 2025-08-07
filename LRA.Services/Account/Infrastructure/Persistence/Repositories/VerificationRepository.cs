@@ -22,7 +22,7 @@ public class VerificationRepository : IVerificationRepository
         var verify = new VerificationEntity()
         {
             Email = email,
-            Token = CodeGenerator.Generate(),
+            Token = StringGenerator.GenerateCode(),
             Type = type,
             IsUsed = false,
             ExpiresAt = DateTime.UtcNow.AddMinutes(tokenLifetime),
