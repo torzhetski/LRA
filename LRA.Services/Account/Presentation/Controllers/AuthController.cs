@@ -37,12 +37,7 @@ public class AuthController : ControllerBase
     {
         var keycloakId = await _keycloakService.CreateKeycloakUserAsync(registrationModel, cancellationToken);
 
-        var model = new AccountEntity()
-        {
-            KeycloakId = Guid.Parse(keycloakId),
-            Email = registrationModel.Email,
-        };
-        await _accountService.CreateAccountAsync(model, cancellationToken);
+        await _accountService.CreateAccountAsync(registrationModel.Email, Guid.Parse(keycloakId), cancellationToken);
 
         await _authService.SendEmailVerificationTokenAsync(registrationModel.Email, 60, cancellationToken);
 
@@ -189,5 +184,28 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Email changing failed");
         }
+    }
+
+    [Authorize]
+    [HttpGet("keycloak/google-login")]
+    public async Task<IActionResult> LoginUserByGoogleCode([FromQuery] string code, CancellationToken cancellationToken)
+    {
+        var response = await _keycloakService.ExchangeGoogleCodeForTokenAsync(code, cancellationToken);
+
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(response.AccessToken);
+        Guid.TryParse(jwtToken.Claims.First(c => c.Type == "sub").Value, out var keycloakId);
+        var email = jwtToken.Claims.First(c => c.Type == "email").Value;
+
+        await _accountService.CreateAccountAsync(email, keycloakId, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("google-url")]
+    public IActionResult GetGoogleLoginUrl()
+    {
+        var url = _keycloakService.GetGoogleLoginUrl();
+        return Ok(url);
     }
 }

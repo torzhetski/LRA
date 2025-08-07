@@ -30,8 +30,8 @@ public class PaymentService : IPaymentService
     {
         var customerId = await _customerService.GetCustomerId(keycloakId, email, cancellationToken);
 
-        var hasActiv = await _subscriptionService.HasCustomerActiveSubscription(customerId, cancellationToken);
-        if (hasActiv) 
+        var hasActive = await _subscriptionService.HasCustomerActiveSubscription(customerId, cancellationToken);
+        if (hasActive) 
         { 
             throw new AlreadyExistsException("Subscription");    
         }

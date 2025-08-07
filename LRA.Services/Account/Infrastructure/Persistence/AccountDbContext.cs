@@ -33,10 +33,10 @@ public class AccountDbContext : DbContext, IAccountDbContext
             .UsingEntity(j => j.ToTable("AccountRoles"));
 
         modelBuilder.Entity<RoleEntity>().HasData(
-            new RoleEntity { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), RoleName = SystemRoles.SuperAdmin },
-            new RoleEntity { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), RoleName = SystemRoles.Admin },
-            new RoleEntity { Id = Guid.Parse("33333333-3333-3333-3333-333333333333"), RoleName = SystemRoles.Client },
-            new RoleEntity { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), RoleName = SystemRoles.Paramedic }
+            new RoleEntity { Id = Guid.Parse("7f2e843e-1ffb-4ef5-b13c-1eecf50df577"), RoleName = SystemRoles.SuperAdmin },
+            new RoleEntity { Id = Guid.Parse("f496959f-8e1a-4a4f-b5d2-49f32c6e82af"), RoleName = SystemRoles.Admin },
+            new RoleEntity { Id = Guid.Parse("9d773595-f07e-4c44-a00e-b5bdc388ba11"), RoleName = SystemRoles.Client },
+            new RoleEntity { Id = Guid.Parse("39c39491-7a96-4e2d-831e-d38def097117"), RoleName = SystemRoles.Paramedic }
         );
     }
 }
