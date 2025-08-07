@@ -12,7 +12,8 @@ public static class ServiceInjection
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<ICustomerProviderService, CustomerProviderService>();
         services.AddScoped<IPaymentService, PaymentService>();
-        services.AddHostedService<SubscriptionRabbitMQConsumer>();
+        services.AddHostedService<CustomerRabbitMQConsumer>();
+        services.AddHostedService<WebhookRabbitMQConsumer>();
 
         return services;
     }

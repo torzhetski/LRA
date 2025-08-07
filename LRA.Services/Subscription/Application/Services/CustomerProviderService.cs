@@ -1,4 +1,5 @@
-﻿using LRA.Subscription.Application.Interfaces;
+﻿using LRA.Shared.Utils.Exceptions;
+using LRA.Subscription.Application.Interfaces;
 using LRA.Subscription.Application.Interfaces.Repositories;
 using LRA.Subscription.Domain.Entities;
 
@@ -15,25 +16,29 @@ public class CustomerProviderService : ICustomerProviderService
         _stripeService = stripeService;
     }
 
-    public async Task<string> GetCustomerId(Guid keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<string> GetCustomerId(Guid keycloakId, CancellationToken cancellationToken)
     {
         var entity = await _customerRepository.GetCustomerOrDefaultByKeycloakIdAysnc(keycloakId, cancellationToken);
         if (entity == null) 
         {
-            var customerId = await _stripeService.CreateStripeCustomerAsync(email, cancellationToken);
-
-            entity = new CustomerEntity()
-            {
-                KeycloakId = keycloakId,
-                StripeCustomerId = customerId,
-            };
-            await _customerRepository.CreateCustomerAsync(entity, cancellationToken);
-
-            return customerId;
+            throw new NotFoundException(nameof(entity), keycloakId);
         }
         else
         {
             return entity.StripeCustomerId;
         }
+    }
+
+    public async Task CreateStripeCustomer(Guid keycloakId, string email, CancellationToken cancellationToken)
+    {
+        var customerId = await _stripeService.CreateStripeCustomerAsync(email, cancellationToken);
+
+        var entity = new CustomerEntity()
+        {
+            KeycloakId = keycloakId,
+            StripeCustomerId = customerId,
+            Email = email,
+        };
+        await _customerRepository.CreateCustomerAsync(entity, cancellationToken);
     }
 }

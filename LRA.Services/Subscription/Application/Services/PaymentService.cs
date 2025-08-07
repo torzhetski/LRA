@@ -26,9 +26,9 @@ public class PaymentService : IPaymentService
         _subscriptionService = subscriptionService;
     }
 
-    public async Task<RedirectUrlModel> GetCheckoutSessionUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetCheckoutSessionUrlAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        var customerId = await _customerService.GetCustomerId(keycloakId, email, cancellationToken);
+        var customerId = await _customerService.GetCustomerId(keycloakId, cancellationToken);
 
         var hasActive = await _subscriptionService.HasCustomerActiveSubscription(customerId, cancellationToken);
         if (hasActive) 
@@ -42,9 +42,9 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<RedirectUrlModel> GetCustomersPortalUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetCustomersPortalUrlAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        var customerId = await _customerService.GetCustomerId(keycloakId, email, cancellationToken);
+        var customerId = await _customerService.GetCustomerId(keycloakId, cancellationToken);
         var url = await _stripeService.CreateBillingPortalSessionAsync(customerId, cancellationToken);
         return url;
     }

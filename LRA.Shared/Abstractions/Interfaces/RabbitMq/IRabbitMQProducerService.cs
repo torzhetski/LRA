@@ -2,6 +2,6 @@
 
 public interface IRabbitMQProducerService
 {
-    Task SendMessageAsync(object obj, CancellationToken token);
-    Task SendMessageAsync(string message, CancellationToken token);
+    Task SendMessageAsync(object obj, string queueName, string rountingKey, CancellationToken token);
+    Task SendMessageAsync(string message, string queueName, string rountingKey, CancellationToken token);
 }

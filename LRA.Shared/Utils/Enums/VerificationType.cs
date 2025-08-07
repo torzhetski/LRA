@@ -2,8 +2,8 @@
 
 public enum VerificationType
 {
-    EmailVerification = 0,
-    TwoFaVerification = 1,
-    ResetPassword = 2,
-    EmailChanging = 3,
+    EmailVerification = 1,
+    TwoFaVerification = 2,
+    ResetPassword = 3,
+    EmailChanging = 4,
 }

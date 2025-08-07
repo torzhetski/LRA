@@ -16,13 +16,13 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         _options = options;
     }
 
-    public async Task SendMessageAsync(object obj, CancellationToken token)
+    public async Task SendMessageAsync(object obj, string queueName, string rountingKey, CancellationToken token)
     {
         var message = JsonSerializer.Serialize(obj);
-        await SendMessageAsync(message, token);
+        await SendMessageAsync(message, queueName, rountingKey, token);
     }
 
-    public async Task SendMessageAsync(string message, CancellationToken token)
+    public async Task SendMessageAsync(string message, string queueName, string rountingKey, CancellationToken token)
     {
         var factory = new ConnectionFactory()
         {
@@ -36,14 +36,14 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         using var channel = await connection.CreateChannelAsync(cancellationToken: token);
 
         await channel.ExchangeDeclareAsync(
-            exchange: _options.Value.Producer.ExchangeName,
-            type: ExchangeType.Fanout, 
+            exchange: _options.Value.ExchangeName,
+            type: ExchangeType.Direct, 
             durable: true,
             autoDelete: false,
             cancellationToken: token);
 
         await channel.QueueDeclareAsync(
-            queue: _options.Value.Producer.QueueName,
+            queue: queueName,
             durable: true,
             exclusive: false,
             autoDelete: false,
@@ -51,9 +51,9 @@ public class RabbitMQProducerService : IRabbitMQProducerService
             cancellationToken: token);
 
         await channel.QueueBindAsync(
-            queue: _options.Value.Producer.QueueName,
-            exchange: _options.Value.Producer.ExchangeName,
-            routingKey: "",
+            queue: queueName,
+            exchange: _options.Value.ExchangeName,
+            routingKey: rountingKey,
             cancellationToken: token);
 
         var body = Encoding.UTF8.GetBytes(message);
@@ -64,8 +64,8 @@ public class RabbitMQProducerService : IRabbitMQProducerService
         };
 
         await channel.BasicPublishAsync(
-            exchange: _options.Value.Producer.ExchangeName,
-            routingKey: "",
+            exchange: _options.Value.ExchangeName,
+            routingKey: rountingKey,
             mandatory: true,
             body: body,
             basicProperties: properties,

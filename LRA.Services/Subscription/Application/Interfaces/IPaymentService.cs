@@ -5,6 +5,6 @@ namespace LRA.Subscription.Application.Interfaces;
 
 public interface IPaymentService
 {
-    Task<RedirectUrlModel> GetCheckoutSessionUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken);
-    Task<RedirectUrlModel> GetCustomersPortalUrlAsync(Guid keycloakId, string email, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetCheckoutSessionUrlAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task<RedirectUrlModel> GetCustomersPortalUrlAsync(Guid keycloakId, CancellationToken cancellationToken);
 }

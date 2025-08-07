@@ -22,12 +22,11 @@ public class SubscriptionHttpClient : ISubscriptionHttpClient
     }
 
 
-    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("chekout-session", new Dictionary<string, string?>
         {
             ["keycloakId"] = keycloakId,
-            ["email"] = email
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -49,12 +48,11 @@ public class SubscriptionHttpClient : ISubscriptionHttpClient
         return redirectUrl;
     }
 
-    public async Task<RedirectUrlModel> GetCustomerPortalSessionAsync(string keycloakId, string email, CancellationToken cancellationToken)
+    public async Task<RedirectUrlModel> GetCustomerPortalSessionAsync(string keycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("customers-portal-session", new Dictionary<string, string?>
         {
             ["keycloakId"] = keycloakId,
-            ["email"] = email
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Get, url);

@@ -28,6 +28,10 @@ namespace LRA.Subscription.Infrasturcture.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("KeycloakId")
                         .HasColumnType("uuid");
 

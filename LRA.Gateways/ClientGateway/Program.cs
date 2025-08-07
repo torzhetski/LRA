@@ -2,6 +2,13 @@ using LRA.Gateways.Client.Extension;
 using LRA.Shared.Infrastructure.Settings;
 using LRA.Shared.Presentation.Configuration;
 using LRA.Shared.Presentation.Extensions;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .Enrich.FromLogContext()
+    .MinimumLevel.Debug()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();

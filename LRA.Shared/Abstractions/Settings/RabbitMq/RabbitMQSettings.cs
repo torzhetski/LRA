@@ -6,6 +6,5 @@ public class RabbitMQSettings
     public int Port { get; set; }
     public required string UserName {  get; set; }
     public required string Password { get; set; }
-    public required RabbitMqProducerSettings Producer { get; set; }
-    public required RabbitMqConsumerSettings Consumer { get; set; }
+    public required string ExchangeName { get; set; }
 }

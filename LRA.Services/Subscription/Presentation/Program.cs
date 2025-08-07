@@ -21,6 +21,12 @@ builder.Services.Configure<PriceSettings>(
 builder.Services.Configure<RabbitMQSettings>(
     builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.Configure<SubscriptionRabbitMqProducerSettings>(
+    builder.Configuration.GetSection("SubscriptionRabbitMqProducerSettings"));
+
+builder.Services.Configure<SubscriptionRabbitMqConsumerSettings>(
+    builder.Configuration.GetSection("SubscriptionRabbitMqConsumerSettings"));
+
 builder.Services.AddDatabase(builder.Configuration);
 
 builder.Services.AddApplicationServices();

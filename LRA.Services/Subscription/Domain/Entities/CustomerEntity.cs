@@ -7,4 +7,5 @@ public class CustomerEntity : IBaseEntity
     public Guid Id { get; set; }
     public required Guid KeycloakId { get; set; }
     public required string StripeCustomerId { get; set; }
+    public required string Email { get; set; }
 }

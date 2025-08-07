@@ -3,5 +3,6 @@ namespace LRA.Subscription.Application.Interfaces;
 
 public interface ICustomerProviderService
 {
-    Task<string> GetCustomerId(Guid keycloakId, string email, CancellationToken cancellationToken);
+    Task<string> GetCustomerId(Guid keycloakId, CancellationToken cancellationToken);
+    Task CreateStripeCustomer(Guid keycloakId, string email, CancellationToken cancellationToken);
 }

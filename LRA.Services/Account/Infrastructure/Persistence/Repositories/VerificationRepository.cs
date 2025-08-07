@@ -19,7 +19,7 @@ public class VerificationRepository : IVerificationRepository
 
     public async Task<string> CreateAsync(string email, VerificationType type, int tokenLifetime, CancellationToken cancellationToken)
     {
-        var TwoFaVerify = new VerificationEntity()
+        var verify = new VerificationEntity()
         {
             Email = email,
             Token = CodeGenerator.Generate(),
@@ -28,10 +28,10 @@ public class VerificationRepository : IVerificationRepository
             ExpiresAt = DateTime.UtcNow.AddMinutes(tokenLifetime),
         };
 
-        _context.VerificationModels.Add(TwoFaVerify);
+        _context.VerificationModels.Add(verify);
         await _context.SaveChangesAsync();
 
-        return TwoFaVerify.Token;
+        return verify.Token;
     }
 
     public async Task<bool> ValidateAsync(string token, string email, VerificationType type ,CancellationToken cancellationToken)

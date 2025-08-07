@@ -8,6 +8,13 @@ namespace LRA.Gateways.Client.Handlers;
 
 public class ClientGatewayExceptionHandler : IExceptionHandler
 {
+    private readonly ILogger<ClientGatewayExceptionHandler> _logger;
+
+    public ClientGatewayExceptionHandler(ILogger<ClientGatewayExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         httpContext.Response.ContentType = "application/problem+json";
@@ -31,6 +38,13 @@ public class ClientGatewayExceptionHandler : IExceptionHandler
                 Title = "Internal Server Error",
             }
         };
+
+        _logger.LogError(
+            exception,
+            "An error {ErrorDescription} occurred during processing the request {Path}",
+            exception.Message,
+            httpContext.Request.Path
+        );
 
         httpContext.Response.StatusCode = (int)response.Status!;
         var json = JsonSerializer.Serialize(response);

@@ -1,7 +1,7 @@
 using LRA.Account.Application.Extension;
+using LRA.Account.Domain.Settings;
 using LRA.Account.Infrastructure.Persistence.Extensions;
 using LRA.Account.Presentation.Extensions;
-using LRA.Account.Presentation.Handlers;
 using LRA.Account.Presentation.Interfaces;
 using LRA.Account.Presentation.Services;
 using LRA.Account.Presentation.Settings;
@@ -12,17 +12,28 @@ using LRA.Shared.Abstractions.Settings.RabbitMq;
 using LRA.Shared.Infrastructure.HttpClients;
 using LRA.Shared.Infrastructure.RabbitMq;
 using LRA.Shared.Infrastructure.Settings;
-using LRA.Shared.Presentation.Handlers;
 using LRA.Shared.Presentation.Middlewares;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .Enrich.FromLogContext()
+    .MinimumLevel.Debug()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<RabbitMQSettings>(
     builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.Configure<AccountRabbitMqConsumerSettings>(
+    builder.Configuration.GetSection("AccountRabbitMqConsumerSettings"));
+
+builder.Services.Configure<AccountRabbitMqProducerSettings>(
+    builder.Configuration.GetSection("AccountRabbitMqProducerSettings"));
+
 builder.Services.Configure<KeycloakServiceSettings>(
     builder.Configuration.GetSection("KeycloakServiceSettings"));
-
 
 builder.Services.Configure<AdminSettings>(
     builder.Configuration.GetSection("AdminSettings"));

@@ -12,6 +12,9 @@ builder.Services.Configure<SmtpSettings>(
 builder.Services.Configure<RabbitMQSettings>(
     builder.Configuration.GetSection("RabbitMqSettings"));
 
+builder.Services.Configure<EmailRabbitMqConsumerSettings>(
+    builder.Configuration.GetSection("EmailRabbitMqConsumerSettings"));
+
 builder.Services.AddHostedService<SmtpRabbitMQConsumer>();
 
 builder.Services.AddScoped<IMessageService, SmtpService>();

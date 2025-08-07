@@ -1,4 +1,5 @@
 using LRA.Email.SmtpService.Interfaces;
+using LRA.Email.SmtpService.Settings;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.RabbitMQProvider.Services;
 using LRA.Shared.Abstractions.Settings.RabbitMq;
@@ -14,15 +15,18 @@ namespace LRA.Email.SmtpService.Services.Hosted
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<SmtpRabbitMQConsumer> _logger;
+        private readonly IOptions<EmailRabbitMqConsumerSettings> _emailOptions;
 
         public SmtpRabbitMQConsumer(
             IOptions<RabbitMQSettings> options,
             IServiceProvider serviceProvider,
-            ILogger<SmtpRabbitMQConsumer> logger)
-            : base(options)
+            ILogger<SmtpRabbitMQConsumer> logger,
+            IOptions<EmailRabbitMqConsumerSettings> emailOptions)
+            : base(options, emailOptions.Value.EmailQueue)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _emailOptions = emailOptions;
         }
 
         protected override async Task ExecuteAsync(CancellationToken token)
@@ -33,8 +37,13 @@ namespace LRA.Email.SmtpService.Services.Hosted
             }
             catch (OperationCanceledException ex) 
             {
-                _logger.LogError(ex, ex.Message);
+                _logger.LogError(
+                ex,
+                "The background consumer task was cancelled: {ErrorDescription}",
+                ex.Message
+                );
             }
+
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.ReceivedAsync += async (ch, ea) =>
             {
@@ -47,7 +56,7 @@ namespace LRA.Email.SmtpService.Services.Hosted
             };
 
             await _channel.BasicConsumeAsync(
-                _options.Value.Consumer.QueueName,
+                _emailOptions.Value.EmailQueue,
                 false,
                 consumer,
                 token);

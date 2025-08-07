@@ -1,5 +1,6 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Services;
+using LRA.Account.Application.Services.Hosted;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LRA.Account.Application.Extension;
@@ -10,6 +11,7 @@ public static class ServiceInjection
     {
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddHostedService<AccountRabbitMQConsumer>();
 
         return services;
     }

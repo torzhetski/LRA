@@ -2,11 +2,19 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace LRA.Shared.Presentation.Handlers;
 
 public class BaseExceptionHandler : IExceptionHandler
 {
+    private readonly ILogger<BaseExceptionHandler> _logger;
+
+    public BaseExceptionHandler(ILogger<BaseExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         httpContext.Response.ContentType = "application/problem+json";
@@ -33,6 +41,13 @@ public class BaseExceptionHandler : IExceptionHandler
 
         if (response is null)
             return false;
+
+        _logger.LogError(
+            exception,
+            "An error {ErrorDescription} occurred during processing the request {Path}",
+            exception.Message,
+            httpContext.Request.Path
+        );
 
         httpContext.Response.StatusCode = response.Status ?? 500;
 

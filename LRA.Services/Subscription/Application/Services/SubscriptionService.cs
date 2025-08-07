@@ -7,6 +7,8 @@ using LRA.Shared.Utils.Exceptions;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Utils.Constants;
 using LRA.Shared.Utils.Enums;
+using Microsoft.Extensions.Options;
+using LRA.Subscription.Domain.Settings;
 
 namespace LRA.Subscription.Application.Services;
 
@@ -17,19 +19,24 @@ public class SubscriptionService : ISubscriptionService
     private readonly ICustomerRepository _customerRepository;
     private readonly IRabbitMQProducerService _producerService;
     private readonly ILogger<SubscriptionService> _logger;
+    private readonly string _queueName;
+    public readonly string _queueRoutingKey;
 
     public SubscriptionService(
         IStripeEventConverter converter,
         ISubscriptionRepository subscriptionRepository,
         ILogger<SubscriptionService> logger,
         ICustomerRepository customerRepository,
-        IRabbitMQProducerService producerService)
+        IRabbitMQProducerService producerService,
+        IOptions<SubscriptionRabbitMqProducerSettings> options)
     {
         _converter = converter;
         _logger = logger;
         _subscriptionRepository = subscriptionRepository;
         _customerRepository = customerRepository;
         _producerService = producerService;
+        _queueName = options.Value.RoleUpdateQueue;
+        _queueRoutingKey = options.Value.RoleUpdateQueueRoutingKey;
     }
 
     public async Task HandleWebhooksAsync(StripeWebhookModel webhookModel, CancellationToken cancellationToken)
@@ -53,9 +60,9 @@ public class SubscriptionService : ISubscriptionService
                         {
                             KeycloakId = customer.KeycloakId,
                             RoleName = SystemRoles.Client,
-                            UpdateType = UpdateType.Add
+                            UpdateType = RoleUpdateType.Add
                         };
-                        await _producerService.SendMessageAsync(role, cancellationToken);
+                        await _producerService.SendMessageAsync(role, _queueName, _queueRoutingKey, cancellationToken);
 
                         break;
                     }
@@ -69,15 +76,15 @@ public class SubscriptionService : ISubscriptionService
 
                         var customer = await _customerRepository.GetKeycloakIdOrDefaultByCustomerAysnc(subscription.CustomerId, cancellationToken);
                         if (customer == null)
-                            throw new Exception("Removinh role failed");
+                            throw new Exception("Removing role failed");
 
                         var role = new UpdateRoleModel()
                         {
                             KeycloakId = customer.KeycloakId,
                             RoleName = SystemRoles.Client,
-                            UpdateType = UpdateType.Remove
+                            UpdateType = RoleUpdateType.Remove
                         };
-                        await _producerService.SendMessageAsync(role, cancellationToken);
+                        await _producerService.SendMessageAsync(role, _queueName, _queueRoutingKey, cancellationToken);
 
                         break;
                     }
