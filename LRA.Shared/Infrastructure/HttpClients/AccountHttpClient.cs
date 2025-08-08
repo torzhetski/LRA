@@ -21,9 +21,23 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDto> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var model = await response.Content.ReadFromJsonAsync<AccountDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return model;
+    }
+
+    public async Task<AccountDto> GetByKeycloakIdAsync(string keycloakId, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak/{keycloakId}");
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);

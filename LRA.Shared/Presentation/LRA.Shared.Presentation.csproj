@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Abstractions\LRA.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\Utils\LRA.Shared.Utils.csproj" />
   </ItemGroup>
 

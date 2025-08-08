@@ -1,4 +1,6 @@
 ﻿using Asp.Versioning;
+using LRA.Gateways.Client.Handlers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LRA.Shared.Presentation.Extensions;
@@ -24,6 +26,13 @@ public static class ServiceInjection
             options.GroupNameFormat = "'v'VVV";
             options.SubstituteApiVersionInUrl = true;
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddRolesPolicy(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthorizationHandler, SystemRoleHandler>();
 
         return services;
     }

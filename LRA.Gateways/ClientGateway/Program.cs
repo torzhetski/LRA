@@ -29,6 +29,8 @@ builder.Services.ConfigureAuthentication(builder.Configuration);
 
 builder.Services.AddVersioning();
 
+builder.Services.AddRolesPolicy();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();

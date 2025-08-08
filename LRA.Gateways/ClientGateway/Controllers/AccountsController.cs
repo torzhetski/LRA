@@ -21,10 +21,15 @@ public class AccountsController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetAccountResponseAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpGet]
+    public async Task<IActionResult> GetAccountResponseAsync(CancellationToken cancellationToken)
     {
-        var response = await _accountService.GetFromAccountServiceAsync(id, cancellationToken);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        var response = await _accountService.GetAccountAsync(userId, cancellationToken);
         return Ok(response);
     }
 
