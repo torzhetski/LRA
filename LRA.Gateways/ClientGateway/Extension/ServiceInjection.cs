@@ -19,8 +19,8 @@ public static class ServiceInjection
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IAccountService, AccountService>();
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IClientAccountService, AccountService>();
+        services.AddScoped<IClientAuthService, AuthService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
         services.AddFluentValidationAutoValidation();

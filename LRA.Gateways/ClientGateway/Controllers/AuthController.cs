@@ -13,9 +13,9 @@ namespace LRA.Gateways.Client.Controllers;
 [ApiVersion("1.0")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IClientAuthService _authService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IClientAuthService authService)
     {
         _authService = authService;
     }
