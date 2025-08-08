@@ -9,7 +9,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using LRA.Subscription.Application.Interfaces;
 using LRA.Shared.Abstractions.Models;
-using LRA.Subscription.Domain.Settings;
+using LRA.Subscription.Application.Settings;
 
 namespace LRA.Subscription.Application.Services.Hosted;
 

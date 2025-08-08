@@ -9,6 +9,7 @@ using LRA.Shared.Abstractions.Settings.RabbitMq;
 using LRA.Shared.Presentation.Handlers;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Infrastructure.RabbitMq;
+using LRA.Subscription.Application.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 

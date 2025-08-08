@@ -1,11 +1,10 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
+using LRA.Account.Application.Settings;
 using LRA.Account.Domain.Entities;
-using LRA.Account.Domain.Settings;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models.Stripe;
-using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils.Exceptions;
 using Microsoft.Extensions.Options;
 
@@ -40,7 +39,7 @@ public class AccountService : IAccountService
             };
             var id = await _accountRepository.CreateAsync(model, cancellationToken);
 
-            var customerModel = new CustomerUpdateModel()
+            var customerModel = new CustomerCreateModel()
             {
                 KeycloakId = keycloakId,
                 Email = email,

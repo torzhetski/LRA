@@ -8,7 +8,7 @@ using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Utils.Constants;
 using LRA.Shared.Utils.Enums;
 using Microsoft.Extensions.Options;
-using LRA.Subscription.Domain.Settings;
+using LRA.Subscription.Application.Settings;
 
 namespace LRA.Subscription.Application.Services;
 
