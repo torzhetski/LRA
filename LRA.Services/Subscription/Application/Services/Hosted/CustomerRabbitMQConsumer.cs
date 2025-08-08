@@ -10,12 +10,8 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using LRA.Subscription.Application.Interfaces;
-using LRA.Shared.Abstractions.Models;
-using LRA.Subscription.Domain.Settings;
 using LRA.Shared.Abstractions.Models.Stripe;
-using LRA.Shared.Utils.Enums;
-using System.Data;
-using System.Threading;
+using LRA.Subscription.Application.Settings;
 
 namespace LRA.Subscription.Application.Services.Hosted;
 
@@ -57,7 +53,7 @@ public class CustomerRabbitMQConsumer : RabbitMQConsumerBase
         {
             var content = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            var dto = JsonSerializer.Deserialize<CustomerUpdateModel>(content);
+            var dto = JsonSerializer.Deserialize<CustomerCreateModel>(content);
             await StripeCustomerCreate(dto, token);
 
             await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
@@ -77,7 +73,7 @@ public class CustomerRabbitMQConsumer : RabbitMQConsumerBase
         base.Dispose();
     }
 
-    private async Task StripeCustomerCreate(CustomerUpdateModel model, CancellationToken token)
+    private async Task StripeCustomerCreate(CustomerCreateModel model, CancellationToken token)
     {
         using (var scope = _serviceProvider.CreateScope())
         {

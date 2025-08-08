@@ -1,5 +1,5 @@
 using LRA.Account.Application.Extension;
-using LRA.Account.Domain.Settings;
+using LRA.Account.Application.Settings;
 using LRA.Account.Infrastructure.Persistence.Extensions;
 using LRA.Account.Presentation.Extensions;
 using LRA.Account.Presentation.Interfaces;

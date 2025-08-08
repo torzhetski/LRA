@@ -1,4 +1,4 @@
-﻿namespace LRA.Subscription.Domain.Settings;
+﻿namespace LRA.Subscription.Application.Settings;
 
 public class SubscriptionRabbitMqProducerSettings
 {
