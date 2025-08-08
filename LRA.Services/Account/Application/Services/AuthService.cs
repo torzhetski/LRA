@@ -1,7 +1,6 @@
 ﻿using LRA.Account.Application.Interfaces;
 using LRA.Account.Application.Interfaces.Repositories;
-using LRA.Account.Domain.Settings;
-using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Account.Application.Settings;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Enums;

@@ -10,9 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LRA.Account.Application.Interfaces;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Enums;
-using LRA.Account.Domain.Settings;
-using Microsoft.AspNetCore.Http;
-using System;
+using LRA.Account.Application.Settings;
 
 namespace LRA.Account.Application.Services.Hosted;
 

@@ -1,4 +1,4 @@
-﻿namespace LRA.Account.Domain.Settings;
+﻿namespace LRA.Account.Application.Settings;
 
 public class AccountRabbitMqProducerSettings
 {
