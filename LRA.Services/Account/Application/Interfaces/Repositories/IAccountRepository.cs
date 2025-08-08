@@ -10,8 +10,8 @@ public interface IAccountRepository
     Task<AccountDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken);
-    PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
-    Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
+    PaginatedList<AccountSummaryDto> GetPaginatedData(int pageNumber, int pageSize);
+    Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     void SoftDelete (Guid id);
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);

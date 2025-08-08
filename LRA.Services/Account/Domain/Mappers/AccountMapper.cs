@@ -20,4 +20,16 @@ public static class AccountMapper
             IsTwoFaEnabled = model.IsTwoFaEnabled,
         };
     }
+
+    public static AccountSummaryDto FromModelToSummaryDto(this AccountEntity model)
+    {
+        return new AccountSummaryDto()
+        {
+            Id = model.Id,
+            Email = model.Email,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            PhoneNumber = model.PhoneNumber,
+        };
+    }
 }

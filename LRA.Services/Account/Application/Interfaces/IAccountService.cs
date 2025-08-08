@@ -10,8 +10,8 @@ public interface IAccountService
     Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
-    PaginatedList<AccountDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
-    Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
+    PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
+    Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);

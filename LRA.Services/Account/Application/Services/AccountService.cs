@@ -81,13 +81,13 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public PaginatedList<AccountDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize)
+    public PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize)
     {
         var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);
         return response;
     }
 
-    public async Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetAllAsync(cancellationToken);
         return response;

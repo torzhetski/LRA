@@ -75,16 +75,16 @@ public class AccountRepository : IAccountRepository
         return credentials;
     }
 
-    public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
+    public PaginatedList<AccountSummaryDto> GetPaginatedData(int pageNumber, int pageSize)
     {
-        var items = _context.Accounts.Select(x => x.FromModelToDto());
-        var paginatedItems = new PaginatedList<AccountDto>(items, pageNumber, pageSize);
+        var items = _context.Accounts.Select(x => x.FromModelToSummaryDto());
+        var paginatedItems = new PaginatedList<AccountSummaryDto>(items, pageNumber, pageSize);
         return paginatedItems;
     }
 
-    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var items = _context.Accounts.Select(x => x.FromModelToDto());
+        var items = _context.Accounts.Select(x => x.FromModelToSummaryDto());
         return await items.ToListAsync(cancellationToken);
     }
 

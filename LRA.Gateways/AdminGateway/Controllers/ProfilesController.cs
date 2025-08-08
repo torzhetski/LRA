@@ -10,10 +10,12 @@ namespace LRA.Gateways.AdminGateway.Controllers;
 public class ProfilesController : ControllerBase
 {
     private readonly IAdminAuthService _authService;
+    private readonly IAdminAccountService _accountService;
 
-    public ProfilesController(IAdminAuthService authService)
+    public ProfilesController(IAdminAuthService authService, IAdminAccountService accountService)
     {
         _authService = authService;
+        _accountService = accountService;
     }
 
     [Authorize(Policy = ServerPolicy.RequireSuperAdmin)]
@@ -45,6 +47,22 @@ public class ProfilesController : ControllerBase
     public async Task<IActionResult> CreateParamedic([FromQuery] string email, CancellationToken cancellationToken)
     {
         var response = await _authService.CreateParamedicAccount(email, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpGet]
+    public async Task<IActionResult> GetAllAccounts( CancellationToken cancellationToken)
+    {
+        var response = await _accountService.GetAllAccountsAsync(cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpGet]
+    public async Task<IActionResult> CreateParamedic([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var response = await _accountService.GetPaginatedAccountsAsync(pageNumber, pageSize, cancellationToken);
         return Ok(response);
     }
 }

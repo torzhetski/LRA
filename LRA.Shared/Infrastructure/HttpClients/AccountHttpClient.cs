@@ -49,7 +49,7 @@ public class AccountHttpClient : IAccountHttpClient
         return model;
     }
 
-    public async Task<PaginatedList<AccountDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedList<AccountSummaryDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("paginated", new Dictionary<string, string?>
         {
@@ -64,12 +64,12 @@ public class AccountHttpClient : IAccountHttpClient
 
         response.EnsureSuccessStatusCode();
 
-        var model = await response.Content.ReadFromJsonAsync<PaginatedList<AccountDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        var model = await response.Content.ReadFromJsonAsync<PaginatedList<AccountSummaryDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return model;
     }
 
-    public async Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"all");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -78,7 +78,7 @@ public class AccountHttpClient : IAccountHttpClient
 
         response.EnsureSuccessStatusCode();
 
-        var model = await response.Content.ReadFromJsonAsync<List<AccountDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        var model = await response.Content.ReadFromJsonAsync<List<AccountSummaryDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return model;
     }
