@@ -13,9 +13,9 @@ namespace Gateways.ClientGateway.Controllers;
 [ApiVersion("1.0")]
 public class AccountsController : ControllerBase
 {
-    private readonly IAccountService _accountService;
+    private readonly IClientAccountService _accountService;
 
-    public AccountsController(IAccountService accountService)
+    public AccountsController(IClientAccountService accountService)
     {
         _accountService = accountService;
     }
