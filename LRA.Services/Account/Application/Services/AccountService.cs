@@ -29,7 +29,7 @@ public class AccountService : IAccountService
         _queueRoutingKey = rabbitMqProducerOptions.Value.SubscriptionQueueRoutingKey;
     }
 
-    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken, CredentialsDetailsEntity credentials = null)
+    public async Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken, CredentialsDetailsEntity credentials)
     {
         if (!await _accountRepository.IsAccountExists(keycloakId, cancellationToken))
         {
@@ -37,7 +37,8 @@ public class AccountService : IAccountService
             {
                 KeycloakId = keycloakId,
                 Email = email,
-                CredentialsDetailsEntity = credentials,
+                IsEmailVerified = true,
+                CredentialsDetails = credentials,
             };
             var id = await _accountRepository.CreateAsync(model, cancellationToken);
 
@@ -80,7 +81,7 @@ public class AccountService : IAccountService
         return response;
     }
 
-    public PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize)
+    public PaginatedList<AccountDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize)
     {
         var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);
         return response;
@@ -140,5 +141,29 @@ public class AccountService : IAccountService
     public async Task VerifyEmailAsync(string email, CancellationToken cancellationToken)
     {
         await _accountRepository.MakeUserVerifiedAsync(email, cancellationToken);
+    }
+
+    public async Task<bool> CanUserLoginAsync(string email, CancellationToken cancellationToken)
+    {
+        var credentials = await _accountRepository.GetCredentialsByEmailAsync(email, cancellationToken);
+        if (credentials == null)
+        {
+            return true;
+        }
+        if (credentials.HasTempPassword == false) 
+        {
+            return true;
+        }
+        else if(credentials.IsPasswordUsed == false && credentials.ExpiresAt < DateTime.UtcNow)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+
+    public async Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken)
+    {
+        await _accountRepository.MakeTempPasswordUsedAsync(email, cancellationToken);
     }
 }

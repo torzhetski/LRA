@@ -34,6 +34,8 @@ builder.Services.AddTypedHttpClients();
 
 builder.Services.AddRolesPolicy();
 
+builder.Services.ConfigureAuthentication(builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

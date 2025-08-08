@@ -59,7 +59,7 @@ public class AccountController : ControllerBase
     [HttpGet("paginated")]
     public IActionResult GetPaginated([FromQuery] int pageNumber, [FromQuery] int PageSize)
     {
-        var response = _accountService.GetPaginatedAccounts(pageNumber, PageSize);
+        var response = _accountService.GetPaginatedAccountsAsync(pageNumber, PageSize);
         return Ok(response);
     }
 

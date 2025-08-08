@@ -33,7 +33,7 @@ public class AccountDbContext : DbContext, IAccountDbContext
             .UsingEntity(j => j.ToTable("AccountRoles"));
 
         modelBuilder.Entity<AccountEntity>()
-            .HasOne(e => e.CredentialsDetailsEntity)
+            .HasOne(e => e.CredentialsDetails)
             .WithOne()
             .HasForeignKey<AccountEntity>(e => e.CredentialsId)
             .OnDelete(DeleteBehavior.Cascade);

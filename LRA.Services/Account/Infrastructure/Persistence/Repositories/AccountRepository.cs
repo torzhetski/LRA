@@ -60,6 +60,21 @@ public class AccountRepository : IAccountRepository
         return model.FromModelToDto();
     }
 
+    public async Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(x => x.CredentialsDetails)
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), email);
+        }
+
+        var credentials = entity.CredentialsDetails;
+        return credentials;
+    }
+
     public PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize)
     {
         var items = _context.Accounts.Select(x => x.FromModelToDto());
@@ -216,6 +231,23 @@ public class AccountRepository : IAccountRepository
     {
         var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
         return !(entity == null);
+    }
+
+    public async Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(x => x.CredentialsDetails)
+            .FirstOrDefaultAsync(a => a.Email == email, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), email);
+        }
+
+        if(entity.CredentialsDetails != null)
+        {
+            entity.CredentialsDetails.IsPasswordUsed = true;
+        }
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

@@ -1,6 +1,5 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Application.Interfaces;
 
@@ -11,7 +10,7 @@ public interface IAccountService
     Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
-    PaginatedList<AccountDto> GetPaginatedAccounts(int pageNumber, int pageSize);
+    PaginatedList<AccountDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
@@ -22,4 +21,6 @@ public interface IAccountService
     Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken);
     Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task VerifyEmailAsync(string email, CancellationToken cancellationToken);
+    Task<bool> CanUserLoginAsync(string email, CancellationToken cancellationToken);
+    Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
 }

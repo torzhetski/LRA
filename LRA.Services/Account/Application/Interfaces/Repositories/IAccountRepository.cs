@@ -9,6 +9,7 @@ public interface IAccountRepository
     Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<AccountDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken);
     PaginatedList<AccountDto> GetPaginatedData(int pageNumber, int pageSize);
     Task<List<AccountDto>> GetAllAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
@@ -24,5 +25,6 @@ public interface IAccountRepository
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
     Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken);
+    Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

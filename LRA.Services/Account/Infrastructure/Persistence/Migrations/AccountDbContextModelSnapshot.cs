@@ -46,6 +46,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.Property<DateTime>("CreatedUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CredentialsId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -79,7 +82,30 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CredentialsId")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("LRA.Account.Domain.Entities.CredentialsDetailsEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("HasTempPassword")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPasswordUsed")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CredentialsDetailsEntity");
                 });
 
             modelBuilder.Entity("LRA.Account.Domain.Entities.RoleEntity", b =>
@@ -163,6 +189,16 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                         .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LRA.Account.Domain.Entities.AccountEntity", b =>
+                {
+                    b.HasOne("LRA.Account.Domain.Entities.CredentialsDetailsEntity", "CredentialsDetails")
+                        .WithOne()
+                        .HasForeignKey("LRA.Account.Domain.Entities.AccountEntity", "CredentialsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CredentialsDetails");
                 });
 #pragma warning restore 612, 618
         }

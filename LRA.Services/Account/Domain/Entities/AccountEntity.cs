@@ -17,7 +17,7 @@ public class AccountEntity : IBaseEntity, ISoftDeletable
     public DateTime? DeletedOnUtc { get; set; }
     public bool IsTwoFaEnabled { get; set; } = true;
     public Guid? CredentialsId { get; set; }
-    public CredentialsDetailsEntity? CredentialsDetailsEntity { get; set; }
+    public CredentialsDetailsEntity? CredentialsDetails { get; set; }
 
     public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
 }

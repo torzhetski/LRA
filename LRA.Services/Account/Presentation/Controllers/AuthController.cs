@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("account-with-temp-pass/registration")]
-    public async Task<IActionResult> CreateUserWithTempPassword([FromQuery] string email, string role, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateUserWithTempPassword([FromQuery] string email, string? role, CancellationToken cancellationToken)
     {
         var tempPassword = StringGenerator.GeneratePassword();
 
@@ -64,13 +64,15 @@ public class AuthController : ControllerBase
         await _keycloakService.EnableKeycloakUserAsync(keycloakId, cancellationToken);
 
         await _accountService.CreateAccountWithTempPasswordAsync(registrationModel.Email, keycloakId, cancellationToken);
-        await _accountService.AddRoleAsync(role, keycloakId, cancellationToken);
+        if (role != null)
+        {
+            await _accountService.AddRoleAsync(role, keycloakId, cancellationToken);
+        }
 
         var passwordModel = new TempPasswordModel() 
         { 
             TempPassword = tempPassword 
         };    
-
         return Ok(passwordModel);
     }
 
@@ -78,7 +80,13 @@ public class AuthController : ControllerBase
     [HttpPost("keycloak/login")]
     public async Task<IActionResult> LoginUser([FromBody] LoginModel model, CancellationToken cancellationToken)
     {
+        if (!await _accountService.CanUserLoginAsync(model.Email, cancellationToken))
+        {
+            throw new Exception("Cant login exception");
+        }
+
         var response = await _keycloakService.LoginKeycloakUserAsync(model, cancellationToken);
+        await _accountService.MakeTempPasswordUsedAsync(model.Email, cancellationToken);
 
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(response.AccessToken);
