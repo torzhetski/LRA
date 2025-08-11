@@ -61,20 +61,20 @@ public class AccountService : IAccountService
         await CreateAccountAsync(email, keycloakId, cancellationToken, credentials);
     }
 
-    public async Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
         return response;
     }
 
-    public async Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetByEmailAsync(email, cancellationToken);
         return response;
     }
 
-    public async Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);
 

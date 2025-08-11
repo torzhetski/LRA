@@ -5,9 +5,9 @@ namespace LRA.Account.Domain.Mappers;
 
 public static class AccountMapper
 {
-    public static AccountDto FromModelToDto (this AccountEntity model)
+    public static AccountDetailsDto FromModelToDto (this AccountEntity model)
     {
-        return new AccountDto()
+        return new AccountDetailsDto()
         {
             Id = model.Id,
             KeycloakId = model.KeycloakId,

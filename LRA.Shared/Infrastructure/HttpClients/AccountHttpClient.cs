@@ -21,7 +21,7 @@ public class AccountHttpClient : IAccountHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<AccountDto> GetByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"{id}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -30,12 +30,12 @@ public class AccountHttpClient : IAccountHttpClient
 
         response.EnsureSuccessStatusCode();
 
-        var model = await response.Content.ReadFromJsonAsync<AccountDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        var model = await response.Content.ReadFromJsonAsync<AccountDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return model;
     }
 
-    public async Task<AccountDto> GetByKeycloakIdAsync(string keycloakId, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetByKeycloakIdAsync(string keycloakId, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"keycloak/{keycloakId}");
         request.Headers.Add("InternalApiKey", _apiKey);
@@ -44,7 +44,7 @@ public class AccountHttpClient : IAccountHttpClient
 
         response.EnsureSuccessStatusCode();
 
-        var model = await response.Content.ReadFromJsonAsync<AccountDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        var model = await response.Content.ReadFromJsonAsync<AccountDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return model;
     }

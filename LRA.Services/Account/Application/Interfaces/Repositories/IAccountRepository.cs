@@ -7,9 +7,9 @@ namespace LRA.Account.Application.Interfaces.Repositories;
 public interface IAccountRepository
 {
     Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken);
-    Task<AccountDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<AccountDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
-    Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken);
     PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
     PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model);

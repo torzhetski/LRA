@@ -7,9 +7,9 @@ public interface IAccountService
 {
     Task CreateAccountAsync(string email, Guid keycloakId, CancellationToken cancellationToken, CredentialsDetailsEntity credentials = null);
     Task CreateAccountWithTempPasswordAsync(string email, Guid keycloakId, CancellationToken cancellationToken);
-    Task<AccountDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<AccountDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
-    Task<AccountDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetAccountByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
     Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
