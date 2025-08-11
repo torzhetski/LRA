@@ -1,5 +1,6 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Application.Interfaces.Repositories;
 
@@ -10,8 +11,9 @@ public interface IAccountRepository
     Task<AccountDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken);
-    PaginatedList<AccountSummaryDto> GetPaginatedData(int pageNumber, int pageSize);
-    Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken);
+    PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
+    PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model);
+    Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     void SoftDelete (Guid id);
     Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);

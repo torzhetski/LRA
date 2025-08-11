@@ -6,6 +6,7 @@ using LRA.Shared.Abstractions.Test;
 using Microsoft.EntityFrameworkCore;
 using LRA.Account.Domain.Mappers;
 using LRA.Shared.Utils.Exceptions;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Infrastructure.Persistence.Repositories;
 
@@ -75,14 +76,47 @@ public class AccountRepository : IAccountRepository
         return credentials;
     }
 
-    public PaginatedList<AccountSummaryDto> GetPaginatedData(int pageNumber, int pageSize)
+    public PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model)
+    {
+        var query = _context.Accounts
+        .Include(a => a.Roles)
+        .AsQueryable();
+
+        if (model.IsDeleted.HasValue)
+            query = query.IgnoreQueryFilters();
+
+        if (!string.IsNullOrWhiteSpace(model.Search))
+        {
+            query = query.Where(a =>
+                (a.FirstName != null && a.FirstName.Contains(model.Search)) ||
+                (a.LastName != null && a.LastName.Contains(model.Search)) ||
+                a.Email.Contains(model.Search) ||
+                (a.PhoneNumber != null && a.PhoneNumber.Contains(model.Search))
+            );
+        }
+
+        if (model.IsDeleted.HasValue)
+            query = query.Where(a => a.IsDeleted == model.IsDeleted.Value);
+
+        if (model.RequiredRoles is { Count: > 0 })
+        {
+            query = query.Where(a => a.Roles.Any(r => model.RequiredRoles.Contains(r.RoleName)));
+        }
+
+        var items = query.Select(x => x.FromModelToSummaryDto());
+        var paginatedItems = new PaginatedList<AccountSummaryDto>(items, pageNumber, pageSize);
+
+        return paginatedItems;
+    }
+
+    public PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize)
     {
         var items = _context.Accounts.Select(x => x.FromModelToSummaryDto());
         var paginatedItems = new PaginatedList<AccountSummaryDto>(items, pageNumber, pageSize);
         return paginatedItems;
     }
 
-    public async Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
         var items = _context.Accounts.Select(x => x.FromModelToSummaryDto());
         return await items.ToListAsync(cancellationToken);

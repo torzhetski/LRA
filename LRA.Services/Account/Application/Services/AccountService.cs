@@ -89,7 +89,7 @@ public class AccountService : IAccountService
 
     public async Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
-        var response = await _accountRepository.GetAllAsync(cancellationToken);
+        var response = await _accountRepository.GetAllAccountsAsync(cancellationToken);
         return response;
     }
 
