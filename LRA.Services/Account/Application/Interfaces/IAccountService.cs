@@ -1,5 +1,6 @@
 ﻿using LRA.Account.Domain.Entities;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Application.Interfaces;
 
@@ -11,6 +12,7 @@ public interface IAccountService
     Task<AccountDetailsDto> GetAccountByEmailAsync(string email, CancellationToken cancellationToken);
     Task<AccountDetailsDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
+    PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model);
     Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);

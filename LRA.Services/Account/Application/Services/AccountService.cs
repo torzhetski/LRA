@@ -81,9 +81,15 @@ public class AccountService : IAccountService
         return response;
     }
 
+    public PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model)
+    {
+        var response = _accountRepository.FilterAndSearhAccountsAsync(pageNumber, pageSize, model);
+        return response;
+    }
+
     public PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize)
     {
-        var response = _accountRepository.GetPaginatedData(pageNumber, pageSize);
+        var response = _accountRepository.GetPaginatedAccountsAsync(pageNumber, pageSize);
         return response;
     }
 

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -47,6 +48,29 @@ public class AccountHttpClient : IAccountHttpClient
         var model = await response.Content.ReadFromJsonAsync<AccountDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return model;
+    }
+
+    public async Task<PaginatedList<AccountSummaryDto>> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(model);
+        var url = QueryHelpers.AddQueryString("filtrated", new Dictionary<string, string?>
+        {
+            ["pageNumber"] = pageNumber.ToString(),
+            ["pageSize"] = pageSize.ToString()
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var items = await response.Content.ReadFromJsonAsync<PaginatedList<AccountSummaryDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return items;
     }
 
     public async Task<PaginatedList<AccountSummaryDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
