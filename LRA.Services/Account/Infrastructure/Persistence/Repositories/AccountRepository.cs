@@ -118,7 +118,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken)
     {
-        var items = _context.Accounts.Select(x => x.FromModelToSummaryDto());
+        var items = _context.Accounts.Select(x => x.FromModelToSummaryDto()).IgnoreQueryFilters();
         return await items.ToListAsync(cancellationToken);
     }
 

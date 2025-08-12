@@ -18,7 +18,7 @@ public class AuthService : AuthServiceBase, IAdminAuthService
         return response;
     }
 
-    public async Task<TempPasswordModel> CreateBlankAccount(string email, CancellationToken cancellationToken)
+    public async Task<TempPasswordModel> CreateClientAccount(string email, CancellationToken cancellationToken)
     {
         var response = await _httpClient.CreateUserWithTempPassword(email, null, cancellationToken);
         return response;
