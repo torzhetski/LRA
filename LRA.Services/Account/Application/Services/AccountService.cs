@@ -135,6 +135,11 @@ public class AccountService : IAccountService
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);
     }
 
+    public async Task DeleteAccountAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.DeleteAsync(id, cancellationToken);
+    }
+
     public async Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
         var dto = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);

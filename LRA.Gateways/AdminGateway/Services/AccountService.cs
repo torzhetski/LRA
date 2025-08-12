@@ -35,4 +35,14 @@ public class AccountService : AccountServiceBase, IAdminAccountService
         var response = await _httpClient.GetByIdAsync(id.ToString(), cancellationToken);
         return response;
     }
+
+    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _httpClient.SoftDeleteAsync(id, cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _httpClient.DeleteAsync(id, cancellationToken);
+    }
 }

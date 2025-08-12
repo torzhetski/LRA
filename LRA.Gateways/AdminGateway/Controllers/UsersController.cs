@@ -82,4 +82,20 @@ public class UsersController : ControllerBase
         var response = await _accountService.GetAccountById(id, cancellationToken);
         return Ok(response);
     }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpDelete("soft/{id}")]
+    public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _accountService.SoftDeleteAsync(id, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireSuperAdmin)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        await _accountService.DeleteAsync(id, cancellationToken);
+        return Ok();
+    }
 }

@@ -140,6 +140,16 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
     }
 
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Delete, $"{id}");
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task<List<string>> GetRolesByKeycloakId(string keycloakId, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, $"{keycloakId}/roles");
