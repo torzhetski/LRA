@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
-[Route("api/profile")]
+[Route("api/usres")]
 [ApiController]
-public class ProfilesController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly IAdminAuthService _authService;
     private readonly IAdminAccountService _accountService;
 
-    public ProfilesController(IAdminAuthService authService, IAdminAccountService accountService)
+    public UsersController(IAdminAuthService authService, IAdminAccountService accountService)
     {
         _authService = authService;
         _accountService = accountService;
@@ -35,10 +35,10 @@ public class ProfilesController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
-    [HttpPost("blank")]
-    public async Task<IActionResult> CreateBlank([FromQuery] string email, CancellationToken cancellationToken)
+    [HttpPost("client")]
+    public async Task<IActionResult> CreateClient([FromQuery] string email, CancellationToken cancellationToken)
     {
-        var response = await _authService.CreateBlankAccount(email, cancellationToken);
+        var response = await _authService.CreateClientAccount(email, cancellationToken);
         return Ok(response);
     }
 
@@ -60,7 +60,7 @@ public class ProfilesController : ControllerBase
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
     [HttpGet]
-    public async Task<IActionResult> CreateParamedic([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetPaginatedAccounts([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _accountService.GetPaginatedAccountsAsync(pageNumber, pageSize, cancellationToken);
         return Ok(response);
