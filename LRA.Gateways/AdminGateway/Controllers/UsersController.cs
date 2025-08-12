@@ -93,7 +93,7 @@ public class UsersController : ControllerBase
         {
             return Unauthorized("Missing 'Identifier' in token");
         }
-        await _accountService.SoftDeleteAsync(id, Guid.Parse(userId), cancellationToken);
+        await _accountService.SoftDeleteAsync(id, userId, cancellationToken);
         return Ok();
     }
 
@@ -106,7 +106,7 @@ public class UsersController : ControllerBase
         {
             return Unauthorized("Missing 'Identifier' in token");
         }
-        await _accountService.DeleteAsync(id, Guid.Parse(userId), cancellationToken);
+        await _accountService.DeleteAsync(id, userId, cancellationToken);
         return Ok();
     }
 }
