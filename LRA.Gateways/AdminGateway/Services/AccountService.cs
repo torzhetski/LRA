@@ -23,4 +23,10 @@ public class AccountService : AccountServiceBase, IAdminAccountService
         var response = await _httpClient.GetPaginatedAsync(pageNumber, pageSize, cancellationToken);
         return response;
     }
+
+    public async Task<PaginatedList<AccountSummaryDto>> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
+        return response;
+    }
 }

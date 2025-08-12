@@ -1,4 +1,5 @@
 ﻿using LRA.Gateways.AdminGateway.Inetrfaces;
+using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,14 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetPaginatedAccounts([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _accountService.GetPaginatedAccountsAsync(pageNumber, pageSize, cancellationToken);
+        return Ok(response);
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPost("filtrated")]
+    public IActionResult FilterAndSearchAccounts([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromBody] FilterAndSearchModel model, CancellationToken cancellationToken)
+    {
+        var response = _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
         return Ok(response);
     }
 }

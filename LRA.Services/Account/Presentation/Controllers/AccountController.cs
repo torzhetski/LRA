@@ -57,7 +57,7 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("filter-and-search")]
+    [HttpPost("filtrated")]
     public IActionResult FilterAndSearchAccounts([FromQuery] int pageNumber, [FromBody] FilterAndSearchModel model, [FromQuery] int pageSize = 10)
     {
         var response = _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model);

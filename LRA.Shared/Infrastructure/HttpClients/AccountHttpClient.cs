@@ -53,7 +53,7 @@ public class AccountHttpClient : IAccountHttpClient
     public async Task<PaginatedList<AccountSummaryDto>> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(model);
-        var url = QueryHelpers.AddQueryString("filter-and-search", new Dictionary<string, string?>
+        var url = QueryHelpers.AddQueryString("filtrated", new Dictionary<string, string?>
         {
             ["pageNumber"] = pageNumber.ToString(),
             ["pageSize"] = pageSize.ToString()
