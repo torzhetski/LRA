@@ -18,6 +18,8 @@ public class AccountEntity : IBaseEntity, ISoftDeletable
     public bool IsTwoFaEnabled { get; set; } = true;
     public Guid? CredentialsId { get; set; }
     public CredentialsDetailsEntity? CredentialsDetails { get; set; }
+    public bool IsBlocked { get; set; }
+    public DateTime? BlockedUntil { get; set; }
 
     public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
 }

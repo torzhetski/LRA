@@ -43,6 +43,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("BlockedUntil")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -58,6 +61,9 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
