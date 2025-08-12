@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
-[Route("api/profile")]
+[Route("api/usres")]
 [ApiController]
-public class ProfilesController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly IAdminAuthService _authService;
 
-    public ProfilesController(IAdminAuthService authService)
+    public UsersController(IAdminAuthService authService)
     {
         _authService = authService;
     }
@@ -33,10 +33,10 @@ public class ProfilesController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
-    [HttpPost("blank")]
-    public async Task<IActionResult> CreateBlank([FromQuery] string email, CancellationToken cancellationToken)
+    [HttpPost("client")]
+    public async Task<IActionResult> CreateClient([FromQuery] string email, CancellationToken cancellationToken)
     {
-        var response = await _authService.CreateBlankAccount(email, cancellationToken);
+        var response = await _authService.CreateClientAccount(email, cancellationToken);
         return Ok(response);
     }
 
