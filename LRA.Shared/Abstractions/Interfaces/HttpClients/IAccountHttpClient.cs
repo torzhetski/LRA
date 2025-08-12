@@ -1,4 +1,5 @@
 ﻿using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
@@ -6,6 +7,7 @@ public interface IAccountHttpClient
 {
     Task<AccountDto> GetByIdAsync(string id, CancellationToken cancellationToken);
     Task<AccountDto> GetByKeycloakIdAsync(string keycloakId, CancellationToken cancellationToken);
+    Task<PaginatedList<AccountSummaryDto>> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model, CancellationToken cancellationToken);
     Task<PaginatedList<AccountSummaryDto>> GetPaginatedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
     Task<List<AccountSummaryDto>> GetAllAsync(CancellationToken cancellationToken);
     Task UpdateAccountAsync(UpdateAccountDto dto, string keycloakId, CancellationToken cancellationToken);

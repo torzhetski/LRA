@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
 
 namespace LRA.Account.Presentation.Controllers;
 
@@ -56,10 +57,18 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("paginated")]
-    public IActionResult GetPaginated([FromQuery] int pageNumber, [FromQuery] int PageSize = 10)
+    [HttpPost("filter-and-search")]
+    public IActionResult FilterAndSearchAccounts([FromQuery] int pageNumber, [FromBody] FilterAndSearchModel model, [FromQuery] int pageSize = 10)
     {
-        var response = _accountService.GetPaginatedAccountsAsync(pageNumber, PageSize);
+        var response = _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("paginated")]
+    public IActionResult GetPaginated([FromQuery] int pageNumber, [FromQuery] int pageSize = 10)
+    {
+        var response = _accountService.GetPaginatedAccountsAsync(pageNumber, pageSize);
         return Ok(response);
     }
 
