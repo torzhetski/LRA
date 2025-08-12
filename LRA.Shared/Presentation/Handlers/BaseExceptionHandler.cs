@@ -26,6 +26,11 @@ public class BaseExceptionHandler : IExceptionHandler
                 Title = alreadyExistsEx.Message,
                 Status = StatusCodes.Status409Conflict
             },
+            PermissionException unauthorizedEx => new ProblemDetails
+            {
+                Title = unauthorizedEx.Message,
+                Status = StatusCodes.Status403Forbidden
+            },
             UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails
             {
                 Title = unauthorizedAccessEx.Message,

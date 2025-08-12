@@ -36,12 +36,12 @@ public class AccountService : AccountServiceBase, IAdminAccountService
         return response;
     }
 
-    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task SoftDeleteAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         await _httpClient.SoftDeleteAsync(id, cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         await _httpClient.DeleteAsync(id, cancellationToken);
     }

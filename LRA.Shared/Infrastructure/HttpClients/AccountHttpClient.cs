@@ -2,8 +2,10 @@
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Utils.Exceptions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -130,24 +132,50 @@ public class AccountHttpClient : IAccountHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task SoftDeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task SoftDeleteAsync(Guid id, string keycloakId, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Delete, $"soft/{id}");
+        var url = QueryHelpers.AddQueryString($"soft/{id}", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Delete, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(response.RequestMessage.ToString());
+                default:
+                    throw new Exception("deletion failed");
+            }
+        }
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(Guid id, string keycloakId, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Delete, $"{id}");
+        var url = QueryHelpers.AddQueryString($"{id}", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Delete, url);
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(response.RequestMessage.ToString());
+                default:
+                    throw new Exception("deletion failed");
+            }
+        }
     }
 
     public async Task<List<string>> GetRolesByKeycloakId(string keycloakId, CancellationToken cancellationToken)

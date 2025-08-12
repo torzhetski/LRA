@@ -3,6 +3,7 @@ using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
@@ -87,7 +88,12 @@ public class UsersController : ControllerBase
     [HttpDelete("soft/{id}")]
     public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        await _accountService.SoftDeleteAsync(id, cancellationToken);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.SoftDeleteAsync(id, Guid.Parse(userId), cancellationToken);
         return Ok();
     }
 
@@ -95,7 +101,12 @@ public class UsersController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        await _accountService.DeleteAsync(id, cancellationToken);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.DeleteAsync(id, Guid.Parse(userId), cancellationToken);
         return Ok();
     }
 }

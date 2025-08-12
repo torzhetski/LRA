@@ -34,17 +34,17 @@ public class AccountController : ControllerBase
 
     [Authorize]
     [HttpDelete("soft/{id}")]
-    public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountService.SoftDeleteAccountAsync(id, cancellationToken);
+        await _accountService.SoftDeleteAccountAsync(id, keycloakId,cancellationToken);
         return Ok();
     }
 
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccount([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAccount([FromRoute] Guid id, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountService.DeleteAccountAsync(id, cancellationToken);
+        await _accountService.DeleteAccountAsync(id, keycloakId, cancellationToken);
         return Ok();
     }
 

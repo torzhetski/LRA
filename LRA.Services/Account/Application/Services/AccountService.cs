@@ -130,13 +130,15 @@ public class AccountService : IAccountService
         await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
-    public async Task SoftDeleteAccountAsync(Guid id, CancellationToken cancellationToken)
+    public async Task SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
+        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);
     }
 
-    public async Task DeleteAccountAsync(Guid id, CancellationToken cancellationToken)
+    public async Task DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
+        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
         await _accountRepository.DeleteAsync(id, cancellationToken);
     }
 

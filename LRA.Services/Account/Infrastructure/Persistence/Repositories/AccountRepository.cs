@@ -1,12 +1,14 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Domain.Entities;
+using LRA.Account.Domain.Mappers;
 using LRA.Account.Infrastructure.Persistence.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
-using LRA.Shared.Abstractions.Test;
-using Microsoft.EntityFrameworkCore;
-using LRA.Account.Domain.Mappers;
-using LRA.Shared.Utils.Exceptions;
 using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Test;
+using LRA.Shared.Utils.Constants;
+using LRA.Shared.Utils.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace LRA.Account.Infrastructure.Persistence.Repositories;
 
@@ -291,6 +293,34 @@ public class AccountRepository : IAccountRepository
         {
             entity.CredentialsDetails.IsPasswordUsed = true;
         }
+    }
+
+    public async Task HasUserPermission(Guid id, Guid adminId, CancellationToken cancellationToken)
+    {
+        var currentUser = await _context.Accounts
+        .Include(a => a.Roles)
+        .FirstOrDefaultAsync(a => a.KeycloakId == adminId, cancellationToken);
+
+        if (currentUser == null)
+            throw new NotFoundException(nameof(currentUser), adminId);
+
+        if (currentUser.Id == id)
+            throw new PermissionException("Cant modify themself");
+
+
+        var targetUser = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+        if (targetUser == null)
+            throw new NotFoundException(nameof(targetUser), id);
+
+        bool currentIsSuperAdmin = currentUser.Roles.Any(r => r.RoleName == SystemRoles.SuperAdmin);
+        bool targetIsAdminOrSuperAdmin = targetUser.Roles.Any(r =>
+            r.RoleName == SystemRoles.Admin || r.RoleName == SystemRoles.SuperAdmin);
+
+        if (!currentIsSuperAdmin && targetIsAdminOrSuperAdmin)
+            throw new PermissionException("Admin cannot modify other admins");
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

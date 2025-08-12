@@ -1,0 +1,60 @@
+﻿using LRA.Shared.Presentation.Handlers;
+using LRA.Shared.Utils.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+
+namespace LRA.Gateways.AdminGateway.Handlers;
+
+public class AdminGatewayExceptionHandler : IExceptionHandler
+{
+    private readonly ILogger<AdminGatewayExceptionHandler> _logger;
+
+    public AdminGatewayExceptionHandler(ILogger<AdminGatewayExceptionHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    {
+        httpContext.Response.ContentType = "application/problem+json";
+
+        var response = exception switch
+        {
+            AlreadyExistsException alreadyExistsEx => new ProblemDetails
+            {
+                Title = alreadyExistsEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
+            PermissionException unauthorizedEx => new ProblemDetails
+            {
+                Title = unauthorizedEx.Message,
+                Status = StatusCodes.Status403Forbidden
+            },
+            UnauthorizedAccessException unauthorizedAccessEx => new ProblemDetails
+            {
+                Title = unauthorizedAccessEx.Message,
+                Status = StatusCodes.Status401Unauthorized
+            },
+            _ => new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = exception.Message,
+                Title = "Internal Server Error",
+            }
+        };
+
+        _logger.LogError(
+            exception,
+            "An error {ErrorDescription} occurred during processing the request {Path}",
+            exception.Message,
+            httpContext.Request.Path
+        );
+
+        httpContext.Response.StatusCode = (int)response.Status!;
+        var json = JsonSerializer.Serialize(response);
+        await httpContext.Response.WriteAsync(json, cancellationToken);
+
+        return true;
+    }
+}
