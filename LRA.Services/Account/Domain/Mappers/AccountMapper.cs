@@ -5,7 +5,7 @@ namespace LRA.Account.Domain.Mappers;
 
 public static class AccountMapper
 {
-    public static AccountDetailsDto FromModelToDto (this AccountEntity model)
+    public static AccountDetailsDto FromModelToDetailsDto (this AccountEntity model)
     {
         return new AccountDetailsDto()
         {
@@ -18,6 +18,10 @@ public static class AccountMapper
             CreatedUtc = model.CreatedUtc,
             UpdatedUtc = model.UpdatedUtc,
             IsTwoFaEnabled = model.IsTwoFaEnabled,
+            IsDeleted = model.IsDeleted,
+            IsEmailVerified = model.IsEmailVerified,
+            UsedTempPassword = model.CredentialsDetails.IsPasswordUsed,
+            Roles = model.Roles.Select(x => x.RoleName).ToList(),
         };
     }
 

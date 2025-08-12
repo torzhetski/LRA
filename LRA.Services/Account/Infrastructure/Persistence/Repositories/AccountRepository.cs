@@ -29,36 +29,45 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var model = await _context.Accounts
+            .Include(x => x.Roles)
+            .Include(x => x.CredentialsDetails)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (model == null)
         {
             throw new NotFoundException(nameof(model), id);
         }
 
-        return model.FromModelToDto();
+        return model.FromModelToDetailsDto();
     }
 
     public async Task<AccountDetailsDto> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+        var model = await _context.Accounts
+            .Include(x => x.Roles)
+            .Include(x => x.CredentialsDetails)
+            .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
         if (model == null)
         {
             throw new NotFoundException(nameof(model), email);
         }
-        return model.FromModelToDto();
+        return model.FromModelToDetailsDto();
     }
 
     public async Task<AccountDetailsDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
-        var model = await _context.Accounts.FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
+        var model = await _context.Accounts
+            .Include(x => x.Roles)
+            .Include(x => x.CredentialsDetails)
+            .FirstOrDefaultAsync(x => x.KeycloakId == keycloakId, cancellationToken);
 
         if (model == null)
         {
             throw new NotFoundException(nameof(model), keycloakId);
         }
 
-        return model.FromModelToDto();
+        return model.FromModelToDetailsDto();
     }
 
     public async Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken)

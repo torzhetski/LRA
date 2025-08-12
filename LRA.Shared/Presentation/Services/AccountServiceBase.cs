@@ -14,7 +14,7 @@ public abstract class AccountServiceBase : IAccountServiceBase, IRoleProvider
         _httpClient = accountHttpClient;
     }
 
-    public async Task<AccountDetailsDto> GetAccountAsync(string keycloakId, CancellationToken cancellationToken)
+    public async Task<AccountDetailsDto> GetAccountByKeycloakAsync(string keycloakId, CancellationToken cancellationToken)
     {
         var response = await _httpClient.GetByKeycloakIdAsync(keycloakId, cancellationToken);
         return response;

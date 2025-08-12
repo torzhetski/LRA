@@ -74,4 +74,12 @@ public class UsersController : ControllerBase
         var response = _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
         return Ok(response);
     }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAccountById([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _accountService.GetAccountById(id, cancellationToken);
+        return Ok(response);
+    }
 }

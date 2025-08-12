@@ -10,4 +10,5 @@ public interface IAdminAccountService : IAccountServiceBase, IRoleProvider
     Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
     Task<PaginatedList<AccountSummaryDto>> GetPaginatedAccountsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
     Task<PaginatedList<AccountSummaryDto>> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetAccountById(Guid id, CancellationToken cancellationToken);
 }

@@ -29,7 +29,7 @@ public class AccountsController : ControllerBase
         {
             return Unauthorized("Missing 'Identifier' in token");
         }
-        var response = await _accountService.GetAccountAsync(userId, cancellationToken);
+        var response = await _accountService.GetAccountByKeycloakAsync(userId, cancellationToken);
         return Ok(response);
     }
 

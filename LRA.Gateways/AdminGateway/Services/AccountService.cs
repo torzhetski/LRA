@@ -29,4 +29,10 @@ public class AccountService : AccountServiceBase, IAdminAccountService
         var response = await _httpClient.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
         return response;
     }
+
+    public async Task<AccountDetailsDto> GetAccountById(Guid id, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetByIdAsync(id.ToString(), cancellationToken);
+        return response;
+    }
 }
