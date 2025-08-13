@@ -91,4 +91,9 @@ public class KeycloakService : IKeycloakService
 
         return redirectUrl;
     }
+
+    public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        await _keycloakHttpClient.DeleteUserAsync(userId, cancellationToken);
+    }
 }

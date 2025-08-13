@@ -41,4 +41,13 @@ public class CustomerProviderService : ICustomerProviderService
         };
         await _customerRepository.CreateCustomerAsync(entity, cancellationToken);
     }
+
+    public async Task DeleteStripeCustomer(Guid keycloakId, CancellationToken cancellationToken)
+    {
+        var stripeId = await GetCustomerId(keycloakId, cancellationToken);
+
+        await _customerRepository.DeleteCustomerAsync(keycloakId, cancellationToken);
+
+        await _stripeService.DeleteStripeCustomerAsync(stripeId, cancellationToken);
+    }
 }

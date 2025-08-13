@@ -16,4 +16,5 @@ public interface IKeycloakService
     Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
     RedirectUrlModel GetGoogleLoginUrl();
+    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
 }

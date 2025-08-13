@@ -1,8 +1,9 @@
 ﻿using LRA.Account.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using LRA.Account.Presentation.Interfaces;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LRA.Account.Presentation.Controllers;
 
@@ -10,10 +11,13 @@ namespace LRA.Account.Presentation.Controllers;
 public class AccountController : ControllerBase
 {
     private IAccountService _accountService;
+    private readonly IKeycloakService _keycloakService;
 
-    public AccountController(IAccountService testService)
+
+    public AccountController(IAccountService testService, IKeycloakService keycloakService)
     {
         _accountService = testService;
+        _keycloakService = keycloakService;
     }
 
     [Authorize]
@@ -36,7 +40,8 @@ public class AccountController : ControllerBase
     [HttpDelete("soft/{id}")]
     public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountService.SoftDeleteAccountAsync(id, keycloakId,cancellationToken);
+        var deletedUser = await _accountService.SoftDeleteAccountAsync(id, keycloakId, cancellationToken);
+        await _keycloakService.ChangeUserEmailAsync(deletedUser.KeycloakDeletedUserId, $"{deletedUser.Email}_deleted", cancellationToken);
         return Ok();
     }
 
@@ -44,7 +49,8 @@ public class AccountController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount([FromRoute] Guid id, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
-        await _accountService.DeleteAccountAsync(id, keycloakId, cancellationToken);
+        var deletedUser = await _accountService.DeleteAccountAsync(id, keycloakId, cancellationToken);
+        await _keycloakService.DeleteUserAsync (deletedUser.KeycloakDeletedUserId, cancellationToken);
         return Ok();
     }
 
