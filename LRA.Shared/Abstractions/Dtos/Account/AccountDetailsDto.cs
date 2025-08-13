@@ -14,5 +14,7 @@ public class AccountDetailsDto
     public bool IsDeleted { get; set; }
     public bool IsEmailVerified { get; set; }
     public bool? UsedTempPassword { get; set; }
+    public bool IsBlocked { get; set; }
+    public DateTime? BlockedUntil { get; set; }
     public List<string> Roles { get; set; } = new List<string>();
 }

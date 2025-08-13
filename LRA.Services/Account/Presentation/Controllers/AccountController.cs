@@ -101,4 +101,20 @@ public class AccountController : ControllerBase
 
         return Ok(roles);
     }
+
+    [Authorize]
+    [HttpPut("block/{id}")]
+    public async Task<IActionResult> BlockAccount([FromRoute] Guid id, [FromQuery] Guid adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        await _accountService.BlockAccount(id, adminKeycloakId, blockUntilUtc, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("unblock/{id}")]
+    public async Task<IActionResult> UnblockAccount([FromRoute] Guid id, [FromQuery] Guid adminKeycloakId, CancellationToken cancellationToken)
+    {
+        await _accountService.UnblockAccount(id, adminKeycloakId, cancellationToken); 
+        return Ok();
+    }
 }

@@ -81,6 +81,25 @@ public class AccountService : IAccountService
     {
         var response = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);
 
+        if (response.IsBlocked)
+        {
+            if (response.BlockedUntil.HasValue)
+            {
+                if (response.BlockedUntil > DateTime.UtcNow)
+                {
+                    throw new UserBlockedException(keycloakId.ToString());
+                }
+                else
+                {
+                    await _accountRepository.UnblockAccount(response.Id, cancellationToken);
+                    response.IsBlocked = false;
+                }
+            }
+            else
+            {
+                throw new UserBlockedException(keycloakId.ToString());
+            }
+        }
         return response;
     }
 
@@ -217,5 +236,17 @@ public class AccountService : IAccountService
     public async Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken)
     {
         await _accountRepository.MakeTempPasswordUsedAsync(email, cancellationToken);
+    }
+
+    public async Task BlockAccount(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+        await _accountRepository.BlockAccount(id, blockUntilUtc, cancellationToken);
+    }
+
+    public async Task UnblockAccount(Guid id, Guid adminId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+        await _accountRepository.UnblockAccount(id, cancellationToken);
     }
 }

@@ -45,4 +45,14 @@ public class AccountService : AccountServiceBase, IAdminAccountService
     {
         await _httpClient.DeleteAsync(id, adminId, cancellationToken);
     }
+
+    public async Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        await _httpClient.BlockAccount(id, adminKeycloakId, blockUntilUtc, cancellationToken);
+    }
+
+    public async Task UnblockAccount(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        await _httpClient.UnblockAccount(id, adminKeyclaokId, cancellationToken);
+    }
 }

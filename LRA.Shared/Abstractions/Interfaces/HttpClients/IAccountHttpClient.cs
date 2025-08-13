@@ -15,4 +15,6 @@ public interface IAccountHttpClient
     Task SoftDeleteAsync(Guid id, string keycloakId, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, string keycloakId, CancellationToken cancellationToken);
     Task<List<string>> GetRolesByKeycloakId(string keycloakId, CancellationToken cancellationToken);
+    Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccount(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
 }

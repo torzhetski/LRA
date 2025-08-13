@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -189,5 +188,60 @@ public class AccountHttpClient : IAccountHttpClient
         var roles = await response.Content.ReadFromJsonAsync<List<string>>();
 
         return roles;
+    }
+
+    public async Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString($"block/{id}", new Dictionary<string, string?>
+        {
+            ["adminKeycloakId"] = adminKeycloakId,
+        });
+
+        if (blockUntilUtc.HasValue)
+        {
+            url = QueryHelpers.AddQueryString($"block/{id}", new Dictionary<string, string?>
+            {
+                ["adminKeycloakId"] = adminKeycloakId,
+                ["blockUntilUtc"] = blockUntilUtc.ToString(),
+            });
+        }
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(adminKeycloakId);
+                default:
+                    throw new Exception("deletion failed");
+            }
+        }
+    }
+
+    public async Task UnblockAccount(Guid id, string adminKeycloakId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString($"unblock/{id}", new Dictionary<string, string?>
+        {
+            ["adminKeycloakId"] = adminKeycloakId,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(adminKeycloakId);
+                default:
+                    throw new Exception("deletion failed");
+            }
+        }
     }
 }

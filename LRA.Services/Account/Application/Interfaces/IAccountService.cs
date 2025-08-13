@@ -27,4 +27,6 @@ public interface IAccountService
     Task VerifyEmailAsync(string email, CancellationToken cancellationToken);
     Task<bool> CanUserLoginAsync(string email, CancellationToken cancellationToken);
     Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
+    Task BlockAccount(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccount(Guid id, Guid adminId, CancellationToken cancellationToken);
 }

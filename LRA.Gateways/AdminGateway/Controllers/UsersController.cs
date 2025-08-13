@@ -110,4 +110,30 @@ public class UsersController : ControllerBase
         await _accountService.DeleteAsync(id, userId, cancellationToken);
         return Ok();
     }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPut("block/{id}")]
+    public async Task<IActionResult> BlockAccount([FromRoute] Guid id, [FromQuery] DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.BlockAccount(id, userId, blockUntilUtc, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPut("unblock/{id}")]
+    public async Task<IActionResult> UnblockAccount([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.UnblockAccount(id, userId, cancellationToken);
+        return Ok();
+    }
 }

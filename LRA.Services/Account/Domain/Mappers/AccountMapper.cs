@@ -21,6 +21,8 @@ public static class AccountMapper
             IsDeleted = model.IsDeleted,
             IsEmailVerified = model.IsEmailVerified,
             UsedTempPassword = model.CredentialsDetails == null ? null : model.CredentialsDetails.IsPasswordUsed,
+            IsBlocked = model.IsBlocked,
+            BlockedUntil = model.BlockedUntil,
             Roles = model.Roles.Select(x => x.RoleName).ToList(),
         };
     }

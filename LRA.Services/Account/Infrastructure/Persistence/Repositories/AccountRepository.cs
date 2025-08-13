@@ -109,6 +109,9 @@ public class AccountRepository : IAccountRepository
         if (model.IsDeleted.HasValue)
             query = query.Where(a => a.IsDeleted == model.IsDeleted.Value);
 
+        if (model.IsBlocked.HasValue)
+            query = query.Where(a => a.IsBlocked == model.IsBlocked.Value);
+
         if (model.RequiredRoles is { Count: > 0 })
         {
             query = query.Where(a => a.Roles.Any(r => model.RequiredRoles.Contains(r.RoleName)));
@@ -321,6 +324,30 @@ public class AccountRepository : IAccountRepository
 
         if (!currentIsSuperAdmin && targetIsAdminOrSuperAdmin)
             throw new PermissionException("Admin cannot modify other admins");
+    }
+
+    public async Task BlockAccount(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        entity.IsBlocked = true;
+        if ( blockUntilUtc.HasValue)
+            entity.BlockedUntil = blockUntilUtc.Value.ToUniversalTime();
+    }
+
+    public async Task UnblockAccount(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        entity.IsBlocked = false;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

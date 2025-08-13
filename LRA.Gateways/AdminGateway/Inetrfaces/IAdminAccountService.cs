@@ -13,4 +13,6 @@ public interface IAdminAccountService : IAccountServiceBase, IRoleProvider
     Task<AccountDetailsDto> GetAccountById(Guid id, CancellationToken cancellationToken);
     Task SoftDeleteAsync(Guid id, string adminId, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, string adminId, CancellationToken cancellationToken);
+    Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccount(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
 }

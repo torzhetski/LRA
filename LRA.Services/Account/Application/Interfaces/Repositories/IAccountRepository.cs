@@ -29,5 +29,7 @@ public interface IAccountRepository
     Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken);
     Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
     Task HasUserPermission(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task BlockAccount(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccount(Guid id, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }
