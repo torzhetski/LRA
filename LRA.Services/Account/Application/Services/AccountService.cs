@@ -152,6 +152,31 @@ public class AccountService : IAccountService
         await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateSpecifiedAccountAsync(dto, id, cancellationToken);
+    }
+
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateSpecifiedAccountTwoFaAsync(id, cancellationToken);
+    }
+
+    public async Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.UpdateSpecifiedAccountEmailAsync(newEmail, id, cancellationToken);
+    }
+
+    public async Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.AddSpecifiedAccountRoleAsync(roleName, id, cancellationToken);
+    }
+
+    public async Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
+    {
+        await _accountRepository.RemoveSpecifiedAccountRoleAsync(roleName, id, cancellationToken);
+    }
+
     public async Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         await _accountRepository.HasUserPermission(id, adminId, cancellationToken);

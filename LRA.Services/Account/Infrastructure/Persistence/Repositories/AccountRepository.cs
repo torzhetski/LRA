@@ -265,6 +265,90 @@ public class AccountRepository : IAccountRepository
         }
     }
 
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == id);
+        if (entity == null)
+            throw new NotFoundException(nameof(entity), id);
+
+        entity.FirstName = dto.FirstName;
+        entity.LastName = dto.LastName;
+        entity.PhoneNumber = dto.PhoneNumber;
+
+        entity.UpdatedUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        entity.IsTwoFaEnabled = !entity.IsTwoFaEnabled;
+        entity.UpdatedUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        entity.Email = newEmail;
+        entity.UpdatedUtc = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
+
+
+        if (!entity.Roles.Contains(roleFromDb))
+        {
+            entity.Roles.Add(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts
+            .Include(a => a.Roles)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        var roleFromDb = await _context.Roles
+            .FirstOrDefaultAsync(r => roleName == r.RoleName);
+
+
+        if (entity.Roles.Contains(roleFromDb))
+        {
+            entity.Roles.Remove(roleFromDb);
+            await SaveChangesAsync(cancellationToken);
+        }
+    }
+
     public async Task MakeUserVerifiedAsync(string email, CancellationToken cancellationToken)
     {
         var entity = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email, cancellationToken);

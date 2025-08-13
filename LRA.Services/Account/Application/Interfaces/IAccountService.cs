@@ -2,6 +2,7 @@
 using LRA.Account.Domain.Models;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
+using System.Threading.Tasks;
 
 namespace LRA.Account.Application.Interfaces;
 
@@ -21,6 +22,11 @@ public interface IAccountService
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken);
+    Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
+    Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
     Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
     Task<DeletedModel> DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
     Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
