@@ -198,6 +198,31 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("admin-reset-code")]
+    public async Task<IActionResult> SendAdminResetUserPasswordCode([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        await _authService.SendAdminPasswordResetTokenAsync(email, 2880, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("admin-reset-code/verification")]
+    public async Task<IActionResult> AdminResetUserPassword([FromBody] ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        var verified = await _authService.VerifyAdminPasswordResetTokenAsync(resetPasswordModel.ResetPasswordToken, resetPasswordModel.Email, cancellationToken);
+        if (verified)
+        {
+            var response = await _accountService.GetAccountByEmailAsync(resetPasswordModel.Email, cancellationToken);
+            await _keycloakService.ChangeUserPasswordAsync(resetPasswordModel.NewPassword, response.KeycloakId, cancellationToken);
+            return Ok("Password changed");
+        }
+        else
+        {
+            return BadRequest("Password reset failed");
+        }
+    }
+
+    [Authorize]
     [HttpGet("new-email-code")]
     public async Task<IActionResult> SendChangeUserEmailCode([FromQuery] string newEmail, CancellationToken cancellationToken)
     {
@@ -245,5 +270,17 @@ public class AuthController : ControllerBase
     {
         var url = _keycloakService.GetGoogleLoginUrl();
         return Ok(url);
+    }
+
+    [Authorize]
+    [HttpPut("temp-password/{id}")]
+    public async Task<IActionResult> GenerateTempPassword([FromRoute] Guid id, [FromQuery] Guid adminKeycloakId, CancellationToken cancellationToken)
+    {
+        var passModel = await _accountService.CreateTempPassForAccountAsync(id, adminKeycloakId, cancellationToken);
+
+        var account = await _accountService.GetAccountByIdAsync(id, cancellationToken);
+        await _keycloakService.ChangeUserPasswordAsync(passModel.TempPassword, account.KeycloakId, cancellationToken);
+
+        return Ok(passModel);
     }
 }

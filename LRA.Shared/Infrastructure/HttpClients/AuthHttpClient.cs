@@ -1,18 +1,19 @@
-﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
-using LRA.Shared.Infrastructure.Settings;
-using Microsoft.Extensions.Options;
-using System.Text.Json;
-using System.Text;
-using LRA.Shared.Utils.Exceptions;
-using System.Net;
-using LRA.Shared.Abstractions.Models.Auth;
+﻿using LRA.Shared.Abstractions.Dtos;
 using LRA.Shared.Abstractions.Dtos.Verification;
-using Microsoft.AspNetCore.WebUtilities;
-using LRA.Shared.Abstractions.Dtos;
-using System.Net.Http.Json;
+using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
-using System.Threading;
+using LRA.Shared.Abstractions.Models.Auth;
+using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Utils.Exceptions;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System;
+using System.Data;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -302,5 +303,49 @@ public class AuthHttpClient : IAuthHttpClient
         var url = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return url;
+    }
+
+    public async Task SendAdminResetUserPasswordCode(string email, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("admin-reset-code", new Dictionary<string, string?>
+        {
+            ["email"] = email,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task VerifyAdminResetUserPassword(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(resetPasswordModel);
+        using var request = new HttpRequestMessage(HttpMethod.Put, "admin-reset-code/verification")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<TempPasswordModel> GenerateTempPassword(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString($"temp-password/{id}", new Dictionary<string, string?>
+        {
+            ["adminKeyclaokId"] = adminKeyclaokId,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        var password = await response.Content.ReadFromJsonAsync<TempPasswordModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        return password;
     }
 }

@@ -27,14 +27,14 @@ public interface IAccountRepository
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken);
     Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken);
     Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
     Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
     Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
     Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken);
     Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
-    Task HasUserPermission(Guid id, Guid adminId, CancellationToken cancellationToken);
-    Task BlockAccount(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken);
-    Task UnblockAccount(Guid id, CancellationToken cancellationToken);
+    Task HasUserPermissionAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task BlockAccountAsync(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccountAsync(Guid id, CancellationToken cancellationToken);
+    Task CreateTempPassForAccountAsync(Guid id, CancellationToken cancellationToken);
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

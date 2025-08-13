@@ -1,4 +1,5 @@
 ﻿using LRA.Gateways.AdminGateway.Inetrfaces;
+using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -134,6 +135,54 @@ public class UsersController : ControllerBase
             return Unauthorized("Missing 'Identifier' in token");
         }
         await _accountService.UnblockAccount(id, userId, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPut("specified/{id}")]
+    public async Task<IActionResult> UpdateSpecifiedAccountAsync([FromBody] UpdateAccountDto dto, [FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.UpdateSpecifiedAccountAsync(dto, id, userId, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPut("specified/twofactor/{id}")]
+    public async Task<IActionResult> UpdateSpecifiedAccountTwoFaAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _accountService.UpdateSpecifiedAccountTwoFaAsync(id, userId, cancellationToken);
+        return Ok();
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpPut("temp-password/{id}")]
+    public async Task<IActionResult> GenerateTempPassword([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        var passModel = await _authService.GenerateTempPassword(id, userId, cancellationToken);
+
+        return Ok(passModel);
+    }
+
+    [Authorize(Policy = ServerPolicy.RequireAdmin)]
+    [HttpGet("admin-reset-code")]
+    public async Task<IActionResult> SendAdminResetUserPasswordCode([FromQuery] string email, CancellationToken cancellationToken)
+    {
+        await _authService.SendResetPasswordCodeAsync(email, cancellationToken);
         return Ok();
     }
 }

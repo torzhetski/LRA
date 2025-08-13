@@ -98,4 +98,22 @@ public class AuthService : IAuthService
         };
         await _rabbitMQProducerService.SendMessageAsync(message, _queueName, _queueRoutingKey, cancellationToken);
     }
+
+    public async Task<bool> VerifyAdminPasswordResetTokenAsync(string token, string email, CancellationToken cancellationToken)
+    {
+        var response = await _verificationRepository.ValidateAsync(token, email, VerificationType.AdminResetPassword, cancellationToken);
+        return response;
+    }
+
+    public async Task SendAdminPasswordResetTokenAsync(string email, int tokenLifetime, CancellationToken cancellationToken)
+    {
+        var response = await _verificationRepository.CreateAsync(email, VerificationType.AdminResetPassword, tokenLifetime, cancellationToken);
+
+        var message = new EmailMessageModel()
+        {
+            Content = response,
+            RecipientMail = email,
+        };
+        await _rabbitMQProducerService.SendMessageAsync(message, _queueName, _queueRoutingKey, cancellationToken);
+    }
 }

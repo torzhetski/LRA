@@ -23,4 +23,7 @@ public interface IAuthHttpClient
     Task ChangeUserEmailVerifyAsync(EmailChangeModel newEmailModel, string keycloakId, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
     Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken);
+    Task SendAdminResetUserPasswordCode(string email, CancellationToken cancellationToken);
+    Task VerifyAdminResetUserPassword(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken);
+    Task<TempPasswordModel> GenerateTempPassword(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
 }

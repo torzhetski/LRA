@@ -14,4 +14,5 @@ public interface IClientAuthService : IAuthServiceBase
     Task VerifyEmailAsync(string token, string email, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> GetTokenByGoogleCode(string code, CancellationToken cancellationToken);
     Task<RedirectUrlModel> GetGoogleLoginUrlAsync(CancellationToken cancellationToken);
+    Task VerifyAdminResetUserPassword(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken);
 }

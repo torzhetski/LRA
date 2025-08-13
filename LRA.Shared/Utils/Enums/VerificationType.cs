@@ -6,4 +6,5 @@ public enum VerificationType
     TwoFaVerification = 2,
     ResetPassword = 3,
     EmailChanging = 4,
+    AdminResetPassword = 5,
 }

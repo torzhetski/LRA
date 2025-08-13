@@ -55,4 +55,14 @@ public class AccountService : AccountServiceBase, IAdminAccountService
     {
         await _httpClient.UnblockAccount(id, adminKeyclaokId, cancellationToken);
     }
+
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        await _httpClient.UpdateSpecifiedAccountTwoFaAsync(id, adminKeyclaokId, cancellationToken);
+    }
+
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        await _httpClient.UpdateSpecifiedAccountAsync(dto, id, adminKeyclaokId, cancellationToken);
+    }
 }

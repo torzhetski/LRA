@@ -292,19 +292,6 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken)
-    {
-        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id);
-        if (entity == null)
-        {
-            throw new NotFoundException(nameof(entity), id);
-        }
-
-        entity.Email = newEmail;
-        entity.UpdatedUtc = DateTime.UtcNow;
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
     public async Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
     {
         var entity = await _context.Accounts
@@ -382,7 +369,7 @@ public class AccountRepository : IAccountRepository
         }
     }
 
-    public async Task HasUserPermission(Guid id, Guid adminId, CancellationToken cancellationToken)
+    public async Task HasUserPermissionAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         var currentUser = await _context.Accounts
         .Include(a => a.Roles)
@@ -410,7 +397,7 @@ public class AccountRepository : IAccountRepository
             throw new PermissionException("Admin cannot modify other admins");
     }
 
-    public async Task BlockAccount(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    public async Task BlockAccountAsync(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken)
     {
         var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity == null)
@@ -423,7 +410,7 @@ public class AccountRepository : IAccountRepository
             entity.BlockedUntil = blockUntilUtc.Value.ToUniversalTime();
     }
 
-    public async Task UnblockAccount(Guid id, CancellationToken cancellationToken)
+    public async Task UnblockAccountAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (entity == null)
@@ -432,6 +419,23 @@ public class AccountRepository : IAccountRepository
         }
 
         entity.IsBlocked = false;
+    }
+
+    public async Task CreateTempPassForAccountAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Accounts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(entity), id);
+        }
+
+        var credentials = new CredentialsDetailsEntity()
+        {
+            HasTempPassword = true,
+            IsPasswordUsed = false,
+            ExpiresAt = DateTime.UtcNow.AddDays(1),
+        };
+        entity.CredentialsDetails = credentials;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

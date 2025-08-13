@@ -15,4 +15,6 @@ public interface IAdminAccountService : IAccountServiceBase, IRoleProvider
     Task DeleteAsync(Guid id, string adminId, CancellationToken cancellationToken);
     Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
     Task UnblockAccount(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
 }

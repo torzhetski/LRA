@@ -7,6 +7,7 @@ using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Stripe;
+using LRA.Shared.Utils;
 using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils.Exceptions;
 using Microsoft.Extensions.Options;
@@ -58,6 +59,7 @@ public class AccountService : IAccountService
     {
         var credentials = new CredentialsDetailsEntity()
         {
+            HasTempPassword = true,
             IsPasswordUsed = false,
             ExpiresAt = DateTime.UtcNow.AddDays(1),
         };
@@ -91,7 +93,7 @@ public class AccountService : IAccountService
                 }
                 else
                 {
-                    await _accountRepository.UnblockAccount(response.Id, cancellationToken);
+                    await _accountRepository.UnblockAccountAsync(response.Id, cancellationToken);
                     response.IsBlocked = false;
                 }
             }
@@ -152,34 +154,33 @@ public class AccountService : IAccountService
         await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
-    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken)
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, Guid adminKeycloakId, CancellationToken cancellationToken)
     {
+        await _accountRepository.HasUserPermissionAsync(id, adminKeycloakId, cancellationToken);
         await _accountRepository.UpdateSpecifiedAccountAsync(dto, id, cancellationToken);
     }
 
-    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken)
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, Guid adminKeycloakId, CancellationToken cancellationToken)
     {
+        await _accountRepository.HasUserPermissionAsync(id, adminKeycloakId, cancellationToken);
         await _accountRepository.UpdateSpecifiedAccountTwoFaAsync(id, cancellationToken);
     }
 
-    public async Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken)
+    public async Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, Guid adminKeycloakId, CancellationToken cancellationToken)
     {
-        await _accountRepository.UpdateSpecifiedAccountEmailAsync(newEmail, id, cancellationToken);
-    }
-
-    public async Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
-    {
+        await _accountRepository.HasUserPermissionAsync(id, adminKeycloakId, cancellationToken);
         await _accountRepository.AddSpecifiedAccountRoleAsync(roleName, id, cancellationToken);
     }
 
-    public async Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken)
+    public async Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, Guid adminKeycloakId, CancellationToken cancellationToken)
     {
+        await _accountRepository.HasUserPermissionAsync(id, adminKeycloakId, cancellationToken);
         await _accountRepository.RemoveSpecifiedAccountRoleAsync(roleName, id, cancellationToken);
     }
 
     public async Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
-        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+        await _accountRepository.HasUserPermissionAsync(id, adminId, cancellationToken);
 
         var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
@@ -203,7 +204,7 @@ public class AccountService : IAccountService
 
     public async Task<DeletedModel> DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
-        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+        await _accountRepository.HasUserPermissionAsync(id, adminId, cancellationToken);
 
         var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
 
@@ -263,15 +264,28 @@ public class AccountService : IAccountService
         await _accountRepository.MakeTempPasswordUsedAsync(email, cancellationToken);
     }
 
-    public async Task BlockAccount(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
+    public async Task BlockAccountAsync(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken)
     {
-        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
-        await _accountRepository.BlockAccount(id, blockUntilUtc, cancellationToken);
+        await _accountRepository.HasUserPermissionAsync(id, adminId, cancellationToken);
+        await _accountRepository.BlockAccountAsync(id, blockUntilUtc, cancellationToken);
     }
 
-    public async Task UnblockAccount(Guid id, Guid adminId, CancellationToken cancellationToken)
+    public async Task UnblockAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
-        await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
-        await _accountRepository.UnblockAccount(id, cancellationToken);
+        await _accountRepository.HasUserPermissionAsync(id, adminId, cancellationToken);
+        await _accountRepository.UnblockAccountAsync(id, cancellationToken);
+    }
+
+    public async Task<TempPasswordModel> CreateTempPassForAccountAsync(Guid id, Guid adminKeycloakId, CancellationToken cancellationToken)
+    {
+        await _accountRepository.HasUserPermissionAsync(id, adminKeycloakId, cancellationToken);
+        var pass = StringGenerator.GeneratePassword();
+        await _accountRepository.CreateTempPassForAccountAsync(id, cancellationToken);
+
+        var tempPassModel = new TempPasswordModel 
+        { 
+            TempPassword= pass
+        };
+        return tempPassModel;
     }
 }

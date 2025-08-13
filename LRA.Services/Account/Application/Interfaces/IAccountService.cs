@@ -22,17 +22,17 @@ public interface IAccountService
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountEmailAsync(string newEmail, Guid id, CancellationToken cancellationToken);
-    Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
-    Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, Guid adminKeyclaokId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, Guid adminKeyclaokId, CancellationToken cancellationToken);
+    Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, Guid adminKeycloakId, CancellationToken cancellationToken);
+    Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, Guid adminKeycloakId, CancellationToken cancellationToken);
     Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
     Task<DeletedModel> DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
     Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task VerifyEmailAsync(string email, CancellationToken cancellationToken);
     Task<bool> CanUserLoginAsync(string email, CancellationToken cancellationToken);
     Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
-    Task BlockAccount(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
-    Task UnblockAccount(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task BlockAccountAsync(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task<TempPasswordModel> CreateTempPassForAccountAsync(Guid id, Guid adminKeycloakId, CancellationToken cancellationToken);
 }

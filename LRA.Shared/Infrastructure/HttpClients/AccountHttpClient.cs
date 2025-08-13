@@ -244,4 +244,36 @@ public class AccountHttpClient : IAccountHttpClient
             }
         }
     }
+
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString($"specified/twofactor/{id}", new Dictionary<string, string?>
+        {
+            ["adminKeyclaokId"] = adminKeyclaokId,
+        });
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString($"specified/{id}", new Dictionary<string, string?>
+        {
+            ["adminKeyclaokId"] = adminKeyclaokId,
+        });
+        var json = JsonSerializer.Serialize(dto);
+
+        using var request = new HttpRequestMessage(HttpMethod.Put, url)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
 }

@@ -10,4 +10,6 @@ public interface IAuthService
     Task SendEmailVerificationTokenAsync(string email, int tokenLifetime, CancellationToken cancellationToken);
     Task<bool> VerifyEmailChangeAsync(string token, string email, CancellationToken cancellationToken);
     Task SendEmailChangingTokenAsync(string email, int tokenLifetime, CancellationToken cancellationToken);
+    Task<bool> VerifyAdminPasswordResetTokenAsync(string token, string email, CancellationToken cancellationToken);
+    Task SendAdminPasswordResetTokenAsync(string email, int tokenLifetime, CancellationToken cancellationToken);
 }

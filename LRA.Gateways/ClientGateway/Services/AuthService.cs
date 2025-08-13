@@ -41,4 +41,9 @@ public class AuthService : AuthServiceBase, IClientAuthService
         var response = await _httpClient.GetGoogleLoginUrlAsync(cancellationToken);
         return response;
     }
+
+    public async Task VerifyAdminResetUserPassword(ResetPasswordModel resetPasswordModel, CancellationToken cancellationToken)
+    {
+        await _httpClient.VerifyAdminResetUserPassword(resetPasswordModel, cancellationToken);
+    }
 }

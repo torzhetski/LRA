@@ -1,6 +1,7 @@
 ﻿using LRA.Gateways.AdminGateway.Inetrfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Abstractions.Models.Auth;
 using LRA.Shared.Presentation.Services;
 using LRA.Shared.Utils.Constants;
 
@@ -34,5 +35,16 @@ public class AuthService : AuthServiceBase, IAdminAuthService
     {
         var response = await _httpClient.CreateUserWithTempPassword(email, SystemRoles.SuperAdmin, cancellationToken);
         return response;
+    }
+
+    public async Task<TempPasswordModel> GenerateTempPassword(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GenerateTempPassword(id, adminKeyclaokId, cancellationToken);
+        return response;
+    }
+
+    public async Task SendAdminResetUserPasswordCode(string email, CancellationToken cancellationToken)
+    {
+        await _httpClient.SendAdminResetUserPasswordCode(email, cancellationToken);
     }
 }
