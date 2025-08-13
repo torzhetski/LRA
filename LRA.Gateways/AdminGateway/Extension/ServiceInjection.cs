@@ -1,4 +1,5 @@
-﻿using LRA.Gateways.AdminGateway.Inetrfaces;
+﻿using LRA.Gateways.AdminGateway.Handlers;
+using LRA.Gateways.AdminGateway.Inetrfaces;
 using LRA.Gateways.AdminGateway.Services;
 using LRA.Shared.Abstractions.Interfaces;
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
@@ -18,6 +19,8 @@ public static class ServiceInjection
         services.AddScoped<IAdminAccountService, AccountService>();
         services.AddScoped<IAdminAuthService, AuthService>();
         services.AddScoped<IRoleProvider, AccountService>();
+        services.AddExceptionHandler<AdminGatewayExceptionHandler>();
+        services.AddProblemDetails();
 
         return services;
     }

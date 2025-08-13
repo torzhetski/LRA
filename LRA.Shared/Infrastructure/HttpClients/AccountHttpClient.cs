@@ -171,7 +171,7 @@ public class AccountHttpClient : IAccountHttpClient
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Forbidden:
-                    throw new PermissionException(response.RequestMessage.ToString());
+                    throw new PermissionException(keycloakId);
                 default:
                     throw new Exception("deletion failed");
             }

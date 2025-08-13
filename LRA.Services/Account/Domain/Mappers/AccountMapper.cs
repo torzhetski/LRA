@@ -20,7 +20,7 @@ public static class AccountMapper
             IsTwoFaEnabled = model.IsTwoFaEnabled,
             IsDeleted = model.IsDeleted,
             IsEmailVerified = model.IsEmailVerified,
-            UsedTempPassword = model.CredentialsDetails.IsPasswordUsed,
+            UsedTempPassword = model.CredentialsDetails == null ? null : model.CredentialsDetails.IsPasswordUsed,
             Roles = model.Roles.Select(x => x.RoleName).ToList(),
         };
     }

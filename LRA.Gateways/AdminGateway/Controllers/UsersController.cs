@@ -4,6 +4,7 @@ using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LRA.Gateways.AdminGateway.Controllers;
 
@@ -61,7 +62,7 @@ public class UsersController : ControllerBase
     }
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
-    [HttpGet]
+    [HttpGet("paginated")]
     public async Task<IActionResult> GetPaginatedAccounts([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var response = await _accountService.GetPaginatedAccountsAsync(pageNumber, pageSize, cancellationToken);
@@ -70,9 +71,9 @@ public class UsersController : ControllerBase
 
     [Authorize(Policy = ServerPolicy.RequireAdmin)]
     [HttpPost("filtrated")]
-    public IActionResult FilterAndSearchAccounts([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromBody] FilterAndSearchModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> FilterAndSearchAccounts([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromBody] FilterAndSearchModel model, CancellationToken cancellationToken)
     {
-        var response = _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
+        var response = await _accountService.FilterAndSearhAccountsAsync(pageNumber, pageSize, model, cancellationToken);
         return Ok(response);
     }
 
