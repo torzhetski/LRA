@@ -83,4 +83,12 @@ public class StripeService : IStripeService
         var customer = await _customerService.CreateAsync(customerOptions, cancellationToken: cancellationToken);
         return customer.Id;
     }
+
+    public async Task DeleteStripeCustomerAsync(string customerId, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(customerId))
+            throw new ArgumentException("Customer ID cannot be null or empty.", nameof(customerId));
+
+        await _customerService.DeleteAsync(customerId, cancellationToken: cancellationToken);
+    }
 }

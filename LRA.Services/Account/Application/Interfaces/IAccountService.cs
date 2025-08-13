@@ -1,4 +1,5 @@
 ﻿using LRA.Account.Domain.Entities;
+using LRA.Account.Domain.Models;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Models;
 
@@ -20,8 +21,8 @@ public interface IAccountService
     Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
     Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
     Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
-    Task SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
-    Task DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task<DeletedModel> DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
     Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken);
     Task VerifyEmailAsync(string email, CancellationToken cancellationToken);
     Task<bool> CanUserLoginAsync(string email, CancellationToken cancellationToken);

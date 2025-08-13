@@ -14,4 +14,5 @@ public interface IKeycloakHttpClient
     Task ChangeUserPasswordAsync(string newPassword, Guid keycloakId, CancellationToken cancellationToken);
     Task ChangeUserEmailAsync(Guid keycloakId, string newEmail, CancellationToken cancellationToken);
     Task<KeycloakTokenDto> ExchangeGoogleCodeForTokenAsync(string code, CancellationToken cancellationToken);
+    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
 }

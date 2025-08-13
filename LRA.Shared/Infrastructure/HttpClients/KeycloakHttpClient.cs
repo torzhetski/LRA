@@ -74,7 +74,7 @@ public class KeycloakHttpClient : IKeycloakHttpClient
                 case HttpStatusCode.Conflict:
                     throw new AlreadyExistsException("Account");
                 default:
-                    throw new Exception("Login failed");
+                    throw new Exception("Registration failed");
             }
         }
 
@@ -268,6 +268,27 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         var tokens = await response.Content.ReadFromJsonAsync<KeycloakTokenDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
         return tokens;
+    }
+
+    public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var _userManagementToken = await GetAdminAccessTokenByPasswordAsync(cancellationToken);
+
+        using var request = new HttpRequestMessage(HttpMethod.Delete, $"{_options.Value.AdminBaseUrl}users/{userId}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _userManagementToken);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    throw new KeyNotFoundException($"User with ID '{userId}' not found in Keycloak.");
+                default:
+                    throw new Exception($"Failed to delete user '{userId}' from Keycloak. Status code: {response.StatusCode}");
+            }
+        }
     }
 
     private async Task<string> GetAdminAccessTokenByPasswordAsync(CancellationToken cancellationToken)

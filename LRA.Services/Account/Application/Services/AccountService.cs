@@ -2,10 +2,12 @@
 using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Application.Settings;
 using LRA.Account.Domain.Entities;
+using LRA.Account.Domain.Models;
 using LRA.Shared.Abstractions.Dtos.Account;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Abstractions.Models.Stripe;
+using LRA.Shared.Utils.Enums;
 using LRA.Shared.Utils.Exceptions;
 using Microsoft.Extensions.Options;
 
@@ -42,10 +44,11 @@ public class AccountService : IAccountService
             };
             var id = await _accountRepository.CreateAsync(model, cancellationToken);
 
-            var customerModel = new CustomerCreateModel()
+            var customerModel = new CustomerChangeModel()
             {
                 KeycloakId = keycloakId,
                 Email = email,
+                Type = CustomerChangeType.Create,
             };
             await _rabbitMQProducerService.SendMessageAsync(customerModel, _queueName, _queueRoutingKey, cancellationToken);
         }
@@ -130,16 +133,52 @@ public class AccountService : IAccountService
         await _accountRepository.RemoveRoleAsync(roleName, keycloakId, cancellationToken);
     }
 
-    public async Task SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
+    public async Task<DeletedModel> SoftDeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+
+        var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
+
         await _accountRepository.SoftDeleteAsync(id, cancellationToken);
+
+        var customerModel = new CustomerChangeModel
+        {
+            Email = account.Email,
+            KeycloakId = account.KeycloakId,
+            Type = CustomerChangeType.Delete,
+        };
+        await _rabbitMQProducerService.SendMessageAsync(customerModel, _queueName, _queueRoutingKey, cancellationToken);
+
+        var deletedModel = new DeletedModel()
+        {
+            Email = account.Email,
+            KeycloakDeletedUserId = account.KeycloakId,
+        };
+        return deletedModel;
     }
 
-    public async Task DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
+    public async Task<DeletedModel> DeleteAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken)
     {
         await _accountRepository.HasUserPermission(id, adminId, cancellationToken);
+
+        var account = await _accountRepository.GetByIdAsync(id, cancellationToken);
+
         await _accountRepository.DeleteAsync(id, cancellationToken);
+
+        var customerModel = new CustomerChangeModel
+        {
+            Email = account.Email,
+            KeycloakId = account.KeycloakId,
+            Type = CustomerChangeType.Delete,
+        };
+        await _rabbitMQProducerService.SendMessageAsync(customerModel, _queueName, _queueRoutingKey, cancellationToken);
+
+        var deletedModel = new DeletedModel()
+        {
+            Email = account.Email,
+            KeycloakDeletedUserId = account.KeycloakId,
+        };
+        return deletedModel;
     }
 
     public async Task<bool> IsTwoFaEnabledAsync(Guid keycloakId, CancellationToken cancellationToken)

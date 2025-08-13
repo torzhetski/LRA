@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LRA.Subscription.Application.Interfaces;
 using LRA.Shared.Abstractions.Models.Stripe;
 using LRA.Subscription.Application.Settings;
+using LRA.Shared.Utils.Enums;
 
 namespace LRA.Subscription.Application.Services.Hosted;
 
@@ -53,7 +54,7 @@ public class CustomerRabbitMQConsumer : RabbitMQConsumerBase
         {
             var content = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-            var dto = JsonSerializer.Deserialize<CustomerCreateModel>(content);
+            var dto = JsonSerializer.Deserialize<CustomerChangeModel>(content);
             await StripeCustomerCreate(dto, token);
 
             await _channel.BasicAckAsync(ea.DeliveryTag, false, token);
@@ -73,13 +74,26 @@ public class CustomerRabbitMQConsumer : RabbitMQConsumerBase
         base.Dispose();
     }
 
-    private async Task StripeCustomerCreate(CustomerCreateModel model, CancellationToken token)
+    private async Task StripeCustomerCreate(CustomerChangeModel model, CancellationToken token)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
             var _customerService = scope.ServiceProvider.GetRequiredService<ICustomerProviderService>();
             
-            await _customerService.CreateStripeCustomer(model.KeycloakId, model.Email, token);
+            switch (model.Type)
+            {
+                case CustomerChangeType.Create:
+                    {
+                        await _customerService.CreateStripeCustomer(model.KeycloakId, model.Email, token);
+                        break;
+                    }
+
+                case CustomerChangeType.Delete:
+                    {
+                        await _customerService.DeleteStripeCustomer(model.KeycloakId, token);
+                        break;
+                    }
+            }
         }
     }
 }
