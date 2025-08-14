@@ -27,7 +27,7 @@ public class KycRepository : IKycRepository
         entity.Status = KycStatus.Approved;
     }
 
-    public async Task CreateIfPossible(KycEntity entity, CancellationToken cancellationToken)
+    public async Task CreateIfPossibleAsync(KycEntity entity, CancellationToken cancellationToken)
     {
         var model = await _context.Kycs.FirstOrDefaultAsync(x => x.AccountId == entity.AccountId);
         if (model == null || model.Status == KycStatus.Rejected)
