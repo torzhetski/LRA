@@ -11,6 +11,7 @@ public static class ServiceInjection
     {
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IKycService, KycService>();
         services.AddHostedService<AccountRabbitMQConsumer>();
 
         return services;

@@ -16,6 +16,7 @@ public class AccountDbContext : DbContext, IAccountDbContext
     public virtual DbSet<AccountEntity> Accounts { get; set; }
     public virtual DbSet<VerificationEntity> VerificationModels { get; set; }
     public virtual DbSet<RoleEntity> Roles { get; set; }
+    public virtual DbSet<KycEntity> Kycs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

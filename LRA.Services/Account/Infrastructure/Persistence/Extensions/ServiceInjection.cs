@@ -1,6 +1,7 @@
 ﻿using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Infrastructure.Persistence.Interfaces;
 using LRA.Account.Infrastructure.Persistence.Repositories;
+using LRA.Account.Infrasturcture.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ public static class ServiceInjection
 
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IVerificationRepository, VerificationRepository>();
+        services.AddScoped<IKycRepository, KycRepository>();
 
         return services;
     }
