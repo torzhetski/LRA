@@ -114,6 +114,41 @@ namespace LRA.Account.Infrasturcture.Persistence.Migrations
                     b.ToTable("CredentialsDetailsEntity");
                 });
 
+            modelBuilder.Entity("LRA.Account.Domain.Entities.KycEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AdminIdWhoReview")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IdentityDocumentUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MedicalCertificationUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RejectMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SelfieWithIdentityDocumentUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Kycs");
+                });
+
             modelBuilder.Entity("LRA.Account.Domain.Entities.RoleEntity", b =>
                 {
                     b.Property<Guid>("Id")
