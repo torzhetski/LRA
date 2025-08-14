@@ -13,10 +13,9 @@ public class KycService : IKycService
         _httpClient = httpClient;
     }
 
-    public async Task<RedirectUrlModel> UploadPhotoAsync(IFormFile file, CancellationToken cancellationToken)
+    public async Task ApplyToJobAsync(string id, IFormFile identityFile, IFormFile certificationFile, IFormFile selfieFile, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.UploadPhotoAsync(file, cancellationToken);
-        return response;
+        await _httpClient.ApplyToJobAsync(id,identityFile, certificationFile, selfieFile, cancellationToken);
     }
 
     public async Task DeletePhotoAsync(string fileName, CancellationToken cancellationToken)

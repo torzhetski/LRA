@@ -2,7 +2,9 @@
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using System.Data;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -19,26 +21,42 @@ public class KycHttpClient : IKycHttpClient
         _apiKey = options.Value.ApiKey;
     }
 
-    public async Task<RedirectUrlModel> UploadPhotoAsync(IFormFile file, CancellationToken cancellationToken)
+    public async Task ApplyToJobAsync(
+        string id,
+        IFormFile identityFile,
+        IFormFile certificationFile,
+        IFormFile selfieFile,
+        CancellationToken cancellationToken)
     {
         using var content = new MultipartFormDataContent();
-        await using var stream = file.OpenReadStream();
-        var fileContent = new StreamContent(stream);
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
-        content.Add(fileContent, "file", file.FileName);
+        void AddFile(IFormFile file, string name)
+        {
+            if (file == null) return;
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, "")
+            var streamContent = new StreamContent(file.OpenReadStream());
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+            content.Add(streamContent, name, file.FileName);
+        }
+
+        AddFile(identityFile, nameof(identityFile));
+        AddFile(certificationFile, nameof(certificationFile));
+        AddFile(selfieFile, nameof(selfieFile));
+
+        var url = QueryHelpers.AddQueryString("", new Dictionary<string, string?>
+        {
+            ["id"] = id,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url)
         {
             Content = content
         };
+
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
-
-        var result = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(cancellationToken: cancellationToken);
-        return result!;
     }
 
     public async Task DeletePhotoAsync(string fileName, CancellationToken cancellationToken)

@@ -5,6 +5,6 @@ namespace LRA.Shared.Abstractions.Interfaces.HttpClients;
 
 public interface IKycHttpClient
 {
-    Task<RedirectUrlModel> UploadPhotoAsync(IFormFile file, CancellationToken cancellationToken);
+    Task ApplyToJobAsync(string id, IFormFile identityFile, IFormFile certificationFile, IFormFile selfieFile, CancellationToken cancellationToken);
     Task DeletePhotoAsync(string fileName, CancellationToken cancellationToken);
 }

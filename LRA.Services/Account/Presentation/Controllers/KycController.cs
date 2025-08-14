@@ -10,20 +10,26 @@ namespace LRA.Account.Presentation.Controllers;
 public class KycController : ControllerBase
 {
     private readonly IAzureService _azureService;
+    private readonly IKycService _kycService;
 
-    public KycController(IAzureService azureService)
+    public KycController(IAzureService azureService, IKycService kycService)
     {
         _azureService = azureService;
+        _kycService = kycService;
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> UploadPhoto([FromForm] IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApplyToJob(
+        [FromQuery] Guid id, 
+        [FromForm] IFormFile identityFile,
+        [FromForm] IFormFile certificationFile,
+        [FromForm] IFormFile selfieFile, 
+        CancellationToken cancellationToken)
     {
-        using var stream = file.OpenReadStream();
-        var url = await _azureService.UploadPhotoAsync(stream, file.FileName, cancellationToken);
+        await _kycService.CreateIfPossibleAsync(id, identityFile, certificationFile, selfieFile, cancellationToken);
 
-        return Ok(url);
+        return Ok();
     }
 
     [HttpDelete("{fileName}")]

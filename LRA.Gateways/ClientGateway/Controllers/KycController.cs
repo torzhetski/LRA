@@ -21,18 +21,19 @@ public class KycController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> UploadPhoto([FromForm] IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApplyToJob(
+        [FromForm] IFormFile identityFile,
+        [FromForm] IFormFile certificationFile,
+        [FromForm] IFormFile selfieFile,
+        CancellationToken cancellationToken)
     {
-        var response = await _kycService.UploadPhotoAsync(file, cancellationToken);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            return Unauthorized("Missing 'Identifier' in token");
+        }
+        await _kycService.ApplyToJobAsync(userId, identityFile, certificationFile, selfieFile, cancellationToken);
 
-        return Ok(response);
-    }
-
-    [Authorize]
-    [HttpDelete("{fileName}")]
-    public async Task<IActionResult> DeletePhoto([FromRoute] string fileName, CancellationToken cancellationToken)
-    {
-        await _kycService.DeletePhotoAsync(fileName, cancellationToken);
         return Ok();
     }
 }
