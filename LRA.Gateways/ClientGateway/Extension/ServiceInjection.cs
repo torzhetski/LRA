@@ -22,6 +22,7 @@ public static class ServiceInjection
         services.AddScoped<IClientAccountService, AccountService>();
         services.AddScoped<IClientAuthService, AuthService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        services.AddScoped<IKycService, KycService>();
         services.AddScoped<IValidator<RegistrationModel>, RegistrationModelValidator>();
         services.AddFluentValidationAutoValidation();
         services.AddScoped<IRoleProvider, AccountService>();
@@ -48,6 +49,12 @@ public static class ServiceInjection
         services.AddHttpClient<ISubscriptionHttpClient, SubscriptionHttpClient>((provider, client) =>
         {
             var options = provider.GetRequiredService<IOptions<SubscriptionServiceSettings>>().Value;
+            client.BaseAddress = new Uri(options.Url);
+        });
+
+        services.AddHttpClient<IKycHttpClient, KycHttpClient>((provider, client) =>
+        {
+            var options = provider.GetRequiredService<IOptions<KycEndpointsSettings>>().Value;
             client.BaseAddress = new Uri(options.Url);
         });
 

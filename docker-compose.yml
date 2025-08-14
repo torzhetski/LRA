@@ -87,7 +87,7 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.1
+    image: quay.io/keycloak/keycloak:24.0.4
     command: start-dev
     environment:
       KC_DB: postgres
@@ -113,9 +113,20 @@ services:
       POSTGRES_PASSWORD: keycloak
     volumes:
       - keycloak-db-data:/var/lib/postgresql/data
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite-data:/data
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0"
 
 volumes:
   account-db-data:
   subscription-db-data:
   rabbitmq-data:
   keycloak-db-data:
+  azurite-data:

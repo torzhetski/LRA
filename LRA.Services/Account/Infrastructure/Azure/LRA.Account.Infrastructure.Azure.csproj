@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Application\LRA.Account.Application.csproj" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\LRA.Account.Application.csproj" />
   </ItemGroup>
 
 </Project>

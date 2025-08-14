@@ -21,6 +21,9 @@ builder.Services.Configure<AuthEndpointsSettings>(
 builder.Services.Configure<SubscriptionServiceSettings>(
     builder.Configuration.GetSection("SubscriptionServiceSettings"));
 
+builder.Services.Configure<KycEndpointsSettings>(
+    builder.Configuration.GetSection("KycEndpointsSettings"));
+
 builder.Services.AddServices();
 
 builder.Services.AddTypedHttpClients();

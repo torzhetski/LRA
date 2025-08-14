@@ -1,5 +1,7 @@
 using LRA.Account.Application.Extension;
 using LRA.Account.Application.Settings;
+using LRA.Account.Infrastructure.Azure.Extensions;
+using LRA.Account.Infrastructure.Azure.Settings;
 using LRA.Account.Infrastructure.Persistence.Extensions;
 using LRA.Account.Presentation.Extensions;
 using LRA.Account.Presentation.Interfaces;
@@ -41,6 +43,9 @@ builder.Services.Configure<AdminSettings>(
 builder.Services.Configure<KeycloakGoogleProviderSettings>(
     builder.Configuration.GetSection("KeycloakGoogleProviderSettings"));
 
+builder.Services.Configure<AzureStorageSettings>(
+    builder.Configuration.GetSection("AzureStorage"));
+
 builder.Services.AddHttpClient<IKeycloakHttpClient, KeycloakHttpClient>();
 
 builder.Services.AddScoped<IKeycloakService, KeycloakService>();
@@ -48,6 +53,8 @@ builder.Services.AddScoped<IKeycloakService, KeycloakService>();
 builder.Services.AddSingleton<IRabbitMQProducerService, RabbitMQProducerService>();
 
 builder.Services.AddDatabase(builder.Configuration);
+
+builder.Services.AddAzureServices();
 
 builder.Services.AddApplicationServices();
 
