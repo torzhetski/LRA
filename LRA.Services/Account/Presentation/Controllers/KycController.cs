@@ -23,7 +23,7 @@ public class KycController : ControllerBase
         using var stream = file.OpenReadStream();
         var url = await _azureService.UploadPhotoAsync(stream, file.FileName, cancellationToken);
 
-        return Ok(new { Url = url });
+        return Ok(url);
     }
 
     [HttpDelete("{fileName}")]

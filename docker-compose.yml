@@ -130,3 +130,4 @@ volumes:
   rabbitmq-data:
   keycloak-db-data:
   azurite-data:
+    
