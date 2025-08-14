@@ -1,4 +1,5 @@
 ﻿using LRA.Account.Application.Interfaces;
+using LRA.Shared.Abstractions.Dtos.Kyc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,5 +38,40 @@ public class KycController : ControllerBase
     {
         await _azureService.DeletePhotoAsync(fileName, cancellationToken);
         return Ok();
+    }
+
+    [HttpPost("approve")]
+    public async Task<IActionResult> ApproveKyc([FromQuery] Guid userId, CancellationToken cancellationToken)
+    {
+        await _kycService.ApproveKycAsync(userId, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("reject")]
+    public async Task<IActionResult> RejectKyc([FromQuery] Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    {
+        await _kycService.RejectKycAsync(userId, rejectMessage, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpGet("paginated/all")]
+    public ActionResult<PaginatedList<KycSummaryDto>> GetAllKyc([FromQuery] int pageNumber, int pageSize = 10)
+    {
+        var result = _kycService.GetAllPaginatedKyc(pageNumber, pageSize);
+        return Ok(result);
+    }
+
+    [HttpGet("paginated/in-progress")]
+    public ActionResult<PaginatedList<KycSummaryDto>> GetInProgressKyc([FromQuery] int pageNumber, int pageSize = 10)
+    {
+        var result = _kycService.GetInProgressPaginatedKyc(pageNumber, pageSize);
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<KycDetailsDto>> GetKycDetails([FromQuery] Guid userId, CancellationToken cancellationToken)
+    {
+        var result = await _kycService.GetKycDetailsAsync(userId, cancellationToken);
+        return Ok(result);
     }
 }

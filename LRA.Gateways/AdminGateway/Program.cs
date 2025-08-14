@@ -10,6 +10,9 @@ builder.Services.Configure<AccountingEndpointsSettings>(
 builder.Services.Configure<AuthEndpointsSettings>(
     builder.Configuration.GetSection("AuthEndpointsSettings"));
 
+builder.Services.Configure<KycEndpointsSettings>(
+    builder.Configuration.GetSection("KycEndpointsSettings"));
+
 builder.WebHost.ConfigureKestrel(options =>
 {
     var config = builder.Configuration;

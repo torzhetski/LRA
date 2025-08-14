@@ -3,8 +3,10 @@ using LRA.Account.Application.Interfaces.Repositories;
 using LRA.Account.Application.Settings;
 using LRA.Account.Domain.Entities;
 using LRA.Account.Domain.Enums;
+using LRA.Shared.Abstractions.Dtos.Kyc;
 using LRA.Shared.Abstractions.Interfaces.RabbitMq;
 using LRA.Shared.Abstractions.Models;
+using LRA.Shared.Utils.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -38,6 +40,8 @@ public class KycService : IKycService
     {
         await _kycRepository.ApproveKycAsync(userId, cancellationToken);
         var model = await _accountRepository.GetByIdAsync(userId, cancellationToken);
+
+        await _accountRepository.AddRoleAsync(SystemRoles.Paramedic, model.KeycloakId, cancellationToken);
 
         var email = new EmailMessageModel()
         {
@@ -76,5 +80,23 @@ public class KycService : IKycService
             RecipientMail = model.Email,
         };
         await _rabbitMQProducerService.SendMessageAsync(email, _queueName, _queueRoutingKey, cancellationToken);
+    }
+
+    public PaginatedList<KycSummaryDto> GetAllPaginatedKyc(int pageNumber, int pageSize)
+    {
+        var response = _kycRepository.GetAllPaginatedKyc(pageNumber, pageSize);
+        return response;
+    }
+
+    public PaginatedList<KycSummaryDto> GetInProgressPaginatedKyc(int pageNumber, int pageSize)
+    {
+        var response = _kycRepository.GetInProgressPaginatedKyc(pageNumber, pageSize);
+        return response;
+    }
+
+    public Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var response = _kycRepository.GetKycDetailsAsync(userId, cancellationToken);
+        return response;
     }
 }

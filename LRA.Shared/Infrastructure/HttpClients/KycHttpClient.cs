@@ -1,4 +1,5 @@
-﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+﻿using LRA.Shared.Abstractions.Dtos.Kyc;
+using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Infrastructure.Settings;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,8 @@ using Microsoft.Extensions.Options;
 using System.Data;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading;
 
 namespace LRA.Shared.Infrastructure.HttpClients;
 
@@ -66,5 +69,92 @@ public class KycHttpClient : IKycHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task ApproveKycAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("approve", new Dictionary<string, string?>
+        {
+            ["userId"] = userId.ToString(),
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task RejectKycAsync(Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("reject", new Dictionary<string, string?>
+        {
+            ["userId"] = userId.ToString(),
+            ["rejectMessage"] = rejectMessage,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<PaginatedList<KycSummaryDto>> GetAllPaginatedKyc(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("paginated/all", new Dictionary<string, string?>
+        {
+            ["pageNumber"] = pageNumber.ToString(),
+            ["pageSize"] = pageSize.ToString(),
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var items = await response.Content.ReadFromJsonAsync<PaginatedList<KycSummaryDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        return items;
+    }
+
+    public async Task<PaginatedList<KycSummaryDto>> GetInProgressPaginatedKyc(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("paginated/in-progress", new Dictionary<string, string?>
+        {
+            ["pageNumber"] = pageNumber.ToString(),
+            ["pageSize"] = pageSize.ToString(),
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var items = await response.Content.ReadFromJsonAsync<PaginatedList<KycSummaryDto>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        return items;
+    }
+
+    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("", new Dictionary<string, string?>
+        {
+            ["userId"] = userId.ToString(),
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var kycDetails = await response.Content.ReadFromJsonAsync<KycDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+        return kycDetails;
     }
 }

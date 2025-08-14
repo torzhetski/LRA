@@ -19,6 +19,7 @@ public static class ServiceInjection
         services.AddScoped<IAdminAccountService, AccountService>();
         services.AddScoped<IAdminAuthService, AuthService>();
         services.AddScoped<IRoleProvider, AccountService>();
+        services.AddScoped<IAdminKycService, AdminKycService>();
         services.AddExceptionHandler<AdminGatewayExceptionHandler>();
         services.AddProblemDetails();
 
