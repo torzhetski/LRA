@@ -24,37 +24,37 @@ public class KycController : ControllerBase
     }
 
     [HttpPost("approve")]
-    public async Task<IActionResult> ApproveKyc([FromQuery] Guid userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApproveKyc([FromQuery] Guid applicationId, CancellationToken cancellationToken)
     {
-        await _adminKycService.ApproveKycAsync(userId, cancellationToken);
-        return NoContent();
+        await _adminKycService.ApproveKycAsync(applicationId, cancellationToken);
+        return Ok();
     }
 
     [HttpPost("reject")]
-    public async Task<IActionResult> RejectKyc([FromQuery] Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task<IActionResult> RejectKyc([FromQuery] Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
-        await _adminKycService.RejectKycAsync(userId, rejectMessage, cancellationToken);
-        return NoContent();
+        await _adminKycService.RejectKycAsync(applicationId, rejectMessage, cancellationToken);
+        return Ok();
     }
 
     [HttpGet("paginated/all")]
-    public ActionResult<PaginatedList<KycSummaryDto>> GetAllKyc([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllKyc([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        var result = _adminKycService.GetAllPaginatedKyc(pageNumber, pageSize, cancellationToken);
+        var result = await _adminKycService.GetAllPaginatedKyc(pageNumber, pageSize, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("paginated/in-progress")]
-    public ActionResult<PaginatedList<KycSummaryDto>> GetInProgressKyc([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetInProgressKyc([FromQuery] int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        var result = _adminKycService.GetInProgressPaginatedKyc(pageNumber, pageSize, cancellationToken);
+        var result = await _adminKycService.GetInProgressPaginatedKyc(pageNumber, pageSize, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("specified")]
-    public async Task<ActionResult<KycDetailsDto>> GetKycDetails([FromQuery] Guid userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetKycDetails([FromQuery] Guid applicationId, CancellationToken cancellationToken)
     {
-        var result = await _adminKycService.GetKycDetailsAsync(userId, cancellationToken);
+        var result = await _adminKycService.GetKycDetailsAsync(applicationId, cancellationToken);
         return Ok(result);
     }
 }

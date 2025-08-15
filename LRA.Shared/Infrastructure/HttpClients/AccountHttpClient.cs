@@ -30,7 +30,16 @@ public class AccountHttpClient : IAccountHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("account", id);
+                default:
+                    throw new Exception("Deletion failed");
+            }
+        }
 
         var model = await response.Content.ReadFromJsonAsync<AccountDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
@@ -44,7 +53,16 @@ public class AccountHttpClient : IAccountHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("account",keycloakId);
+                default:
+                    throw new Exception("Cant get user info");
+            }
+        }
 
         var model = await response.Content.ReadFromJsonAsync<AccountDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
@@ -118,7 +136,16 @@ public class AccountHttpClient : IAccountHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("account", keycloakId);
+                default:
+                    throw new Exception("Deletion failed");
+            }
+        }
     }
 
     public async Task UpdateTwoFaAsync(string keycloakId, CancellationToken cancellationToken)
@@ -128,7 +155,16 @@ public class AccountHttpClient : IAccountHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("account", keycloakId);
+                default:
+                    throw new Exception("Deletion failed");
+            }
+        }
     }
 
     public async Task SoftDeleteAsync(Guid id, string keycloakId, CancellationToken cancellationToken)
@@ -147,9 +183,11 @@ public class AccountHttpClient : IAccountHttpClient
             switch (response.StatusCode)
             {
                 case HttpStatusCode.Forbidden:
-                    throw new PermissionException(response.RequestMessage.ToString());
+                    throw new PermissionException(keycloakId);
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("account", keycloakId);
                 default:
-                    throw new Exception("deletion failed");
+                    throw new Exception("Deletion failed");
             }
         }
     }
@@ -172,7 +210,7 @@ public class AccountHttpClient : IAccountHttpClient
                 case HttpStatusCode.Forbidden:
                     throw new PermissionException(keycloakId);
                 default:
-                    throw new Exception("deletion failed");
+                    throw new Exception("Deletion failed");
             }
         }
     }
@@ -217,7 +255,7 @@ public class AccountHttpClient : IAccountHttpClient
                 case HttpStatusCode.Forbidden:
                     throw new PermissionException(adminKeycloakId);
                 default:
-                    throw new Exception("deletion failed");
+                    throw new Exception("Block failed");
             }
         }
     }
@@ -240,30 +278,39 @@ public class AccountHttpClient : IAccountHttpClient
                 case HttpStatusCode.Forbidden:
                     throw new PermissionException(adminKeycloakId);
                 default:
-                    throw new Exception("deletion failed");
+                    throw new Exception("Unblock failed");
             }
         }
     }
 
-    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    public async Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString($"specified/twofactor/{id}", new Dictionary<string, string?>
         {
-            ["adminKeyclaokId"] = adminKeyclaokId,
+            ["adminKeycloakId"] = adminKeycloakId,
         });
         using var request = new HttpRequestMessage(HttpMethod.Put, url);
 
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(adminKeycloakId);
+                default:
+                    throw new Exception("Updating failed");
+            }
+        }
     }
 
-    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeyclaokId, CancellationToken cancellationToken)
+    public async Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeycloakId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString($"specified/{id}", new Dictionary<string, string?>
         {
-            ["adminKeyclaokId"] = adminKeyclaokId,
+            ["adminKeycloakId"] = adminKeycloakId,
         });
         var json = JsonSerializer.Serialize(dto);
 
@@ -274,6 +321,15 @@ public class AccountHttpClient : IAccountHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                    throw new PermissionException(adminKeycloakId);
+                default:
+                    throw new Exception("Updating failed");
+            }
+        }
     }
 }

@@ -84,6 +84,7 @@ public class AuthController : ControllerBase
         {
             throw new Exception("Cant login exception");
         }
+        await _accountService.IsUserBlocked(model.Email, cancellationToken);
 
         var response = await _keycloakService.LoginKeycloakUserAsync(model, cancellationToken);
         await _accountService.MakeTempPasswordUsedAsync(model.Email, cancellationToken);

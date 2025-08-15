@@ -106,11 +106,13 @@ public class AccountRepository : IAccountRepository
             );
         }
 
-        if (model.IsDeleted.HasValue)
-            query = query.Where(a => a.IsDeleted == model.IsDeleted.Value);
-
-        if (model.IsBlocked.HasValue)
-            query = query.Where(a => a.IsBlocked == model.IsBlocked.Value);
+        if (model.IsDeleted.HasValue || model.IsBlocked.HasValue)
+        {
+            query = query.Where(a =>
+                (model.IsDeleted.HasValue && a.IsDeleted == model.IsDeleted.Value) ||
+                (model.IsBlocked.HasValue && a.IsBlocked == model.IsBlocked.Value)
+            );
+        }
 
         if (model.RequiredRoles is { Count: > 0 })
         {
@@ -408,6 +410,7 @@ public class AccountRepository : IAccountRepository
         entity.IsBlocked = true;
         if ( blockUntilUtc.HasValue)
             entity.BlockedUntil = blockUntilUtc.Value.ToUniversalTime();
+        await _context.SaveChangesAsync();
     }
 
     public async Task UnblockAccountAsync(Guid id, CancellationToken cancellationToken)
@@ -419,6 +422,7 @@ public class AccountRepository : IAccountRepository
         }
 
         entity.IsBlocked = false;
+        await _context.SaveChangesAsync();
     }
 
     public async Task CreateTempPassForAccountAsync(Guid id, CancellationToken cancellationToken)

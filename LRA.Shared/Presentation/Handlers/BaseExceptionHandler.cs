@@ -41,6 +41,21 @@ public class BaseExceptionHandler : IExceptionHandler
                 Title = notFoundEx.Message,
                 Status = StatusCodes.Status404NotFound
             },
+            UserBlockedException userBlockedEx => new ProblemDetails
+            {
+                Title = userBlockedEx.Message,
+                Status = StatusCodes.Status423Locked
+            },
+            InvalidParametrException invalidParametrEx => new ProblemDetails
+            {
+                Title = invalidParametrEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
+            InvalidVerificationException InvalidVerificationEx => new ProblemDetails
+            {
+                Title = InvalidVerificationEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
             _ => null!
         };
 

@@ -13,9 +13,9 @@ public class AdminKycService : IAdminKycService
         _httpClient = httpClient;
     }
 
-    public async Task ApproveKycAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task ApproveKycAsync(Guid applicationId, CancellationToken cancellationToken)
     {
-        await _httpClient.ApproveKycAsync(userId, cancellationToken);
+        await _httpClient.ApproveKycAsync(applicationId, cancellationToken);
     }
 
     public async Task<PaginatedList<KycSummaryDto>> GetAllPaginatedKyc(int pageNumber, int pageSize, CancellationToken cancellationToken)
@@ -30,14 +30,14 @@ public class AdminKycService : IAdminKycService
         return response;
     }
 
-    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid applicationId, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.GetKycDetailsAsync(userId, cancellationToken);
+        var response = await _httpClient.GetKycDetailsAsync(applicationId, cancellationToken);
         return response;
     }
 
-    public async Task RejectKycAsync(Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task RejectKycAsync(Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
-        await _httpClient.RejectKycAsync(userId, rejectMessage, cancellationToken);
+        await _httpClient.RejectKycAsync(applicationId, rejectMessage, cancellationToken);
     }
 }

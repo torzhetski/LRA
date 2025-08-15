@@ -17,15 +17,16 @@ public class KycRepository : IKycRepository
         _context = context;
     }
 
-    public async Task ApproveKycAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task ApproveKycAsync(Guid applicationId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Kycs.FirstOrDefaultAsync(x => x.AccountId == userId);
+        var entity = await _context.Kycs.FirstOrDefaultAsync(x => x.Id == applicationId && x.Status == KycStatus.InProcess);
         if (entity == null)
         {
-            throw new NotFoundException(nameof(entity), userId);
+            throw new NotFoundException(nameof(entity), applicationId);
         }
 
         entity.Status = KycStatus.Approved;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task CreateIfPossibleAsync(KycEntity entity, CancellationToken cancellationToken)
@@ -42,16 +43,17 @@ public class KycRepository : IKycRepository
         }
     }
 
-    public async Task RejectKycAsync(Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task RejectKycAsync(Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
-        var entity = await _context.Kycs.FirstOrDefaultAsync(x => x.AccountId == userId);
+        var entity = await _context.Kycs.FirstOrDefaultAsync(x => x.Id == applicationId && x.Status == KycStatus.InProcess);
         if (entity == null)
         {
-            throw new NotFoundException(nameof(entity), userId);
+            throw new NotFoundException(nameof(entity), applicationId);
         }
 
         entity.Status = KycStatus.Rejected;
         entity.RejectMessage = rejectMessage;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public PaginatedList<KycSummaryDto> GetAllPaginatedKyc(int pageNumber, int pageSize)
@@ -63,6 +65,7 @@ public class KycRepository : IKycRepository
             kyc => kyc.AccountId,
             (account, kyc) => new KycSummaryDto
             {
+                JobApplicationId = kyc.Id,
                 AccountId = account.Id,
                 Email = account.Email,
                 Status = kyc.Status.ToString()
@@ -84,6 +87,7 @@ public class KycRepository : IKycRepository
         .Where(x => x.kyc.Status == KycStatus.InProcess)
         .Select(x => new KycSummaryDto
         {
+            JobApplicationId = x.kyc.Id,
             AccountId = x.account.Id,
             Email = x.account.Email,
             Status = x.kyc.Status.ToString(),
@@ -92,7 +96,7 @@ public class KycRepository : IKycRepository
         return new PaginatedList<KycSummaryDto>(query, pageNumber, pageSize);
     }
 
-    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid applicationId, CancellationToken cancellationToken)
     {
         var result = await _context.Accounts
         .Join(
@@ -101,9 +105,10 @@ public class KycRepository : IKycRepository
             kyc => kyc.AccountId,
             (account, kyc) => new { account, kyc }
         )
-        .Where(x => x.account.Id == userId)
+        .Where(x => x.kyc.Id == applicationId)
         .Select(x => new KycDetailsDto
         {
+            JobApplicationId = x.kyc.Id,
             AccountId = x.account.Id,
             Email = x.account.Email,
             FirstName = x.account.FirstName,
@@ -119,7 +124,7 @@ public class KycRepository : IKycRepository
 
         if(result == null)
         {
-            throw new NotFoundException(nameof(result), userId);
+            throw new NotFoundException(nameof(result), applicationId);
         }
 
         return result;

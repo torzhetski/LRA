@@ -39,7 +39,11 @@ public static class ServiceInjection
             var options = provider.GetRequiredService<IOptions<AuthEndpointsSettings>>().Value;
             client.BaseAddress = new Uri(options.Url);
         });
-
+        services.AddHttpClient<IKycHttpClient, KycHttpClient>((provider, client) =>
+        {
+            var options = provider.GetRequiredService<IOptions<KycEndpointsSettings>>().Value;
+            client.BaseAddress = new Uri(options.Url);
+        });
         return services;
     }
 

@@ -41,37 +41,37 @@ public class KycController : ControllerBase
     }
 
     [HttpPost("approve")]
-    public async Task<IActionResult> ApproveKyc([FromQuery] Guid userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApproveKyc([FromQuery] Guid applicationId, CancellationToken cancellationToken)
     {
-        await _kycService.ApproveKycAsync(userId, cancellationToken);
+        await _kycService.ApproveKycAsync(applicationId, cancellationToken);
         return NoContent();
     }
 
     [HttpPost("reject")]
-    public async Task<IActionResult> RejectKyc([FromQuery] Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task<IActionResult> RejectKyc([FromQuery] Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
-        await _kycService.RejectKycAsync(userId, rejectMessage, cancellationToken);
+        await _kycService.RejectKycAsync(applicationId, rejectMessage, cancellationToken);
         return NoContent();
     }
 
     [HttpGet("paginated/all")]
-    public ActionResult<PaginatedList<KycSummaryDto>> GetAllKyc([FromQuery] int pageNumber, int pageSize = 10)
+    public IActionResult GetAllKyc([FromQuery] int pageNumber, int pageSize = 10)
     {
         var result = _kycService.GetAllPaginatedKyc(pageNumber, pageSize);
         return Ok(result);
     }
 
     [HttpGet("paginated/in-progress")]
-    public ActionResult<PaginatedList<KycSummaryDto>> GetInProgressKyc([FromQuery] int pageNumber, int pageSize = 10)
+    public IActionResult GetInProgressKyc([FromQuery] int pageNumber, int pageSize = 10)
     {
         var result = _kycService.GetInProgressPaginatedKyc(pageNumber, pageSize);
         return Ok(result);
     }
 
     [HttpGet]
-    public async Task<ActionResult<KycDetailsDto>> GetKycDetails([FromQuery] Guid userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetKycDetails([FromQuery] Guid applicationId, CancellationToken cancellationToken)
     {
-        var result = await _kycService.GetKycDetailsAsync(userId, cancellationToken);
+        var result = await _kycService.GetKycDetailsAsync(applicationId, cancellationToken);
         return Ok(result);
     }
 }

@@ -82,26 +82,6 @@ public class AccountService : IAccountService
     public async Task<AccountDetailsDto> GetAccountByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken)
     {
         var response = await _accountRepository.GetByKeycloakIdAsync(keycloakId, cancellationToken);
-
-        if (response.IsBlocked)
-        {
-            if (response.BlockedUntil.HasValue)
-            {
-                if (response.BlockedUntil > DateTime.UtcNow)
-                {
-                    throw new UserBlockedException(keycloakId.ToString());
-                }
-                else
-                {
-                    await _accountRepository.UnblockAccountAsync(response.Id, cancellationToken);
-                    response.IsBlocked = false;
-                }
-            }
-            else
-            {
-                throw new UserBlockedException(keycloakId.ToString());
-            }
-        }
         return response;
     }
 
@@ -251,7 +231,7 @@ public class AccountService : IAccountService
         {
             return true;
         }
-        else if(credentials.IsPasswordUsed == false && credentials.ExpiresAt < DateTime.UtcNow)
+        else if(credentials.IsPasswordUsed == false && DateTime.UtcNow < credentials.ExpiresAt)
         {
             return true;
         }
@@ -287,5 +267,30 @@ public class AccountService : IAccountService
             TempPassword= pass
         };
         return tempPassModel;
+    }
+
+    public async Task IsUserBlocked(string email, CancellationToken cancellationToken)
+    {
+        var response = await _accountRepository.GetByEmailAsync(email, cancellationToken);
+
+        if (response.IsBlocked)
+        {
+            if (response.BlockedUntil.HasValue)
+            {
+                if (response.BlockedUntil > DateTime.UtcNow)
+                {
+                    throw new UserBlockedException(email.ToString());
+                }
+                else
+                {
+                    await _accountRepository.UnblockAccountAsync(response.Id, cancellationToken);
+                    response.IsBlocked = false;
+                }
+            }
+            else
+            {
+                throw new UserBlockedException(email.ToString());
+            }
+        }
     }
 }

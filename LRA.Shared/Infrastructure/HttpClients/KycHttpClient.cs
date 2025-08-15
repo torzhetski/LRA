@@ -2,10 +2,12 @@
 using LRA.Shared.Abstractions.Interfaces.HttpClients;
 using LRA.Shared.Abstractions.Models;
 using LRA.Shared.Infrastructure.Settings;
+using LRA.Shared.Utils.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using System.Data;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -71,11 +73,11 @@ public class KycHttpClient : IKycHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task ApproveKycAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task ApproveKycAsync(Guid applicationId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("approve", new Dictionary<string, string?>
         {
-            ["userId"] = userId.ToString(),
+            ["applicationId"] = applicationId.ToString(),
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -86,11 +88,11 @@ public class KycHttpClient : IKycHttpClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task RejectKycAsync(Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task RejectKycAsync(Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("reject", new Dictionary<string, string?>
         {
-            ["userId"] = userId.ToString(),
+            ["applicationId"] = applicationId.ToString(),
             ["rejectMessage"] = rejectMessage,
         });
 
@@ -140,11 +142,11 @@ public class KycHttpClient : IKycHttpClient
         return items;
     }
 
-    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid applicationId, CancellationToken cancellationToken)
     {
         var url = QueryHelpers.AddQueryString("", new Dictionary<string, string?>
         {
-            ["userId"] = userId.ToString(),
+            ["applicationId"] = applicationId.ToString(),
         });
 
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -152,7 +154,16 @@ public class KycHttpClient : IKycHttpClient
         request.Headers.Add("InternalApiKey", _apiKey);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Conflict:
+                    throw new AlreadyExistsException("Job application");
+                case HttpStatusCode.NotFound:
+                    throw new NotFoundException("Job application", applicationId);
+                default:
+                    throw new Exception("Problems with job application");
+            }
 
         var kycDetails = await response.Content.ReadFromJsonAsync<KycDetailsDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
         return kycDetails;

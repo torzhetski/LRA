@@ -38,4 +38,17 @@ public class AzureService : IAzureService
         var blobClient = _containerClient.GetBlobClient(fileName);
         await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots, cancellationToken: cancellationToken);
     }
+
+    public async Task<string> GetFileBytesAsync(string blobUrl, CancellationToken cancellationToken)
+    {
+        var fileName = Path.GetFileName(blobUrl);
+        var fileExtension = Path.GetExtension(blobUrl);
+
+        var blobClient = _containerClient.GetBlobClient(fileName);
+
+        using var stream = new MemoryStream();
+        await blobClient.DownloadToAsync(stream, cancellationToken);
+        var fileContent = Convert.ToBase64String(stream.ToArray());
+        return fileContent;
+    }
 }

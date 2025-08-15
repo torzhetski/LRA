@@ -36,10 +36,10 @@ public class KycService : IKycService
         _accountRepository = accountRepository;
     }
 
-    public async Task ApproveKycAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task ApproveKycAsync(Guid applicationId, CancellationToken cancellationToken)
     {
-        await _kycRepository.ApproveKycAsync(userId, cancellationToken);
-        var model = await _accountRepository.GetByIdAsync(userId, cancellationToken);
+        await _kycRepository.ApproveKycAsync(applicationId, cancellationToken);
+        var model = await _accountRepository.GetByIdAsync(applicationId, cancellationToken);
 
         await _accountRepository.AddRoleAsync(SystemRoles.Paramedic, model.KeycloakId, cancellationToken);
 
@@ -53,13 +53,15 @@ public class KycService : IKycService
 
     public async Task CreateIfPossibleAsync(Guid userId, IFormFile identityFile, IFormFile certificationFile, IFormFile selfieFile, CancellationToken cancellationToken)
     {
-        var identityUrl = await _azureService.UploadPhotoAsync(identityFile.OpenReadStream(), $"{identityFile.FileName}_{DateTime.UtcNow}", cancellationToken);
-        var certificationUrl = await _azureService.UploadPhotoAsync(certificationFile.OpenReadStream(), $"{certificationFile.FileName}_{DateTime.UtcNow}", cancellationToken);
-        var selfieUrl = await _azureService.UploadPhotoAsync(selfieFile.OpenReadStream(), $"{selfieFile.FileName}_{DateTime.UtcNow}", cancellationToken);
+        var identityUrl = await _azureService.UploadPhotoAsync(identityFile.OpenReadStream(), $"{identityFile.FileName}", cancellationToken);
+        var certificationUrl = await _azureService.UploadPhotoAsync(certificationFile.OpenReadStream(), $"{certificationFile.FileName}", cancellationToken);
+        var selfieUrl = await _azureService.UploadPhotoAsync(selfieFile.OpenReadStream(), $"{selfieFile.FileName}", cancellationToken);
+
+        var model = await _accountRepository.GetByKeycloakIdAsync(userId, cancellationToken);
 
         var enity = new KycEntity()
         {
-            AccountId = userId,
+            AccountId = model.Id,
             IdentityDocumentUrl = identityUrl.RedirectUrl,
             MedicalCertificationUrl = certificationUrl.RedirectUrl,
             SelfieWithIdentityDocumentUrl = selfieUrl.RedirectUrl,
@@ -68,11 +70,11 @@ public class KycService : IKycService
         await _kycRepository.CreateIfPossibleAsync(enity, cancellationToken);
     }
 
-    public async Task RejectKycAsync(Guid userId, string rejectMessage, CancellationToken cancellationToken)
+    public async Task RejectKycAsync(Guid applicationId, string rejectMessage, CancellationToken cancellationToken)
     {
-        await _kycRepository.RejectKycAsync(userId, rejectMessage, cancellationToken);
+        await _kycRepository.RejectKycAsync(applicationId, rejectMessage, cancellationToken);
 
-        var model = await _accountRepository.GetByIdAsync(userId, cancellationToken);
+        var model = await _accountRepository.GetByIdAsync(applicationId, cancellationToken);
 
         var email = new EmailMessageModel()
         {
@@ -94,9 +96,13 @@ public class KycService : IKycService
         return response;
     }
 
-    public Task<KycDetailsDto> GetKycDetailsAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<KycDetailsDto> GetKycDetailsAsync(Guid applicationId, CancellationToken cancellationToken)
     {
-        var response = _kycRepository.GetKycDetailsAsync(userId, cancellationToken);
+        var response = await _kycRepository.GetKycDetailsAsync(applicationId, cancellationToken);
+
+        response.IdentityDocumentBase64 = await _azureService.GetFileBytesAsync(response.IdentityDocumentUrl, cancellationToken);
+        response.MedicalCertificationBase64 = await _azureService.GetFileBytesAsync(response.MedicalCertificationUrl, cancellationToken);
+        response.SelfieWithIdentityDocumentBase64 = await _azureService.GetFileBytesAsync(response.SelfieWithIdentityDocumentUrl, cancellationToken);
         return response;
     }
 }

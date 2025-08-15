@@ -41,7 +41,7 @@ public class AccountController : ControllerBase
     public async Task<IActionResult> SoftDeleteAccount([FromRoute] Guid id, [FromQuery] Guid keycloakId, CancellationToken cancellationToken)
     {
         var deletedUser = await _accountService.SoftDeleteAccountAsync(id, keycloakId, cancellationToken);
-        await _keycloakService.ChangeUserEmailAsync(deletedUser.KeycloakDeletedUserId, $"{deletedUser.Email}_deleted", cancellationToken);
+        await _keycloakService.ChangeUserEmailAsync(deletedUser.KeycloakDeletedUserId, $"deleted.{deletedUser.Email}", cancellationToken);
         return Ok();
     }
 

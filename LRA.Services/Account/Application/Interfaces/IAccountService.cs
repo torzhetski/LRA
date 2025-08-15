@@ -34,5 +34,6 @@ public interface IAccountService
     Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
     Task BlockAccountAsync(Guid id, Guid adminId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
     Task UnblockAccountAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task IsUserBlocked(string email, CancellationToken cancellationToken);
     Task<TempPasswordModel> CreateTempPassForAccountAsync(Guid id, Guid adminKeycloakId, CancellationToken cancellationToken);
 }

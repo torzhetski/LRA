@@ -103,6 +103,10 @@ public class AuthHttpClient : IAuthHttpClient
             {
                 case HttpStatusCode.Unauthorized:
                     throw new UnauthorizedAccessException("Invalid account credentials");
+                case HttpStatusCode.Locked:
+                    throw new UserBlockedException(model.Email);
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidVerificationException();
                 default:
                     throw new Exception("Account login failed");
             }
@@ -124,7 +128,16 @@ public class AuthHttpClient : IAuthHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidParametrException();
+                default:
+                    throw new Exception("TwoFactor verification failed");
+            }
+        }
 
         var dto = await response.Content.ReadFromJsonAsync<VerificationDto>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
 
@@ -144,7 +157,16 @@ public class AuthHttpClient : IAuthHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidParametrException();
+                default:
+                    throw new Exception("Email verification failed");
+            }
+        }
     }
 
     public async Task<KeycloakTokenDto> RefreshTokenAsync(RefreshTokenModel refreshTokenModel, CancellationToken cancellationToken)
@@ -240,7 +262,16 @@ public class AuthHttpClient : IAuthHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidParametrException();
+                default:
+                    throw new Exception("Reset password verification failed");
+            }
+        }
     }
 
     public async Task SendChangeUserEmailCodeAsync(string newEmail, CancellationToken cancellationToken)
@@ -331,7 +362,16 @@ public class AuthHttpClient : IAuthHttpClient
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidParametrException();
+                default:
+                    throw new Exception("Reset password verification failed");
+            }
+        }
     }
 
     public async Task<TempPasswordModel> GenerateTempPassword(Guid id, string adminKeyclaokId, CancellationToken cancellationToken)

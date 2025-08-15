@@ -130,6 +130,8 @@ public class KeycloakHttpClient : IKeycloakHttpClient
             {
                 case HttpStatusCode.Unauthorized:
                     throw new UnauthorizedAccessException("Invalid user credentials");
+                case HttpStatusCode.BadRequest:
+                    throw new InvalidVerificationException();
                 default:
                     throw new Exception("Failed to login");
             }
@@ -224,7 +226,8 @@ public class KeycloakHttpClient : IKeycloakHttpClient
         {
             Email = newEmail,
             Username = newEmail,
-            EmailVerified = true
+            EmailVerified = true,
+            Enabled = true
         };
 
         using var request = new HttpRequestMessage(HttpMethod.Put, $"{_options.Value.AdminBaseUrl}users/{keycloakId}")

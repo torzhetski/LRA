@@ -10,4 +10,6 @@ public class UpdateKeycloakEmailModel
     public required string Username { get; set; }
     [JsonPropertyName("emailVerified")]
     public bool EmailVerified { get; set; }
+    [JsonPropertyName("enabled")]
+    public bool Enabled { get; set; }
 }

@@ -31,6 +31,26 @@ public class ClientGatewayExceptionHandler : IExceptionHandler
                 Title = unauthorizedAccessEx.Message,
                 Status = StatusCodes.Status401Unauthorized
             },
+            UserBlockedException userBlockedEx => new ProblemDetails
+            {
+                Title = userBlockedEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
+            InvalidParametrException invalidParametrEx => new ProblemDetails
+            {
+                Title = invalidParametrEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
+            NotFoundException notFoundEx => new ProblemDetails
+            {
+                Title = notFoundEx.Message,
+                Status = StatusCodes.Status404NotFound
+            },
+            InvalidVerificationException InvalidVerificationEx => new ProblemDetails
+            {
+                Title = InvalidVerificationEx.Message,
+                Status = StatusCodes.Status400BadRequest
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,

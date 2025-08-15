@@ -17,6 +17,6 @@ public interface IAccountHttpClient
     Task<List<string>> GetRolesByKeycloakId(string keycloakId, CancellationToken cancellationToken);
     Task BlockAccount(Guid id, string adminKeycloakId, DateTime? blockUntilUtc, CancellationToken cancellationToken);
     Task UnblockAccount(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
-    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeyclaokId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, string adminKeycloakId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, string adminKeycloakId, CancellationToken cancellationToken);
 }
