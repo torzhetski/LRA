@@ -1,0 +1,40 @@
+﻿using LRA.Account.Domain.Entities;
+using LRA.Shared.Abstractions.Dtos.Account;
+using LRA.Shared.Abstractions.Models;
+
+namespace LRA.Account.Application.Interfaces.Repositories;
+
+public interface IAccountRepository
+{
+    Task<Guid> CreateAsync(AccountEntity model, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<AccountDetailsDto> GetByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task<CredentialsDetailsEntity?> GetCredentialsByEmailAsync(string email, CancellationToken cancellationToken);
+    PaginatedList<AccountSummaryDto> GetPaginatedAccountsAsync(int pageNumber, int pageSize);
+    PaginatedList<AccountSummaryDto> FilterAndSearhAccountsAsync(int pageNumber, int pageSize, FilterAndSearchModel model);
+    Task<List<AccountSummaryDto>> GetAllAccountsAsync(CancellationToken cancellationToken);
+    Task<List<string>> GetRolesByKeycloakIdAsync(Guid keycloakId, CancellationToken cancellationToken);
+    void SoftDelete (Guid id);
+    Task SoftDeleteAsync (Guid id, CancellationToken cancellationToken);
+    void Delete(Guid id);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    void Update(UpdateAccountDto dto, Guid keycloakId);
+    Task UpdateAsync(UpdateAccountDto dto, Guid keycloakId, CancellationToken cancellationToken);
+    Task UpdateTwoFaAsync(Guid keycloakId, CancellationToken cancellationToken);
+    Task UpdateEmailAsync(string newEmail, Guid keycloakId, CancellationToken cancellationToken);
+    Task AddRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task RemoveRoleAsync(string roleName, Guid keycloakId, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountAsync(UpdateAccountDto dto, Guid id, CancellationToken cancellationToken);
+    Task UpdateSpecifiedAccountTwoFaAsync(Guid id, CancellationToken cancellationToken);
+    Task AddSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
+    Task RemoveSpecifiedAccountRoleAsync(string roleName, Guid id, CancellationToken cancellationToken);
+    Task MakeUserVerifiedAsync (string email, CancellationToken cancellationToken);   
+    Task<bool> IsAccountExists(Guid keycloakId, CancellationToken cancellationToken);
+    Task MakeTempPasswordUsedAsync(string email, CancellationToken cancellationToken);
+    Task HasUserPermissionAsync(Guid id, Guid adminId, CancellationToken cancellationToken);
+    Task BlockAccountAsync(Guid id, DateTime? blockUntilUtc, CancellationToken cancellationToken);
+    Task UnblockAccountAsync(Guid id, CancellationToken cancellationToken);
+    Task CreateTempPassForAccountAsync(Guid id, CancellationToken cancellationToken);
+    Task SaveChangesAsync(CancellationToken cancellationToken);
+}

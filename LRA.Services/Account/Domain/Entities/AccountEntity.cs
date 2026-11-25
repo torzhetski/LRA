@@ -1,0 +1,25 @@
+﻿using LRA.Shared.Abstractions.Interfaces.Entities;
+
+namespace LRA.Account.Domain.Entities;
+
+public class AccountEntity : IBaseEntity, ISoftDeletable
+{
+    public Guid Id { get; set; }
+    public required Guid KeycloakId { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public required string Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedUtc { get; set; }
+    public bool IsEmailVerified { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedOnUtc { get; set; }
+    public bool IsTwoFaEnabled { get; set; } = true;
+    public Guid? CredentialsId { get; set; }
+    public CredentialsDetailsEntity? CredentialsDetails { get; set; }
+    public bool IsBlocked { get; set; }
+    public DateTime? BlockedUntil { get; set; }
+
+    public ICollection<RoleEntity> Roles { get; set; } = new List<RoleEntity>();
+}

@@ -1,0 +1,69 @@
+﻿using LRA.Shared.Abstractions.Interfaces.HttpClients;
+using LRA.Shared.Infrastructure.Settings;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
+using LRA.Shared.Abstractions.Models;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Json;
+using LRA.Shared.Utils.Exceptions;
+using System.Net;
+
+namespace LRA.Shared.Infrastructure.HttpClients;
+
+public class SubscriptionHttpClient : ISubscriptionHttpClient
+{
+    private readonly HttpClient _httpClient;
+    private readonly string _apiKey;
+
+    public SubscriptionHttpClient(HttpClient httpClient, IOptions<SubscriptionServiceSettings> options)
+    {
+        _httpClient = httpClient;
+        _apiKey = options.Value.ApiKey;
+    }
+
+
+    public async Task<RedirectUrlModel> GetChekoutSessionAsync(string keycloakId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("chekout-session", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Conflict:
+                    throw new AlreadyExistsException("Subscription");
+                default:
+                    throw new Exception("Problems with chekout session");
+            }
+
+        var redirectUrl = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return redirectUrl;
+    }
+
+    public async Task<RedirectUrlModel> GetCustomerPortalSessionAsync(string keycloakId, CancellationToken cancellationToken)
+    {
+        var url = QueryHelpers.AddQueryString("customers-portal-session", new Dictionary<string, string?>
+        {
+            ["keycloakId"] = keycloakId,
+        });
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("InternalApiKey", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var redirectUrl = await response.Content.ReadFromJsonAsync<RedirectUrlModel>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
+
+        return redirectUrl;
+    }
+}
